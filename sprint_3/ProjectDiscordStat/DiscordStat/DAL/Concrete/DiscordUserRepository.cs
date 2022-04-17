@@ -6,15 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DiscordStats.DAL.Concrete
 {
-    public class DiscordUserRepository : Repository<DiscordUser>, IDiscordUserRepository
+    public class DiscordUserRepository : Repository<DiscordUserAndUserWebSiteInfo>, IDiscordUserRepository
     {
         public DiscordUserRepository(DiscordDataDbContext ctx) : base(ctx)
         {
         }
 
-        public IEnumerable<DiscordUser> GetDiscordUsers()
+        public IEnumerable<DiscordUserAndUserWebSiteInfo> GetDiscordUsers()
         {
-            List<DiscordUser> discordusers = new List<DiscordUser>();
+            List<DiscordUserAndUserWebSiteInfo> discordusers = new List<DiscordUserAndUserWebSiteInfo>();
             foreach (var s in _dbSet)
             {
                 discordusers.Add(s);

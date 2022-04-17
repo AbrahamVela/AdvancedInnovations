@@ -21,7 +21,8 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
-        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository)
+        private readonly IDiscordUserRepository _discordUserRepository;
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IDiscordUserRepository discordUserRepository)
         {
             _logger = logger;
             _discord = discord;
@@ -30,6 +31,7 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
+            _discordUserRepository = discordUserRepository;    
         }
 
         [Authorize (AuthenticationSchemes = "Discord")]
@@ -37,8 +39,9 @@ namespace DiscordStats.Controllers
         {
             // Don't use the ViewBag!  Use a viewmodel instead.
             // The data in ClaimTypes can be mocked.  Will have to wait though for how to do that.
-            ViewBag.id = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            ViewBag.name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            ViewBag.name  = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            ViewBag.id = userId;
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             string botToken = _configuration["API:BotToken"];
 
@@ -53,27 +56,52 @@ namespace DiscordStats.Controllers
                 string hasBot = await _discord.CheckForBot(botToken, server.Id);
                 if (hasBot == "true")
                 {
-                    var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
+                     var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
 
-                    _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
+                     _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
                 }
             }
 
             var userInfo = await _discord.GetCurrentUserInfo(bearerToken);
-
-
             ViewBag.hash = userInfo.Avatar;
+            var websiteProfileInfo = _discordUserRepository.GetAll().ToList();
+            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+            vm.Servers = servers.ToList();
+            var user = websiteProfileInfo.Where(n => n.Id == userId).FirstOrDefault();
+            if (user != null)
+            {
+                vm.id = user.Id;
+                vm.ProfileFirstName = user.FirstName;
+                vm.ProfileLastName = user.LastName;
+                vm.ProfileBirthDate = user.BirthDate;
+                vm.ProfileEmail = user.Email;
+            }
+
+            // Now we can inject a mock IDiscordService that fakes this method.  That will allow us to test
+            // anything __after__ getting this list of servers, i.e. any logic that we perform with this data from
+            // here on.  There's nothing here now but there presumably will be.  If this method used a viewmodel
+            // then we could test this action method a little more, but it doesn't.
+
+            // Unfortunately it doesn't allow us to test the actual code within the GetCurrentUserGuilds method.
+            // For that we must take the next step in refactoring.
+            //var test = await _discord.UpdateOwner(botToken);
+            return View(vm);
+        }
 
 
-        // Now we can inject a mock IDiscordService that fakes this method.  That will allow us to test
-        // anything __after__ getting this list of servers, i.e. any logic that we perform with this data from
-        // here on.  There's nothing here now but there presumably will be.  If this method used a viewmodel
-        // then we could test this action method a little more, but it doesn't.
+        [Authorize]
+        public async Task<IActionResult> WebsiteProfileForm(List<Server> userId)
+        {
+            ViewBag.Id = userId;
+            return View();
+        }
 
-        // Unfortunately it doesn't allow us to test the actual code within the GetCurrentUserGuilds method.
-        // For that we must take the next step in refactoring.
-        //var test = await _discord.UpdateOwner(botToken);
-            return View(servers);
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> ProfileFormSubmit([Bind("ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
+        {
+
+            return RedirectToAction("Account");
         }
 
         [Authorize(AuthenticationSchemes = "Discord")]

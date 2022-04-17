@@ -60,7 +60,7 @@ namespace DiscordStats.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostUsers(DiscordUser[] users)
+        public async Task<IActionResult> PostUsers(DiscordUserAndUserWebSiteInfo[] users)
         {
             foreach (var user in users)
             {

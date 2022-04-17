@@ -1,0 +1,161 @@
+﻿@model DiscordStats.Models.DiscordUserAndUserWebSiteInfo
+
+
+@{
+	ViewData["Title"] = "Create/Update Website Profile Info";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Server Details</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>@ViewData["Title"] - DiscordStat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="~/assets/css/templatemo-host-cloud.css">
+    <link rel="stylesheet" href="~/assets/css/owl.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+</head>
+ <body>
+               <!-- ***** Preloader Start ***** -->
+    <div id="preloader">
+        <div class="jumper">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>  
+    <!-- ***** Preloader End ***** -->
+    <!-- Page Content -->
+    <!-- Heading Starts Here -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>STAT TRACKER profile info</h1>
+            <p>Add or Update profile info in the Account page</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Heading Ends Here -->
+    <!-- Services Starts Here -->
+    <div class="services-section services-page">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+              <h2>Here you can make adjustments or add profile info custom to STAT TRACKER</h2>
+            </div>
+          </div>
+          <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
+              @using (Html.BeginForm("ProfileFormSubmit", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <h4>Send your comments.</h4>
+                    <hr />
+                    <div class="form-group">
+                        @Html.LabelFor(m => @Model.FirstName, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => @Model.FirstName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => @Model.FirstName)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => @Model.LastName, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => @Model.LastName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => @Model.LastName)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => @Model.BirthDate, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(m => @Model.BirthDate, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => @Model.BirthDate)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => @Model.Email, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(m =>  @Model.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m =>  @Model.Email)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" class="btn btn-default" value="Send" />
+                        </div>
+                    </div>
+                }
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Services Ends Here -->
+
+</body>
+    </html>
+    <!-- Bootstrap core JavaScript -->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Additional Scripts -->
+    <script src="~/assets/js/custom.js"></script>
+    <script src="~/assets/js/owl.js"></script>
+    <script src="~/assets/js/accordions.js"></script>
+@section Scripts {
+
+     <script type="text/javascript" src="~/js/site.js"></script>
+}
+
+
+  @*          <form asp-controller="Account" asp-action="ProfileFormSubmit" method="post">
+
+                <div class="row" >
+                <label for="FirstName" asp-for="FirstName" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter first Name:</label>
+                <input type="text" asp-for="FirstName" class="form-control" >
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                <label for="LastName" asp-for="LastName" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter Last Name:</label>
+                <input type="text" asp-for="LastName" class="form-control" >
+                <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                 <div class="row" >
+                <label for="BirthDate" asp-for="BirthDate" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter B-day:</label>
+                <input type="text" asp-for="BirthDate" class="form-control" >
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                <label for="Email" asp-for="Email" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter Eamil:</label>
+                <input type="text" asp-for="Email" class="form-control" >
+                <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <div class="form-group mt-3 text-center">
+                        <input type="submit" value="Submit Changes for Profile info"  class="btn btn-primary"/>
+                    </div>
+                </div>
+
+            </form>*@
+@*            <form asp-controller="Forum" asp-action="ServerOffForum" method="post">
+
+                    <div class="col">
+                        <div class="form-group mt-3 text-center">
+                            <input type="submit" value="Un-Add from Forum"  class="btn btn-primary"/>
+                        </div>
+                    </div>
+            </form>*@

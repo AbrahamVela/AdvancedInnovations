@@ -3,9 +3,9 @@ using DiscordStats.Models;
 
 namespace DiscordStats.DAL.Abstract
 {
-    public interface IDiscordUserRepository : IRepository<DiscordUser>
+    public interface IDiscordUserRepository : IRepository<DiscordUserAndUserWebSiteInfo>
     {
-        IEnumerable<DiscordUser> GetDiscordUsers();
+        IEnumerable<DiscordUserAndUserWebSiteInfo> GetDiscordUsers();
 
     }
 }
