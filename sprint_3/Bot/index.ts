@@ -424,7 +424,7 @@ async function sendVoiceChannels (){
             console.log("All Channels: ")
             console.log(channels)
         
-            axios.post('https://localhost:7228/api/PostVoiceChannels', channels)
+            axios.post(url + '/api/PostVoiceChannels', channels)
                 .then((result: any) => {
                     console.log(result);
                 })
@@ -463,15 +463,20 @@ async function sendVoiceChannels (){
 
 function updataData() {
     sendPresence();
+    console.log(Date.now)
     sendUsers();
+    console.log(Date.now)
 }
 function UpdateVoiceChannel() {
     sendVoiceChannels();
+    console.log(Date.now)
     sendServers();
+    console.log(Date.now)
     sendChannels();
+    console.log(Date.now)
 }
   
-setInterval(updataData, 12000);
+setInterval(updataData, 300000);
 setInterval(UpdateVoiceChannel, 1800000);
 
 client.login(process.env.TOKEN);

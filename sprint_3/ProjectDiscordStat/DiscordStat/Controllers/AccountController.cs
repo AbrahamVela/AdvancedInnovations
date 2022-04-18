@@ -94,36 +94,6 @@ namespace DiscordStats.Controllers
             return View(servers.Where(m => m.Owner == "true").ToList());
         }
 
-        //[Authorize(AuthenticationSchemes = "Discord")]
-        //public async Task<IActionResult> ServerChannels(string? serverId)
-        //{
-        //    string botToken = _configuration["API:BotToken"];
-        //    var servers = _serverRepository.GetAll();
-        //    var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
-
-        //    IList<Channel> channels = new List<Channel>();
-        //    if (selectedServer != null)
-        //    {
-        //        if (selectedServer.HasBot == "true")
-        //        {
-        //            channels = _channelRepository.GetAll().Where(x => x.GuildId == selectedServer.Id).ToList();
-
-        //            ViewBag.hasBot = "true";
-
-        //        }
-        //        else
-        //        {
-        //            ViewBag.hasBot = "false";
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ViewBag.hasBot = "false";
-        //    }
-
-        //    return View(channels);
-        //}
-
         [HttpPost]
         public IActionResult ChangePrivacy(string privacyString)
         {
@@ -274,7 +244,7 @@ namespace DiscordStats.Controllers
                     newGame.UserCount = 1;
 
                     if (presence.Image == null)
-                        newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                        newGame.GameImage = "https://nektony.com/wp-content/uploads/2019/07/discord-icon.png";
                     else
                         newGame.GameImage = presence.Image;
                     newGame.smallImageId = presence.SmallImageId;

@@ -10,17 +10,68 @@
         error: handleError
     });
 
+    $.ajax({
+        type: 'GET',
+        url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
+        success: graphDropDownBox,
+        error: handleError
+    });
+
 })
 
 const timezone = -3
-
+var presenceActivityData = [];
+var presencesChart;
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
 }
 
 
+function graphDropDownBox(data) {
+    var allUsersPresences = document.getElementById("allUsersPresences");
+    for (i = 0; i < data.length; i++) {
+        console.log(data[i].username);
+        var opt = data[i];
+        var elPresence = document.createElement("option");
+        elPresence.textContent = opt.username;
+        elPresence.value = opt.id;
+        allUsersPresences.appendChild(elPresence);
+    }
+}
+
+$("#allUsersPresences").change(function () {
+    $("#usersHourlyAllTimeChart").empty();
+
+    var newList = []
+    if ($(this).val() == "All Users") {
+
+        if (presencesChart != null) {
+            presencesChart.destroy();
+        }
+        graphingPresenceActivity(presenceActivityData)
+    }
+    else {
+        for (var i = 0; i < presenceActivityData.length; i++) {
+            if (presenceActivityData[i].userId == $(this).val()) {
+                newList.push(presenceActivityData[i]);
+            }
+        }
+        if (presencesChart != null) {
+            presencesChart.destroy();
+        }
+        graphingPresenceActivity(newList)
+    }
+});
+
+
 function barGraphHourlyPresenceActivity(data) {
+    presenceActivityData = data
+    graphingPresenceActivity(presenceActivityData)
+}
+
+
+function graphingPresenceActivity(data) {
 
 
     $("#presencesHourlyAllTimeChart").empty();
@@ -44,7 +95,7 @@ function barGraphHourlyPresenceActivity(data) {
 
 
 
-    new Chart("presencesHourlyAllTimeChart", {
+    presencesChart = new Chart("presencesHourlyAllTimeChart", {
         type: "bar",
         data: {
             labels: xValues,

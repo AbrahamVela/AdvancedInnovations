@@ -60,13 +60,19 @@ namespace DiscordStats.Controllers
         [HttpGet]
         public IActionResult GetMessageInfoFromDatabase(string ServerId)
         {
-            return Json(_messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId));
+            return Json(_messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
         }
 
         [HttpGet]
         public IActionResult GetPresencesFromDatabase(string ServerId, string GameName)
         {
-            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName));
+            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+        }
+
+        [HttpGet]
+        public IActionResult GetUsersFromDatabase(string ServerId)
+        {
+            return Json(_discordUserRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
         }
     }
 }

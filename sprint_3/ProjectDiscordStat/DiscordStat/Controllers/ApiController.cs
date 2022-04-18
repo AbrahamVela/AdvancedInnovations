@@ -73,7 +73,7 @@ namespace DiscordStats.Controllers
 
                     for (int i = 0; i < allDiscordUsers.Count(); i++)
                     {
-                        if (user.Id == allDiscordUsers[i].Id)
+                        if (user.Id == allDiscordUsers[i].Id && user.Servers == allDiscordUsers[i].Servers)
                         {
                             duplicate = true;
                         }
