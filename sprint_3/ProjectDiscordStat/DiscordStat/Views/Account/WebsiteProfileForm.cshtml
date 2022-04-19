@@ -58,15 +58,15 @@
             </div>
           </div>
           <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
-              @using (Html.BeginForm("ProfileFormSubmit", "Account", FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
+              @*@using (Html.BeginForm("ProfileFormSubmit", "Account", FormMethod.Post))*@
+            <form asp-action="ProfileFormSubmit"> 
+                    @*@Html.AntiForgeryToken()
                     <h4>Send your comments.</h4>
                     <hr />
                     <div class="form-group">
                         @Html.LabelFor(m => @Model.FirstName, new { @class = "col-md-2 control-label" })
                         <div class="col-md-10">
-                            @Html.TextBoxFor(m => @Model.FirstName, new { @class = "form-control" })
+                            @Html.TextBoxFor(m => @Model.FirstName, new { @class = "form-control"})
                             @Html.ValidationMessageFor(m => @Model.FirstName)
                         </div>
                     </div>
@@ -83,21 +83,33 @@
                             @Html.TextAreaFor(m => @Model.BirthDate, new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => @Model.BirthDate)
                         </div>
+                    </div>*@
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">Birth Date:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="BirthDate" type="date" class="form-control" min="@DateTime.Now - 100" max="@DateTime.Now"/>
+                            <span asp-validation-for="BirthDate" class="text-danger"></span>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => @Model.Email, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-10">
-                            @Html.TextAreaFor(m =>  @Model.Email, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m =>  @Model.Email)
+                
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">Email:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="Email" type="email" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" class="btn btn-default" value="Send" />
+                        <div class="col-md-12 text-center" >
+                            <input type="submit" class="btn btn-primary" value="Send" />
                         </div>
                     </div>
-                }
-
+                
+            </form>
           </div>
         </div>
       </div>
