@@ -58,6 +58,7 @@ builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
 builder.Services.AddScoped<IChannelRepository, ChannelRepository>();
 builder.Services.AddScoped<IMessageInfoRepository, MessageInfoRepository>();
 builder.Services.AddScoped<IVoiceChannelRepository, VoiceChannelRepository>();
+builder.Services.AddScoped<IVoiceStateRepository, VoiceStateRepository>();
 
 
 // Add services to the container.

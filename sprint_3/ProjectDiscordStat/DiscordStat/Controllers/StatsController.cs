@@ -36,9 +36,10 @@ namespace DiscordStats.Controllers
         private readonly IServerRepository _serverRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IMessageInfoRepository _messageInfoRepository;
+        private readonly IVoiceStateRepository _voiceStateRepository;
 
 
-        public StatsController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository)
+        public StatsController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
         {
             _logger = logger;
             _discordUserRepository = discordUserRepo;
@@ -47,6 +48,7 @@ namespace DiscordStats.Controllers
             _serverRepository = serverRepository;
             _channelRepository = channelRepository;
             _messageInfoRepository = messageInfoRepository;
+            _voiceStateRepository = voiceStateRepository;
         }
 
         public IActionResult ServerStats(string ServerId)
@@ -73,6 +75,12 @@ namespace DiscordStats.Controllers
         public IActionResult GetUsersFromDatabase(string ServerId)
         {
             return Json(_discordUserRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
+        }
+
+        [HttpGet]
+        public IActionResult GetVoiceStatesFromDatabase(string ServerId)
+        {
+            return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
         }
     }
 }

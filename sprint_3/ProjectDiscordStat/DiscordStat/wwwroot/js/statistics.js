@@ -11,29 +11,22 @@ $(document).ready(function () {
     $.ajax({
         type: 'GET',
         url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
-        success: graphDropDownBox,
+        success: graphMessageDropDownBox,
         error: handleError
     });
 })
 
-const timezone = -3;
 var messageActivityData = [];
 var messagesChart;
 
 
-function graphDropDownBox(data) {
-    var allUsersVoice = document.getElementById("allUsersVoice");
+function graphMessageDropDownBox(data) {
     var allUsersMessages = document.getElementById("allUsersMessages");
     for (i = 0; i < data.length; i++) {
-        console.log(data[i].username);
         var opt = data[i];
         var elMessage = document.createElement("option");
-        var elVoice = document.createElement("option");
         elMessage.textContent = opt.username;
         elMessage.value = opt.id;
-        elVoice.textContent = opt.username;
-        elVoice.value = opt.id;
-        allUsersVoice.appendChild(elVoice);
         allUsersMessages.appendChild(elMessage);
     }
 }
@@ -79,7 +72,7 @@ function graphingMessageActivity(data) {
 
     for (var i = 0; i < data.length; i++) {
         let hour = new Date(data[i].createdAt).getHours();
-        subtraction = hour - 1 + timezone;
+        subtraction = hour - 4;
         if (subtraction < 0) {
             subtraction = yValues.length + subtraction;
         }

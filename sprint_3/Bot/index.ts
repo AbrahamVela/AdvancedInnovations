@@ -69,12 +69,6 @@ client.on('messageCreate', async(message) => {
     }, 5000);
 
 
-
-
-
-
-
-
     if (!message.content.startsWith(prefix)) return;
 
     // gets the ID of the server in which the message was sent from
@@ -435,6 +429,42 @@ async function sendVoiceChannels (){
     }, 100000);
 }
 
+async function sendVoiceStates (){
+    let voiceStates: any = [];
+     client.guilds.cache.each(async (guild) => {
+        guild.channels.cache.each(async (channel) => {               
+            
+            if(channel.type == 'GUILD_VOICE' && channel.members.size != 0)
+            {
+                channel.members.each(member => {
+                let newVoiceState = {
+                    ServerId: guild.id,
+                    ChannelId: channel.id,
+                    UserId: member.id,
+                    CreatedAt: new Date()
+                }
+                voiceStates.push(newVoiceState);
+                })
+            }
+        }) 
+    })
+
+    setTimeout(() => {
+        if (voiceStates.length != 0) {
+            console.log("All VoiceStates: ")
+            console.log(voiceStates)
+        
+            axios.post(url + '/api/PostVoiceStates', voiceStates)
+                .then((result: any) => {
+                    console.log(result);
+                })
+                .catch((error: any) => {
+                    console.log(error);
+                });
+        }
+    }, 5000);
+}
+
             // axios.post('https://discordstats.azurewebsites.net/api/postchannels', channels)
             //     .then((result: any) => {
             //         console.log(result);
@@ -462,21 +492,19 @@ async function sendVoiceChannels (){
 // }
 
 function updataData() {
-    sendPresence();
-    console.log(Date.now)
-    sendUsers();
-    console.log(Date.now)
+    // sendPresence();
+    // sendUsers();
+    sendVoiceStates();
 }
 function UpdateVoiceChannel() {
-    sendVoiceChannels();
-    console.log(Date.now)
-    sendServers();
-    console.log(Date.now)
-    sendChannels();
-    console.log(Date.now)
+    // sendVoiceChannels();
+    // sendServers();
+    // sendChannels();
 }
   
-setInterval(updataData, 300000);
-setInterval(UpdateVoiceChannel, 1800000);
+// setInterval(updataData, 300000);
+// setInterval(UpdateVoiceChannel, 1800000);
+setInterval(updataData, 5000);
+
 
 client.login(process.env.TOKEN);
