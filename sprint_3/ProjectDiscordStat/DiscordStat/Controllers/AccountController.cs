@@ -21,8 +21,8 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
-        private readonly IDiscordUserRepository _discordUserRepository;
-        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IDiscordUserRepository discordUserRepository)
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository)
         {
             _logger = logger;
             _discord = discord;
@@ -31,7 +31,7 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
-            _discordUserRepository = discordUserRepository;    
+            _userRepository = userRepository;    
         }
 
         [Authorize (AuthenticationSchemes = "Discord")]
@@ -64,7 +64,7 @@ namespace DiscordStats.Controllers
 
             var userInfo = await _discord.GetCurrentUserInfo(bearerToken);
             ViewBag.hash = userInfo.Avatar;
-            var websiteProfileInfo = _discordUserRepository.GetAll().ToList();
+            var websiteProfileInfo = _userRepository.GetAll().ToList();
             var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
             vm.Servers = servers.ToList();
             var user = websiteProfileInfo.Where(n => n.Id == userId).FirstOrDefault();
@@ -90,17 +90,18 @@ namespace DiscordStats.Controllers
 
 
         [Authorize]
-        public async Task<IActionResult> WebsiteProfileForm(List<Server> userId)
+        public async Task<IActionResult> WebsiteProfileForm(string userId)
         {
-            ViewBag.Id = userId;
-            return View();
+            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+            vm.id = userId;
+            return View(vm);
         }
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
-        public async Task<IActionResult> ProfileFormSubmit([Bind("ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
+        public async Task<IActionResult> ProfileFormSubmit([Bind("id, ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
         {
-
+            _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo);
             return RedirectToAction("Account");
         }
 

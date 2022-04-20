@@ -25,37 +25,5 @@ namespace DiscordStats.ViewModel
 
     }
 
-    public class WebsiteProfileUpdate
-    {
-
-        private readonly IDiscordUserRepository _discordUserRepository;
-
-        public WebsiteProfileUpdate(IDiscordUserRepository discordUserRepository)
-        {
-
-            _discordUserRepository = discordUserRepository;
-        }
-
-        public void UpdateWebsiteProfileInfoInDiscordUserAndSiteInfoDb(DiscordUserAndUserWebSiteInfo userInputProfileForm)
-        {
-            var discordUserAndWebsite = _discordUserRepository.GetAll();
-            foreach (var websiteUser in discordUserAndWebsite)
-            {
-                var duplicate = false;
-
-                if (websiteUser.Id == userInputProfileForm.Id)
-                {
-                    duplicate = true;
-                }
-
-                if (!duplicate)
-                {
-                    _discordUserRepository.AddOrUpdate(websiteUser);
-                }
-
-            }
-        }
-    }
-
 }
 

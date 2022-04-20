@@ -1,4 +1,4 @@
-﻿@model DiscordStats.Models.DiscordUserAndUserWebSiteInfo
+﻿@model DiscordStats.ViewModel.ServerAndDiscordUserInfoAndWebsiteProfileVM
 
 
 @{
@@ -60,37 +60,33 @@
           <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
               @*@using (Html.BeginForm("ProfileFormSubmit", "Account", FormMethod.Post))*@
             <form asp-action="ProfileFormSubmit"> 
-                    @*@Html.AntiForgeryToken()
-                    <h4>Send your comments.</h4>
-                    <hr />
-                    <div class="form-group">
-                        @Html.LabelFor(m => @Model.FirstName, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(m => @Model.FirstName, new { @class = "form-control"})
-                            @Html.ValidationMessageFor(m => @Model.FirstName)
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">First Name:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="ProfileFirstName" type="text" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileFirstName" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => @Model.LastName, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(m => @Model.LastName, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => @Model.LastName)
+
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">Last Name:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="ProfileLastName" type="text" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileLastName" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => @Model.BirthDate, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-10">
-                            @Html.TextAreaFor(m => @Model.BirthDate, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => @Model.BirthDate)
-                        </div>
-                    </div>*@
+
                     <div class="row" style="padding-bottom: 3%" >
                         <div class="col-3">
                             <p style=" color: black; font-weight: 400;font-size:16px">Birth Date:</p>
                         </div>
                         <div class="col-6">
-                            <input asp-for="BirthDate" type="date" class="form-control" min="@DateTime.Now - 100" max="@DateTime.Now"/>
-                            <span asp-validation-for="BirthDate" class="text-danger"></span>
+                            <input asp-for="ProfileBirthDate" type="date" id="Date" class="form-control" onchange="CheckDate(Date)"/>
+                            <span asp-validation-for="ProfileBirthDate" class="text-danger"></span>
                         </div>
                     </div>
                 
@@ -99,16 +95,19 @@
                             <p style=" color: black; font-weight: 400;font-size:16px">Email:</p>
                         </div>
                         <div class="col-6">
-                            <input asp-for="Email" type="email" class="form-control" maxlength="32"/>
-                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <input asp-for="ProfileEmail" type="email" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileEmail" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="col-6">
+                        @Html.HiddenFor(m => m.id, new { @readonly="readonly" })                       
                     </div>
                     <div class="form-group">
                         <div class="col-md-12 text-center" >
-                            <input type="submit" class="btn btn-primary" value="Send" />
+                            <button value="Submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
-                
+
             </form>
           </div>
         </div>
@@ -131,43 +130,26 @@
      <script type="text/javascript" src="~/js/site.js"></script>
 }
 
+<script>
+     function CheckDate(date) {
+            var inDate = $("#Date").val();
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+            today = yyyy + '-' + mm + '-' + dd;
+            var pastDateCheck = new Date();
+            pastDateCheck.setFullYear( pastDateCheck.getFullYear() - 125);
+            var yyyy = pastDateCheck.getFullYear();
+            pastDateCheck = yyyy + '-' + 00 + '-' + 00;
 
-  @*          <form asp-controller="Account" asp-action="ProfileFormSubmit" method="post">
-
-                <div class="row" >
-                <label for="FirstName" asp-for="FirstName" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter first Name:</label>
-                <input type="text" asp-for="FirstName" class="form-control" >
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-                </div>
-
-                <div class="row">
-                <label for="LastName" asp-for="LastName" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter Last Name:</label>
-                <input type="text" asp-for="LastName" class="form-control" >
-                <span asp-validation-for="LastName" class="text-danger"></span>
-                </div>
-                 <div class="row" >
-                <label for="BirthDate" asp-for="BirthDate" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter B-day:</label>
-                <input type="text" asp-for="BirthDate" class="form-control" >
-                <span asp-validation-for="BirthDate" class="text-danger"></span>
-                </div>
-
-                <div class="row">
-                <label for="Email" asp-for="Email" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Enter Eamil:</label>
-                <input type="text" asp-for="Email" class="form-control" >
-                <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="col">
-                    <div class="form-group mt-3 text-center">
-                        <input type="submit" value="Submit Changes for Profile info"  class="btn btn-primary"/>
-                    </div>
-                </div>
-
-            </form>*@
-@*            <form asp-controller="Forum" asp-action="ServerOffForum" method="post">
-
-                    <div class="col">
-                        <div class="form-group mt-3 text-center">
-                            <input type="submit" value="Un-Add from Forum"  class="btn btn-primary"/>
-                        </div>
-                    </div>
-            </form>*@
+            if (inDate > today) {
+                alert("Birth date can't be in the future.");
+                $("#Date1").val(null);
+            }
+            //if(today < pastDateCheck){
+            //    alert("Birth date year can't be more than 125 yrs back.");
+            //    $("#Date1").val(null);
+            //}
+        }
+</script>
