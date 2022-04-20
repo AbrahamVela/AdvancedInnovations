@@ -197,18 +197,26 @@ namespace DiscordStats.Controllers
             var duplicate = false;
             foreach (var voiceState in voiceStates)
             {
-                var newVoiceState = voiceState;
-                newVoiceState.CreatedAt = newVoiceState.CreatedAt?.ToLocalTime();
                 foreach (var voice in _voiceStateRepository.GetAll().ToList())
                 {
-                    if (voice.UserId == newVoiceState.UserId && voice.ServerId == newVoiceState.ServerId && voice.CreatedAt?.Hour == newVoiceState.CreatedAt?.Hour && voice.CreatedAt?.Date == newVoiceState.CreatedAt?.Date)
+                    if (voice.UserId == voiceState.UserId && voice.ServerId == voiceState.ServerId && voice.CreatedAt?.Hour == voiceState.CreatedAt?.Hour && voice.CreatedAt?.Date == voiceState.CreatedAt?.Date)
                     {
                         duplicate = true;
                     }
                 }
+                if (duplicate)
+                {
+                    if (voiceState.CreatedAt?.Hour != DateTime.UtcNow.Hour)
+                    {
+                        var newVoiceState = voiceState;
+                        newVoiceState.CreatedAt = DateTime.UtcNow;
+                        _voiceStateRepository.AddOrUpdate(voiceState);
+
+                    }
+                }
                 if (!duplicate)
                 {
-                    _voiceStateRepository.AddOrUpdate(newVoiceState);
+                    _voiceStateRepository.AddOrUpdate(voiceState);
                 }
             }
 

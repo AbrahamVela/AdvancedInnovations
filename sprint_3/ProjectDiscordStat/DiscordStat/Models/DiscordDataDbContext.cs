@@ -129,8 +129,8 @@ namespace DiscordStats.Models
 
             modelBuilder.Entity<VoiceState>(entity =>
             {
-                entity.HasKey(e => e.MessageDataPk)
-                    .HasName("PK__VoiceSta__2389D5B5BE45E166");
+                entity.HasKey(e => e.VoiceStatePk)
+                    .HasName("PK__VoiceSta__02A65DC31F02D3E6");
             });
 
             modelBuilder.Entity<Webhook>(entity =>

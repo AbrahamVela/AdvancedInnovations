@@ -52,7 +52,7 @@ CREATE TABLE [MessageInfo]
 
 CREATE TABLE [VoiceState] 
 (
-  [MessageDataPk] int           PRIMARY KEY IDENTITY(1, 1),
+  [VoiceStatePk] int           PRIMARY KEY IDENTITY(1, 1),
   [ServerId] nvarchar(256) NULL,
   [ChannelId] nvarchar(256) NULL,
   [UserId] nvarchar(256) NULL,

@@ -10,7 +10,7 @@ namespace DiscordStats.Models
     public partial class VoiceState
     {
         [Key]
-        public int MessageDataPk { get; set; }
+        public int VoiceStatePk { get; set; }
         [StringLength(256)]
         public string? ServerId { get; set; }
         [StringLength(256)]

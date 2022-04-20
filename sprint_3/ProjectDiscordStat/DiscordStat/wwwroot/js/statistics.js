@@ -21,13 +21,13 @@ var messagesChart;
 
 
 function graphMessageDropDownBox(data) {
-    var allUsersMessages = document.getElementById("allUsersMessages");
+    var allUsers = document.getElementById("allUsers");
     for (i = 0; i < data.length; i++) {
         var opt = data[i];
         var elMessage = document.createElement("option");
         elMessage.textContent = opt.username;
         elMessage.value = opt.id;
-        allUsersMessages.appendChild(elMessage);
+        allUsers.appendChild(elMessage);
     }
 }
 
@@ -35,7 +35,7 @@ function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
 }
 
-$("#allUsersMessages").change(function () {
+$("#allUsers").change(function () {
     $("#usersHourlyAllTimeChart").empty();
 
     var newList = []

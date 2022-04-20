@@ -1,7 +1,7 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     let gameDetailsGameName = $("#GameName").attr('value');
-    console.log("URL: " + '../Stats/GetVoiceStatesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId);
+    console.log("URL: " + '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId);
 
     $.ajax({
         type: 'GET',
@@ -10,12 +10,12 @@
         error: handleError
     });
 
-    $.ajax({
-        type: 'GET',
-        url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
-        success: graphVoiceDropDownBox,
-        error: handleError
-    });
+    //$.ajax({
+    //    type: 'GET',
+    //    url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
+    //    success: graphVoiceDropDownBox,
+    //    error: handleError
+    //});
 
 })
 
@@ -27,18 +27,18 @@ function handleError(xhr, ajaxOptions, thrownError) {
 }
 
 
-function graphVoiceDropDownBox(data) {
-    var allUsersVoiceStates = document.getElementById("allUsersVoice");
-    for (i = 0; i < data.length; i++) {
-        var opt = data[i];
-        var elVoiceState = document.createElement("option");
-        elVoiceState.textContent = opt.username;
-        elVoiceState.value = opt.id;
-        allUsersVoiceStates.appendChild(elVoiceState);
-    }
-}
+//function graphVoiceDropDownBox(data) {
+//    var allUsersVoiceStates = document.getElementById("allUsersVoice");
+//    for (i = 0; i < data.length; i++) {
+//        var opt = data[i];
+//        var elVoiceState = document.createElement("option");
+//        elVoiceState.textContent = opt.username;
+//        elVoiceState.value = opt.id;
+//        allUsersVoiceStates.appendChild(elVoiceState);
+//    }
+//}
 
-$("#allUsersMessages").change(function () {
+$("#allUsers").change(function () {
     $("#usersHourlyAllTimeChart").empty();
 
     var newList = []
@@ -80,7 +80,10 @@ function graphingVoiceStateActivity(data) {
 
 
     for (var i = 0; i < data.length; i++) {
-        let hour = new Date(data[i].createdAt).getHours();
+        var date = new Date(data[i].createdAt)
+        var dateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()))
+        let hour = new Date(dateUTC.toString()).getHours()
+
         subtraction = hour - 4;
         if (subtraction < 0) {
             subtraction = yValues.length + subtraction;

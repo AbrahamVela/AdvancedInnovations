@@ -492,18 +492,20 @@ async function sendVoiceStates (){
 // }
 
 function updataData() {
-    // sendPresence();
-    // sendUsers();
+    sendPresence();
+    sendUsers();
     sendVoiceStates();
 }
 function UpdateVoiceChannel() {
-    // sendVoiceChannels();
-    // sendServers();
-    // sendChannels();
+    sendVoiceChannels();
+    sendServers();
+    sendChannels();
 }
   
 // setInterval(updataData, 300000);
 // setInterval(UpdateVoiceChannel, 1800000);
+setInterval(UpdateVoiceChannel, 6000);
+
 setInterval(updataData, 5000);
 
 

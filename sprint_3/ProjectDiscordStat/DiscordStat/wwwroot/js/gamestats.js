@@ -82,7 +82,9 @@ function graphingPresenceActivity(data) {
 
 
     for (var i = 0; i < data.length; i++) {
-        let hour = new Date(data[i].createdAt).getHours();
+        var date = new Date(data[i].createdAt)
+        var dateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()))
+        let hour = new Date(dateUTC.toString()).getHours()
         subtraction = hour - 1 + timezone;
         if (subtraction < 0) {
             subtraction = yValues.length + subtraction;
