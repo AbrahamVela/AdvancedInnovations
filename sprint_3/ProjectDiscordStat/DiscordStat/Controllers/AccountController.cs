@@ -21,7 +21,8 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
-        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository)
+        private readonly IMessageInfoRepository _messageIngoChannelRepository;
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository)
         {
             _logger = logger;
             _discord = discord;
@@ -30,6 +31,7 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
+            _messageIngoChannelRepository = messageInfoRepository;
         }
 
         [Authorize (AuthenticationSchemes = "Discord")]
@@ -150,11 +152,12 @@ namespace DiscordStats.Controllers
         {
 
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
+            string botToken = _configuration["API:BotToken"];
             IEnumerable<Server>? servers = await _discord.GetCurrentUserGuilds(bearerToken);
             var SelectedServer = servers.Where(m => m.Name == name).FirstOrDefault();
             SelectedServer.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], SelectedServer.Id);
             var vm = new ServerOwnerViewModel();
-            var test = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            
             if (SelectedServer.HasBot == "true")
             {
                 vm = await _discord.GetFullGuild(_configuration["API:BotToken"], SelectedServer.Id);
@@ -172,8 +175,20 @@ namespace DiscordStats.Controllers
                 vm.Id = SelectedServer.Id;
                 vm.HasBot = "false";
             }
-
-          
+            var ServerMessages = _messageIngoChannelRepository.GetAll().Where(m => m.ServerId == vm.Id).ToList();
+            var UsersMessagesFiltered = ServerMessages.GroupBy(x => x.UserId).Select(x => x.ToList()).Take(3).ToList();
+            var users = new List<UserMessageVM>();
+            foreach (var u in UsersMessagesFiltered)
+            {
+                var user = await _discord.GetUserInfoById(botToken, u[0].UserId);
+                UserMessageVM MessageUser = new();
+                MessageUser.Id = user.Id;
+                MessageUser.Username = user.Username;
+                MessageUser.Avatar = user.Avatar;
+                MessageUser.MessageCount = u.Count();
+                users.Add(MessageUser);
+            }
+            vm.userMessageVMs = users.OrderByDescending(m => m.MessageCount).ToList();
             return View(vm);
         }
         [Authorize(AuthenticationSchemes = "Discord")]
@@ -343,7 +358,16 @@ namespace DiscordStats.Controllers
             {
                 data.avgMemberCount = (double)data.TotalmemberCount / data.divider;
             }
-            return Json(graphData);
+                return Json(graphData);
+        }
+        public async Task<PartialViewResult> UpdateMessagesByDate(DateTime StartDate, DateTime EndDate, string serverId)
+        {
+            string botToken = _configuration["API:BotToken"];
+            var users = await _discord.UpdatedMessagesByDates(StartDate, EndDate, serverId);
+
+            var model = new ServerOwnerViewModel();
+            model.userMessageVMs = users;
+            return PartialView("_UpdateMessagePartial", model);
         }
     }
 }

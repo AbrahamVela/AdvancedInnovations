@@ -19,7 +19,7 @@ namespace KorbinSpecFlowProject.PageObjects
         public virtual void Goto()
         {
             //Common.UrlFor(PageName)
-            _browserInteractions.GoToUrl("https://www.google.com/");
+            _browserInteractions.GoToUrl("https://localhost:7228/home");
         }
 
         // If you need to just go to a named page
