@@ -62,7 +62,7 @@
             <div class="section-heading">
                 @if (@Model.HasBot == "false")
                     {
-            <h2 style="text-align: center">This is all the information we could gather about this server. Please add the bot to see more.</h2>
+            <h2 style="text-align: center" id="noBotMessage">This is all the information we could gather about this server. Please add the bot to see more.</h2>
                     }
                     @if (@Model.HasBot == "true")
                     {
@@ -75,7 +75,7 @@
           <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="service-item">
               <i class="fa fa-cloud"></i>
-              <h4>Details</h4>             
+              <h4 id="DetailsContainer">Details</h4>             
                 <p>Owner: @Model.Owner</p>
                 <P>Total members: @Model.Approximate_Member_Count</P>
                 <P>Online members: @Model.Approximate_Presence_Count</P>
@@ -85,7 +85,7 @@
                 <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
                 </div>
                 <div class="row" style="margin-top:3%">
-                <button type="button" class="btn btn-info" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
+                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
                 </div>
             </div>
           </div>

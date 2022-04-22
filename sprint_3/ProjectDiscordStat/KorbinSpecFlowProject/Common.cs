@@ -13,15 +13,21 @@
             // Page names that everyone should use
             public const string HomePageName = "Home";
             public const string AccountPageName = "Account";
+            public const string ContactUsPageName = "Contact";
+            public const string PrivacyPageName = "Privacy";
+            public const string AllServersPageName = "AllServers";
 
-            // File to store browser cookies in
-            public const string CookieFile = "C:\\Users\\Korbin Cardoza\\Desktop\\School\\cookies.txt";
+        // File to store browser cookies in
+        public const string CookieFile = "C:\\Users\\Korbin Cardoza\\Desktop\\School\\cookies.txt";
 
             // A handy way to look these up
             public static readonly Dictionary<string, string> Paths = new()
             {
                 { HomePageName, "/" },
-                { AccountPageName, "/Account/Account" }
+                { AccountPageName, "/Account/Account" },
+                { ContactUsPageName, "/Home/Contact" },
+                { PrivacyPageName, "/Home/Privacy" },
+                { AllServersPageName, "/Home/AllServers" },
             };
 
             public static string PathFor(string pathName) => Paths[pathName];

@@ -12,17 +12,29 @@ namespace KorbinSpecFlowProject.PageObjects
         private IEnumerable<IWebElement> AppleButtons => _browserInteractions.WaitAndReturnElements(By.CssSelector("#listOfApples button"));
         private IWebElement logoutButton => _browserInteractions.WaitAndReturnElement(By.Id("logoutButton"));
         private IWebElement UserServers => _browserInteractions.WaitAndReturnElement(By.Id("ServersBlock"));
+        private IWebElement ServerInfoButton => _browserInteractions.WaitAndReturnElement(By.Id("Advanced Innovations"));
+        private IWebElement ServerInfoButtonNoBot => _browserInteractions.WaitAndReturnElement(By.Id("Discord Developers"));
+        private IWebElement noBotMessage => _browserInteractions.WaitAndReturnElement(By.Id("noBotMessage"));
         public AccountPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
         {
             PageName = Common.AccountPageName;
         }
-        
+
+        public bool GetnoBotMessage => noBotMessage.Displayed;
         public string GetlogoutButton => logoutButton.Text;
         public bool GetServers => UserServers.Enabled;
         public string GetTitle => Title.Text;
         public string GetWelcomeText => WelcomeText.Text;
-
+        public void clickServerInfoNoBot()
+        {
+            ServerInfoButtonNoBot.ClickWithRetry(30);
+        }
+        public void clickServerInfo()
+        {
+           
+            ServerInfoButton.ClickWithRetry(30);
+        }
         public string GetAppleButtonText(int index) => AppleButtons.ElementAt(index).Text;
 
         public IEnumerable<string> GetAppleButtonTexts() => AppleButtons.Select(x => x.Text);
