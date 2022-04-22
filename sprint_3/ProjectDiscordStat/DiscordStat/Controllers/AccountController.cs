@@ -22,7 +22,8 @@ namespace DiscordStats.Controllers
         private readonly IPresenceRepository _presenceRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IMessageInfoRepository _messageIngoChannelRepository;
-        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository)
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository)
         {
             _logger = logger;
             _discord = discord;
@@ -32,6 +33,8 @@ namespace DiscordStats.Controllers
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
             _messageIngoChannelRepository = messageInfoRepository;
+            _userRepository = userRepository;    
+
         }
 
         [Authorize (AuthenticationSchemes = "Discord")]
@@ -39,8 +42,9 @@ namespace DiscordStats.Controllers
         {
             // Don't use the ViewBag!  Use a viewmodel instead.
             // The data in ClaimTypes can be mocked.  Will have to wait though for how to do that.
-            ViewBag.id = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            ViewBag.name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            ViewBag.name  = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            ViewBag.id = userId;
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             string botToken = _configuration["API:BotToken"];
 
@@ -58,27 +62,53 @@ namespace DiscordStats.Controllers
                 string hasBot = await _discord.CheckForBot(botToken, server.Id);
                 if (hasBot == "true")
                 {
-                    var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
+                     var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
 
-                    _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
+                     _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
                 }
             }
 
             var userInfo = await _discord.GetCurrentUserInfo(bearerToken);
-
-
             ViewBag.hash = userInfo.Avatar;
+            var websiteProfileInfo = _userRepository.GetAll().ToList();
+            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+            vm.Servers = servers.ToList();
+            var user = websiteProfileInfo.Where(n => n.Id == userId).FirstOrDefault();
+            if (user != null)
+            {
+                vm.id = user.Id;
+                vm.ProfileFirstName = user.FirstName;
+                vm.ProfileLastName = user.LastName;
+                vm.ProfileBirthDate = user.BirthDate;
+                vm.ProfileEmail = user.Email;
+            }
+
+            // Now we can inject a mock IDiscordService that fakes this method.  That will allow us to test
+            // anything __after__ getting this list of servers, i.e. any logic that we perform with this data from
+            // here on.  There's nothing here now but there presumably will be.  If this method used a viewmodel
+            // then we could test this action method a little more, but it doesn't.
+
+            // Unfortunately it doesn't allow us to test the actual code within the GetCurrentUserGuilds method.
+            // For that we must take the next step in refactoring.
+            //var test = await _discord.UpdateOwner(botToken);
+            return View(vm);
+        }
 
 
-        // Now we can inject a mock IDiscordService that fakes this method.  That will allow us to test
-        // anything __after__ getting this list of servers, i.e. any logic that we perform with this data from
-        // here on.  There's nothing here now but there presumably will be.  If this method used a viewmodel
-        // then we could test this action method a little more, but it doesn't.
+        [Authorize]
+        public async Task<IActionResult> WebsiteProfileForm(string userId)
+        {
+            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+            vm.id = userId;
+            return View(vm);
+        }
 
-        // Unfortunately it doesn't allow us to test the actual code within the GetCurrentUserGuilds method.
-        // For that we must take the next step in refactoring.
-        //var test = await _discord.UpdateOwner(botToken);
-            return View(servers);
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> ProfileFormSubmit([Bind("id, ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
+        {
+            _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo);
+            return RedirectToAction("Account");
         }
 
         [Authorize(AuthenticationSchemes = "Discord")]
@@ -98,39 +128,36 @@ namespace DiscordStats.Controllers
                 s.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], s.Id);
             }
 
+            var servers2 = _serverRepository.GetAll();
 
-            return View(servers.Where(m => m.Owner == "true").ToList());
+            //return View(servers.Where(m => m.Owner == "true").ToList());
+            return View(servers2.Where(m => m.Owner == "true").ToList());
         }
 
-        //[Authorize(AuthenticationSchemes = "Discord")]
-        //public async Task<IActionResult> ServerChannels(string? serverId)
-        //{
-        //    string botToken = _configuration["API:BotToken"];
-        //    var servers = _serverRepository.GetAll();
-        //    var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> AddServerLottery(string serverId)
+        {
+            Server selectedServer = _serverRepository.GetAll().Where(m => m.Id == serverId).FirstOrDefault();
+            ServerLotteryFunctionality lottoFunction = new(_serverRepository);
+            if(selectedServer.InLottery == "null")
+            {
+                _serverRepository.AddingServerToLottery(serverId);
+            }
+            if (selectedServer.InLottery != "trueWinner")
+            {
+                lottoFunction.FunctionalityEquation(serverId);
+            }
+            return RedirectToAction("Servers");
+        }
 
-        //    IList<Channel> channels = new List<Channel>();
-        //    if (selectedServer != null)
-        //    {
-        //        if (selectedServer.HasBot == "true")
-        //        {
-        //            channels = _channelRepository.GetAll().Where(x => x.GuildId == selectedServer.Id).ToList();
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> RemoveServerLottery(string serverId)
+        {
 
-        //            ViewBag.hasBot = "true";
+            _serverRepository.RemoveServerFromLottery(serverId);
 
-        //        }
-        //        else
-        //        {
-        //            ViewBag.hasBot = "false";
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ViewBag.hasBot = "false";
-        //    }
-
-        //    return View(channels);
-        //}
+            return RedirectToAction("Servers");
+        }
 
         [HttpPost]
         public IActionResult ChangePrivacy(string privacyString)

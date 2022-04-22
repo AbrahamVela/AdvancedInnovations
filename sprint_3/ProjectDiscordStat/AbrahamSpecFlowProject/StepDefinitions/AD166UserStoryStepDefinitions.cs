@@ -1,3 +1,4 @@
+using AbrahamSpecFlowProject.PageObjects;
 using System;
 using TechTalk.SpecFlow;
 
@@ -6,10 +7,17 @@ namespace AbrahamSpecFlowProject.StepDefinitions
     [Binding]
     public class AD166UserStoryStepDefinitions
     {
+        private readonly HomePage _homePage;
+
+        public AD166UserStoryStepDefinitions(HomePage page)
+        {
+            _homePage = page;
+        }
+
         [Given(@"I am on the ServerChannels page")]
         public void GivenIAmOnTheServerChannelsPage()
         {
-            throw new PendingStepException();
+            _homePage.Goto();
         }
 
         [When(@"I click on a channel")]

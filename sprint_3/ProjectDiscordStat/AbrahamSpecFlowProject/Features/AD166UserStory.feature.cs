@@ -105,12 +105,6 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
  testRunner.Given("I am on the ServerChannels page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 7
- testRunner.When("I click on a channel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 8
- testRunner.Then("I\'ll see a list of webhooks", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
             }
             this.ScenarioCleanup();
         }

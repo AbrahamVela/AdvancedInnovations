@@ -52,7 +52,7 @@ builder.Services.AddScoped<IDiscordService, DiscordService>();
 builder.Services.AddScoped<IServerRepository, ServerRepository>();
 builder.Services.AddScoped<ServerOwnerViewModel, ServerOwnerViewModel>();
 builder.Services.AddScoped<IServerUserJoinRepository, ServerUserJoinRepository>();
-builder.Services.AddScoped<IDiscordUserRepository, DiscordUserRepository>();
+builder.Services.AddScoped<IDiscordUserAndUserWebSiteInfoRepository, DiscordUserAndUserWebSiteInfoRepository>();
 builder.Services.AddScoped<IDiscordServicesForChannels, DiscordServicesForChannels>();  
 builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
 builder.Services.AddScoped<IChannelRepository, ChannelRepository>();

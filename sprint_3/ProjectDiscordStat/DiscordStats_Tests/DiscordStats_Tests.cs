@@ -528,7 +528,7 @@ namespace DiscordStats_Tests
             DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
-            Task<DiscordUser?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
+            Task<DiscordUserAndUserWebSiteInfo?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
             Assert.That(Act, Throws.TypeOf<HttpRequestException>());
@@ -547,7 +547,7 @@ namespace DiscordStats_Tests
 
 
             // Act
-            Task<DiscordUser?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
+            Task<DiscordUserAndUserWebSiteInfo?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
             Assert.That(Act, Throws.TypeOf<HttpRequestException>());
@@ -662,7 +662,7 @@ namespace DiscordStats_Tests
             DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
-            DiscordUser? userInfo = await discord.GetCurrentUserInfo("fakeBearerToken");
+            DiscordUserAndUserWebSiteInfo? userInfo = await discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
             Assert.Multiple(() =>
