@@ -68,7 +68,7 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
             }
         }
         public async Task<string> GetJsonStringFromEndpointWithUserParam(string botToken, string uri)
@@ -240,8 +240,12 @@ namespace DiscordStats.DAL.Concrete
             // Remember to handle errors here
             string response = await GetJsonStringFromEndpoint(bearerToken, $"https://discord.com/api/users/@me/guilds");
             // And here
-            List<Server>? servers = JsonConvert.DeserializeObject<List<Server>>(response);
-            return servers;
+            if (response != null)
+            {
+                List<Server>? servers = JsonConvert.DeserializeObject<List<Server>>(response);
+                return servers;
+            }
+            else return null;
         }
 
         public async Task<DiscordUser?> GetCurrentUserInfo(string bearerToken)

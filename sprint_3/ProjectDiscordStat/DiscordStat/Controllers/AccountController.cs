@@ -49,7 +49,10 @@ namespace DiscordStats.Controllers
             //var updatedOwner = await _discord.UpdateOwner(_configuration["API:BotToken"], "952358862059614218", userId);
 
             IEnumerable<Server>? servers = await _discord.GetCurrentUserGuilds(bearerToken);
-
+            if (servers == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             foreach (Server server in servers)
             {              
                 string hasBot = await _discord.CheckForBot(botToken, server.Id);
@@ -86,7 +89,10 @@ namespace DiscordStats.Controllers
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
 
             IEnumerable<Server>? servers = await _discord.GetCurrentUserGuilds(bearerToken);
-
+            if (servers == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             foreach (var s in servers.Where(m => m.Owner == "true"))
             {
                 s.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], s.Id);
@@ -154,7 +160,15 @@ namespace DiscordStats.Controllers
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             string botToken = _configuration["API:BotToken"];
             IEnumerable<Server>? servers = await _discord.GetCurrentUserGuilds(bearerToken);
+            if(servers == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             var SelectedServer = servers.Where(m => m.Name == name).FirstOrDefault();
+            if(SelectedServer == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             SelectedServer.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], SelectedServer.Id);
             var vm = new ServerOwnerViewModel();
             
