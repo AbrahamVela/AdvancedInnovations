@@ -49,64 +49,84 @@
             <div class="section-heading">
                 <span>Servers</span>
               <h2>Here is a list of servers that you own</h2>
-                 <p>Please select which one you would like to add our bot to or click on the server name to see it's channels</p>
+                @* <p>Please select which one you would like to add our bot to</p>*@
             </div>
           </div>
-          @foreach (var s in Model)
-{
-    <div class="row" style="padding-top: 3%">
-        <div class="col-2">
-            @if (s.Icon == null)
-            {
-                <img src="https://nektony.com/wp-content/uploads/2019/07/discord-icon.png" width="125" height="125"/>
-            }
-            else
-            {
-                var link = "https://cdn.discordapp.com/icons/" + @s.Id + "//" + @s.Icon + ".png";
-                <img src="@link"/>
-            } 
+             
+          <table class="table">
+              <thead class="thead-dark">
+                <tr>
+                    <th><b>Server</b></th>
+                    <th><b>Privacy Level/Add bot</b></th>
+                    <th><b>Server channels</b></th>
+                    <th><b>Drawing for server on home page</b></th>
+                </tr>
+             </thead>
+             <tbody>
+              @foreach (var s in Model)
+                {
 
-        </div>
-        <div class ="col-3" style="font-weight:bold">   
-            <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> @s.Name</a></h3>
+                    <td style="padding-bottom: 2%">
+                        @if (s.Icon == null)
+                        {
+                            <img src="https://nektony.com/wp-content/uploads/2019/07/discord-icon.png" width="125" height="125"/>
+                        }
+                        else
+                        {
+                            var link = "https://cdn.discordapp.com/icons/" + @s.Id + "//" + @s.Icon + ".png";
+                            <img src="@link"/>
+                        } 
 
-            @if(s.HasBot == "false")
-            {
-                <div class="row" style="width: 50%; margin-top: 2%">
-                @{
-                    var url = "https://discord.com/oauth2/authorize?client_id=938808510932746350&scope=bot&permissions=8&guild_id=" + s.Id;
-                }
-                <a id="anchorID" href="@url" target="_blank" style="margin-left: 12%" class="btn btn-primary">Add Bot</a>
-                </div>
-            }
-            @if(s.HasBot == "true")
-            {
-                <div class="row form-inline">
-                    <form method="post" action="ChangePrivacy">
-                        <select class="form-select" aria-label="Default select example" itemid="privacy @s" name="privacyString" id="privacyChangeForm">
-                            <option value="private @s.Id">Private</option>
-                            <option value="public @s.Id">Public</option>
-                        </select>
-                        <input class="btn btn-secondary" type="submit" value="Submit" style="float:left; margin-top: 3%">
-                    </form>
-                    <br/>
+                    </td>
+                    <td style="font-weight:bold; padding-bottom: 2%">   
+                        @* <h3><a> @s.Name</a></h3>*@
+
+                        @if(s.HasBot == "false")
+                        {
+                            <div class="row" style="width: 50%; margin-top: 2%">
+                            @{
+                                var url = "https://discord.com/oauth2/authorize?client_id=938808510932746350&scope=bot&permissions=8&guild_id=" + s.Id;
+                            }
+                            <a id="anchorID" href="@url" target="_blank" style="margin-left: 12%" class="btn btn-primary">Add Bot</a>
+                            </div>
+                        }
+                        @if(s.HasBot == "true")
+                        {
+                            <div class="row form-inline">
+                                <form method="post" action="ChangePrivacy">
+                                    <select class="form-select" aria-label="Default select example" itemid="privacy @s" name="privacyString" id="privacyChangeForm">
+                                        <option value="private @s.Id">Private</option>
+                                        <option value="public @s.Id">Public</option>
+                                    </select>
+                                    <input class="btn btn-secondary" type="submit" value="Submit" style="float:left; margin-top: 3%">
+                                </form>
+                                <br/>
 
 
-                </div>
-                <div class="row" style="width: 50%; margin-top: 2%;white-space: nowrap; display: inline-block; color: green; font-size:18px">
+                            </div>
+                            <div class="row" style="width: 50%; margin-top: 2%;white-space: nowrap; display: inline-block; color: green; font-size:18px">
                    
-                    <span>Bot added </span> <span class="fa fa-check" style="margin-left: -15%"></span>
-                </div>
-            }
-        </div>
-        <div class="col-4">
-            @if (s.InLottery == null)
-            {
-                <p><a href="@Url.Action("ServerLottery", "Account", new {serverId = s.Id})"> Put in for @s.Name to be on front page </a></p>
-            }
-        </div>
-    </div>
-}
+                                <span>Bot added </span> <span class="fa fa-check" style="margin-left: -15%"></span>
+                            </div>
+                        }
+                    </td>
+                    <td style="padding-bottom: 2%">
+                            <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> Channels</a></h3>
+                    </td>
+                    <td style="padding-bottom: 2%">
+                        @if (s.InLottery == "null")
+                        {
+                            <h3>Add: <a href="@Url.Action("AddServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
+                        }
+                        else
+                        {
+                            <h3>Remove: <a href="@Url.Action("RemoveServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
+                        }
+                    </td>
+
+                }
+            </tbody>
+        </table>
           
           
 

@@ -119,39 +119,36 @@ namespace DiscordStats.Controllers
                 s.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], s.Id);
             }
 
+            var servers2 = _serverRepository.GetAll();
 
-            return View(servers.Where(m => m.Owner == "true").ToList());
+            //return View(servers.Where(m => m.Owner == "true").ToList());
+            return View(servers2.Where(m => m.Owner == "true").ToList());
         }
 
-        //[Authorize(AuthenticationSchemes = "Discord")]
-        //public async Task<IActionResult> ServerChannels(string? serverId)
-        //{
-        //    string botToken = _configuration["API:BotToken"];
-        //    var servers = _serverRepository.GetAll();
-        //    var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> AddServerLottery(string serverId)
+        {
+            Server selectedServer = _serverRepository.GetAll().Where(m => m.Id == serverId).FirstOrDefault();
+            ServerLotteryFunctionality lottoFunction = new(_serverRepository);
+            if(selectedServer.InLottery == "null")
+            {
+                _serverRepository.AddingServerToLottery(serverId);
+            }
+            if (selectedServer.InLottery != "trueWinner")
+            {
+                lottoFunction.FunctionalityEquation(serverId);
+            }
+            return RedirectToAction("Servers");
+        }
 
-        //    IList<Channel> channels = new List<Channel>();
-        //    if (selectedServer != null)
-        //    {
-        //        if (selectedServer.HasBot == "true")
-        //        {
-        //            channels = _channelRepository.GetAll().Where(x => x.GuildId == selectedServer.Id).ToList();
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> RemoveServerLottery(string serverId)
+        {
 
-        //            ViewBag.hasBot = "true";
+            _serverRepository.RemoveServerFromLottery(serverId);
 
-        //        }
-        //        else
-        //        {
-        //            ViewBag.hasBot = "false";
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ViewBag.hasBot = "false";
-        //    }
-
-        //    return View(channels);
-        //}
+            return RedirectToAction("Servers");
+        }
 
         [HttpPost]
         public IActionResult ChangePrivacy(string privacyString)
