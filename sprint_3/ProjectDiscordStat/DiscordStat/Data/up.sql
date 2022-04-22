@@ -21,7 +21,8 @@ CREATE TABLE [Server]
   [approximate_presence_count] int Null,
   [Privacy] nvarchar(256) Null,
   [OnForum] nvarchar(256) Null,
-  [Message] nvarchar(256) Null
+  [Message] nvarchar(256) Null,
+  [InLottery] nvarchar(256) Null
 );
 
 CREATE TABLE [ServerUserJoin] 
