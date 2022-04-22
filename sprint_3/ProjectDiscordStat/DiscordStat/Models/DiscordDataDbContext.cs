@@ -18,7 +18,7 @@ namespace DiscordStats.Models
 
         public virtual DbSet<Channel> Channels { get; set; } = null!;
         public virtual DbSet<ChannelWebhookJoin> ChannelWebhookJoins { get; set; } = null!;
-        public virtual DbSet<DiscordUser> DiscordUsers { get; set; } = null!;
+        public virtual DbSet<DiscordUserAndUserWebSiteInfo> DiscordUserAndUserWebSiteInfos { get; set; } = null!;
         public virtual DbSet<MessageInfo> MessageInfos { get; set; } = null!;
         public virtual DbSet<Presence> Presences { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
@@ -41,7 +41,7 @@ namespace DiscordStats.Models
             modelBuilder.Entity<Channel>(entity =>
             {
                 entity.HasKey(e => e.ChannelPk)
-                    .HasName("PK__Channel__38C3B1265DDAF2D6");
+                    .HasName("PK__Channel__38C3B1266A4FA037");
             });
 
             modelBuilder.Entity<ChannelWebhookJoin>(entity =>
@@ -57,28 +57,28 @@ namespace DiscordStats.Models
                     .HasConstraintName("ChannelWebhookJoinWebhookPk");
             });
 
-            modelBuilder.Entity<DiscordUser>(entity =>
+            modelBuilder.Entity<DiscordUserAndUserWebSiteInfo>(entity =>
             {
                 entity.HasKey(e => e.DiscordUserPk)
-                    .HasName("PK__DiscordU__1F12BE95452C9C99");
+                    .HasName("PK__DiscordU__1F12BE95812871FD");
             });
 
             modelBuilder.Entity<MessageInfo>(entity =>
             {
                 entity.HasKey(e => e.MessageDataPk)
-                    .HasName("PK__MessageI__2389D5B5D913E2DF");
+                    .HasName("PK__MessageI__2389D5B5FBA1A3E8");
             });
 
             modelBuilder.Entity<Presence>(entity =>
             {
                 entity.HasKey(e => e.PresencePk)
-                    .HasName("PK__Presence__4981B3D9DF1D387E");
+                    .HasName("PK__Presence__4981B3D91724D75C");
             });
 
             modelBuilder.Entity<Server>(entity =>
             {
                 entity.HasKey(e => e.ServerPk)
-                    .HasName("PK__Server__C56B0386DACC6517");
+                    .HasName("PK__Server__C56B0386A1626B81");
             });
 
             modelBuilder.Entity<ServerChannelJoin>(entity =>
@@ -123,13 +123,13 @@ namespace DiscordStats.Models
             modelBuilder.Entity<VoiceChannel>(entity =>
             {
                 entity.HasKey(e => e.VoiceChannelPk)
-                    .HasName("PK__VoiceCha__004F00F911515B03");
+                    .HasName("PK__VoiceCha__004F00F97C8E6A8C");
             });
 
             modelBuilder.Entity<Webhook>(entity =>
             {
                 entity.HasKey(e => e.WebhookPk)
-                    .HasName("PK__Webhook__238C26FD5154B15F");
+                    .HasName("PK__Webhook__238C26FD766FF9D7");
             });
 
             OnModelCreatingPartial(modelBuilder);

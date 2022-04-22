@@ -29,7 +29,7 @@ namespace DiscordStats.Controllers
     public class StatsController : Controller
     {
 
-        private readonly IDiscordUserRepository _discordUserRepository;
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly ILogger<ApiController> _logger;
         private readonly IDiscordService _discord;
@@ -38,10 +38,10 @@ namespace DiscordStats.Controllers
         private readonly IMessageInfoRepository _messageInfoRepository;
 
 
-        public StatsController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository)
+        public StatsController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository userRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository)
         {
             _logger = logger;
-            _discordUserRepository = discordUserRepo;
+            _userRepository = userRepo;
             _presenceRepository = presenceRepository;
             _discord = discord;
             _serverRepository = serverRepository;

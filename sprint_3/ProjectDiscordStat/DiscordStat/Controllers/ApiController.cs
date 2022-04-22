@@ -35,7 +35,7 @@ namespace DiscordStats.Controllers
         };
 
 
-        private readonly IDiscordUserRepository _discordUserRepository;
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly ILogger<ApiController> _logger;
         private readonly IDiscordService _discord;
@@ -45,10 +45,10 @@ namespace DiscordStats.Controllers
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
        
-        public ApiController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository)
+        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository userRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository)
         {
             _logger = logger;
-            _discordUserRepository = discordUserRepo;
+            _userRepository = userRepo;
             _presenceRepository = presenceRepository;
             _discord = discord;
             _discordServicesForChannels = discordServicesForChannels;
@@ -60,7 +60,7 @@ namespace DiscordStats.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostUsers(DiscordUser[] users)
+        public async Task<IActionResult> PostUsers(DiscordUserAndUserWebSiteInfo[] users)
         {
             foreach (var user in users)
             {
@@ -69,7 +69,7 @@ namespace DiscordStats.Controllers
                 Task.Delay(300).Wait();
                 await Task.Run(() =>
                 {
-                    var allDiscordUsers = _discordUserRepository.GetAll().ToList();
+                    var allDiscordUsers = _userRepository.GetAll().ToList();
 
                     for (int i = 0; i < allDiscordUsers.Count(); i++)
                     {
@@ -80,7 +80,7 @@ namespace DiscordStats.Controllers
                     }
                     if (!duplicate)
                     {
-                        _discordUserRepository.AddOrUpdate(user);
+                        _userRepository.AddOrUpdate(user);
                     }
                 });
 

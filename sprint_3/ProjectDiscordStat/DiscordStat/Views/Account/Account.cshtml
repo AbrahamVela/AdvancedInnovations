@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DiscordStats.Models.Server>
+﻿@model DiscordStats.ViewModel.ServerAndDiscordUserInfoAndWebsiteProfileVM
 
 <!DOCTYPE html>
 <html lang="en">
@@ -40,14 +40,13 @@
     <div class="page-heading header-text">
       <div class="container">
         <div class="row">
-          <div class="col">
-        <a href="https://discord.com/channels/" + @ViewBag.id >@{var link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";}
-        <img class="discordImage"  src="@link" style="width:175px"/></a>
-    </div>
-    <div class="col" style="text-align:center">
-        <h1>Welcome home @ViewBag.name, this is your account page.</h1>
-    </div>
-          </div>
+            <div class="col">
+                <a>@{var link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";}
+                <img class="discordImage"  src="@link" style="width:175px"/></a>
+            </div>
+            <div class="col" style="text-align:center">
+                <h1>Welcome home  @ViewBag.name, this is your account page.</h1>
+            </div>      
         </div>
       </div>
     </div>
@@ -57,6 +56,27 @@
     <!-- Services Starts Here -->
     <div class="services-section services-page">
       <div class="container">
+        <div class="row">
+              <h3>Your STAT TRACKER profile info:</h3>
+                <div class="row">
+                    <p>First name: @Model.ProfileFirstName</p>
+                </div>
+                <div class="row">
+                    <p>Last name: @Model.ProfileLastName</p>
+                </div>
+                <div class="row" >
+                    <p>B day (yyyy-dd-mm): @Model.ProfileBirthDate</p>
+                </div>
+                <div class="row">
+                    <p>Email: @Model.ProfileEmail</p>
+                </div>
+               <div class="col">
+            <div class="form-group mt-3 text-center">
+                <input type="button" value="Edit Profile Info" class="btn btn-success" onclick="location.href='@Url.Action("WebsiteProfileForm","Account", new {userId = @Model.id} )'" />
+            </div>
+        </div>
+       </div>
+        <br /><br />
         <div class="row">
           <div class="col-md-12">
             <div class="section-heading">
@@ -76,11 +96,11 @@
                             </tr>
                         </thead>
                             <tbody>
-                                @foreach (var item in Model)
+                                @for(int i = 0; i < Model.Servers.Count; ++i)
                                   {
                                     <tr>
                                         <td style="padding-top: 1%">
-                                            @if (item.Owner == "true")
+                                            @if (@Model.Servers[i].Owner == "true")
                                               {
                                                 <p>Yes</p>
                                               }
@@ -89,9 +109,9 @@
                                                 <p>No</p>
                                               }
                                         </td>
-                                            <td style="padding-top: 1%">@item.Name</td>
+                                            <td style="padding-top: 1%">@Model.Servers[i].Name</td>
                                             <td style="padding-top: 1%">
-                                            <a href="@Url.Action("Details", "Account", new {name = item.Name})" class="btn btn-primary"/>
+                                            <a href="@Url.Action("Details", "Account", new {name = @Model.Servers[i].Name})" class="btn btn-primary"/>
                                             <i class="fa fa-info" ></i>
                                         </td>
                                     </tr>

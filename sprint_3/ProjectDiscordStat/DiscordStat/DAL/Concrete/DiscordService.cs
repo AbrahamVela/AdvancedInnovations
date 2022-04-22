@@ -241,12 +241,12 @@ namespace DiscordStats.DAL.Concrete
             return servers;
         }
 
-        public async Task<DiscordUser?> GetCurrentUserInfo(string bearerToken)
+        public async Task<DiscordUserAndUserWebSiteInfo?> GetCurrentUserInfo(string bearerToken)
         {
             // Remember to handle errors here
             string response = await GetJsonStringFromEndpoint(bearerToken, "https://discord.com/api/users/@me");
             // And here
-            DiscordUser? userInfo = JsonConvert.DeserializeObject<DiscordUser>(response);
+            DiscordUserAndUserWebSiteInfo? userInfo = JsonConvert.DeserializeObject<DiscordUserAndUserWebSiteInfo>(response);
             return userInfo;
         }
         public async Task<List<GuildUsers>?> GetCurrentGuildUsers(string botToken, string serverId)
@@ -257,11 +257,11 @@ namespace DiscordStats.DAL.Concrete
             return userInfo;
         }
 
-        public async Task<DiscordUser?> GetUserInfoById(string botToken, string UserId)
+        public async Task<DiscordUserAndUserWebSiteInfo?> GetUserInfoById(string botToken, string UserId)
         {
             string uri = "https://discord.com/api/users/" + UserId;
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
-            DiscordUser? userInfo = JsonConvert.DeserializeObject<DiscordUser>(response);
+            DiscordUserAndUserWebSiteInfo? userInfo = JsonConvert.DeserializeObject<DiscordUserAndUserWebSiteInfo>(response);
             return userInfo;
         }
 
