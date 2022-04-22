@@ -25,9 +25,9 @@ namespace DiscordStats.Models
         public string Servers { get; set; } = null!;
         [StringLength(256)]
         public string? Avatar { get; set; }
-        [StringLength(256)]
+        [StringLength(128)]
         public string? FirstName { get; set; }
-        [StringLength(256)]
+        [StringLength(128)]
         public string? LastName { get; set; }
         [StringLength(256)]
         public string? BirthDate { get; set; }
