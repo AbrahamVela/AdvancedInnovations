@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DiscordStats.Models
 {
-    [Table("DiscordUser")]
-    public partial class DiscordUser
+    [Table("DiscordUserAndUserWebSiteInfo")]
+    public partial class DiscordUserAndUserWebSiteInfo
     {
-        public DiscordUser()
+        public DiscordUserAndUserWebSiteInfo()
         {
             ServerUserJoins = new HashSet<ServerUserJoin>();
         }
 
         [Column("ID")]
-        [StringLength(128)]
+        [StringLength(256)]
         public string Id { get; set; } = null!;
         [Key]
         public int DiscordUserPk { get; set; }
@@ -25,6 +25,14 @@ namespace DiscordStats.Models
         public string Servers { get; set; } = null!;
         [StringLength(256)]
         public string? Avatar { get; set; }
+        [StringLength(256)]
+        public string? FirstName { get; set; }
+        [StringLength(256)]
+        public string? LastName { get; set; }
+        [StringLength(256)]
+        public string? BirthDate { get; set; }
+        [StringLength(256)]
+        public string? Email { get; set; }
 
         [InverseProperty(nameof(ServerUserJoin.DiscordUserPkNavigation))]
         public virtual ICollection<ServerUserJoin> ServerUserJoins { get; set; }
