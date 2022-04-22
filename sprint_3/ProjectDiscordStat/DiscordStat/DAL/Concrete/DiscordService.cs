@@ -95,7 +95,8 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
+            
             }
         }
 
@@ -123,7 +124,7 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
             }
         }
         public async Task<string> PostToDiscordEndPoint(string botToken, string uri)
@@ -260,6 +261,9 @@ namespace DiscordStats.DAL.Concrete
         {
             string uri = "https://discord.com/api/guilds/" + serverId + "/members?limit=1000";
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
+            if( response == null)
+                return null;
+
             List<GuildUsers>? userInfo = JsonConvert.DeserializeObject<List<GuildUsers>?>(response);
             return userInfo;
         }

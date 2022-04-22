@@ -282,6 +282,10 @@ namespace DiscordStats.Controllers
         {
             bool authenticated = false;
             var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
             foreach (var u in usersInGuild)
             {
@@ -357,6 +361,10 @@ namespace DiscordStats.Controllers
         {
             bool authenticated = false;
             var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
             foreach (var u in usersInGuild)
             {
