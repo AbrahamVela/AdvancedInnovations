@@ -41,8 +41,19 @@
       <div class="container">
         <div class="row">
           <div class="col">
-        <a href="https://discord.com/channels/" + @ViewBag.id >@{var link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";}
-        <img class="discordImage"  src="@link" style="width:175px"/></a>
+              @{
+                        string link = null;
+                    }
+              @if (ViewBag.hash == null)
+                {
+                     link = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";                  
+                }
+                else
+                    {
+                       link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";
+                    }
+
+        <img class="discordImage"  src="@link" style="width:175px"/>
     </div>
     <div class="col" style="text-align:center">
         <h1 id="displayMessage" >Welcome home @ViewBag.name, this is your account page.</h1>
