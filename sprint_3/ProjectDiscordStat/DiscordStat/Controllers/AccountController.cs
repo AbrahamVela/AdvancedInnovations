@@ -280,69 +280,102 @@ namespace DiscordStats.Controllers
         [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<IActionResult> Games(string ServerId)
         {
-            List<GamesVM> games = new List<GamesVM>();
-            var presence_list = _discord.GetPresencesForServer(ServerId).Result;
-
-            foreach (var presence in presence_list)
-
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
             {
-                var duplicate = false;
-                foreach (var game in games)
-                {
-                    if (game.name == presence.Name)
-                    {
-                        game.UserCount++;
-                        duplicate = true;
-                    }
-                }
-                if (duplicate == false)
-                {
-                    GamesVM newGame = new GamesVM();
-                    newGame.ServerId = ServerId;
-                    newGame.name = presence.Name;
-                    newGame.UserCount = 1;
-
-                    if (presence.Image == null)
-                        newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
-                    else
-                        newGame.GameImage = presence.Image;
-                    newGame.smallImageId = presence.SmallImageId;
-                    if (newGame.smallImageId != null)
-                        if (newGame.smallImageId.Contains("playstation"))
-                            newGame.GameImage = "https://blog.playstation.com/tachyon/2021/03/Playstation-logo.jpg";
-                    if (newGame.GameImage == null)
-
-                    {
-                        var game = await _discord.GetJsonStringFromEndpointGames(newGame.name);
-                        if (game == null)
-                        {
-                            newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
-                            newGame.id = "1";
-                        }
-                        else
-                        {
-                            if (game.icon == null)
-                                newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
-                            else
-                                newGame.icon = game.icon;
-                            newGame.id = game.id;
-                        }
-
-                    }
-                    games.Add(newGame);
-                }
+                if(u.user.UserName == name)
+                    authenticated = true;
             }
-            return View(games);
+            if (authenticated)
+            {
+                List<GamesVM> games = new List<GamesVM>();
+
+                var presence_list = _discord.GetPresencesForServer(ServerId).Result;
+
+                foreach (var presence in presence_list)
+
+                {
+                    var duplicate = false;
+                    foreach (var game in games)
+                    {
+                        if (game.name == presence.Name)
+                        {
+                            game.UserCount++;
+                            duplicate = true;
+                        }
+                    }
+                    if (duplicate == false)
+                    {
+                        GamesVM newGame = new GamesVM();
+                        newGame.ServerId = ServerId;
+                        newGame.name = presence.Name;
+                        newGame.UserCount = 1;
+
+                        if (presence.Image == null)
+                            newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                        else
+                            newGame.GameImage = presence.Image;
+                        newGame.smallImageId = presence.SmallImageId;
+                        if (newGame.smallImageId != null)
+                            if (newGame.smallImageId.Contains("playstation"))
+                                newGame.GameImage = "https://blog.playstation.com/tachyon/2021/03/Playstation-logo.jpg";
+                        if (newGame.GameImage == null)
+
+                        {
+                            var game = await _discord.GetJsonStringFromEndpointGames(newGame.name);
+                            if (game == null)
+                            {
+                                newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                                newGame.id = "1";
+                            }
+                            else
+                            {
+                                if (game.icon == null)
+                                    newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                                else
+                                    newGame.icon = game.icon;
+                                newGame.id = game.id;
+                            }
+
+                        }
+                        games.Add(newGame);
+                    }
+                }
+                return View(games);
+            }
+            else
+            {
+                return RedirectToAction("Account", "Account");
+            }
         }
+        
+
         [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<IActionResult> GameDetails(string gameName, string ServerId )
         {
-            var ps = new ServerIdAndGameNameVM()
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
             {
-                ServerId = ServerId,
-                GameName = gameName
-            };
-            return View(ps);
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var ps = new ServerIdAndGameNameVM()
+                {
+                    ServerId = ServerId,
+                    GameName = gameName
+                };
+                return View(ps);
+            }
+            else
+            {
+                return RedirectToAction("Account", "Account");
+            }
         }
         [HttpGet]
         public IActionResult GetVoiceChannelInfoFromDatabase(string ServerId)

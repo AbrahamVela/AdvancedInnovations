@@ -62,7 +62,7 @@
             <div class="section-heading">
                 @if (@Model.HasBot == "false")
                     {
-            <h2 style="text-align: center" id="noBotMessage">This is all the information we could gather about this server. Please add the bot to see more.</h2>
+            <h2 style="text-align: center" id="">This is all the information we could gather about this server. Please add the bot to see more.</h2>
                     }
                     @if (@Model.HasBot == "true")
                     {
@@ -338,6 +338,18 @@ var id = document.getElementById('ServerId').getAttribute("value");
                     url: `@Url.Action("UpdateMessagesByDate", "Account")?StartDate=${startDate}&EndDate=${endDate}&serverId=${id}`,
                     success: function(msg) {
                         $('#viewPlaceHolder').html(msg);                    
+                    }
+});
+    }
+
+function GoToGamesPage(){
+var Serverid = document.getElementById('ServerId').getAttribute("value");
+
+         $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("Games", "Account")?ServerId=${Serverid}`,
+                    success: function() {
+                                          
                     }
 });
     }
