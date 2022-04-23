@@ -22,7 +22,8 @@ namespace DiscordStats.Controllers
         private readonly IPresenceRepository _presenceRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IMessageInfoRepository _messageIngoChannelRepository;
-        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository)
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository)
         {
             _logger = logger;
             _discord = discord;
@@ -32,6 +33,8 @@ namespace DiscordStats.Controllers
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
             _messageIngoChannelRepository = messageInfoRepository;
+            _userRepository = userRepository;    
+
         }
 
         [Authorize (AuthenticationSchemes = "Discord")]
@@ -39,8 +42,9 @@ namespace DiscordStats.Controllers
         {
             // Don't use the ViewBag!  Use a viewmodel instead.
             // The data in ClaimTypes can be mocked.  Will have to wait though for how to do that.
-            ViewBag.id = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            ViewBag.name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            ViewBag.name  = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            ViewBag.id = userId;
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             string botToken = _configuration["API:BotToken"];
 
@@ -49,33 +53,62 @@ namespace DiscordStats.Controllers
             //var updatedOwner = await _discord.UpdateOwner(_configuration["API:BotToken"], "952358862059614218", userId);
 
             IEnumerable<Server>? servers = await _discord.GetCurrentUserGuilds(bearerToken);
-
+            if (servers == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             foreach (Server server in servers)
             {              
                 string hasBot = await _discord.CheckForBot(botToken, server.Id);
                 if (hasBot == "true")
                 {
-                    var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
+                     var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
 
-                    _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
+                     _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
                 }
             }
 
             var userInfo = await _discord.GetCurrentUserInfo(bearerToken);
-
-
             ViewBag.hash = userInfo.Avatar;
+            var websiteProfileInfo = _userRepository.GetAll().ToList();
+            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+            vm.Servers = servers.ToList();
+            var user = websiteProfileInfo.Where(n => n.Id == userId).FirstOrDefault();
+            if (user != null)
+            {
+                vm.id = user.Id;
+                vm.ProfileFirstName = user.FirstName;
+                vm.ProfileLastName = user.LastName;
+                vm.ProfileBirthDate = user.BirthDate;
+                vm.ProfileEmail = user.Email;
+            }
+
+            // Now we can inject a mock IDiscordService that fakes this method.  That will allow us to test
+            // anything __after__ getting this list of servers, i.e. any logic that we perform with this data from
+            // here on.  There's nothing here now but there presumably will be.  If this method used a viewmodel
+            // then we could test this action method a little more, but it doesn't.
+
+            // Unfortunately it doesn't allow us to test the actual code within the GetCurrentUserGuilds method.
+            // For that we must take the next step in refactoring.
+            //var test = await _discord.UpdateOwner(botToken);
+            return View(vm);
+        }
 
 
-        // Now we can inject a mock IDiscordService that fakes this method.  That will allow us to test
-        // anything __after__ getting this list of servers, i.e. any logic that we perform with this data from
-        // here on.  There's nothing here now but there presumably will be.  If this method used a viewmodel
-        // then we could test this action method a little more, but it doesn't.
+        [Authorize]
+        public async Task<IActionResult> WebsiteProfileForm(string userId)
+        {
+            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+            vm.id = userId;
+            return View(vm);
+        }
 
-        // Unfortunately it doesn't allow us to test the actual code within the GetCurrentUserGuilds method.
-        // For that we must take the next step in refactoring.
-        //var test = await _discord.UpdateOwner(botToken);
-            return View(servers);
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> ProfileFormSubmit([Bind("id, ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
+        {
+            _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo);
+            return RedirectToAction("Account");
         }
 
         [Authorize(AuthenticationSchemes = "Discord")]
@@ -86,45 +119,45 @@ namespace DiscordStats.Controllers
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
 
             IEnumerable<Server>? servers = await _discord.GetCurrentUserGuilds(bearerToken);
-
+            if (servers == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             foreach (var s in servers.Where(m => m.Owner == "true"))
             {
                 s.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], s.Id);
             }
 
+            var servers2 = _serverRepository.GetAll();
 
-            return View(servers.Where(m => m.Owner == "true").ToList());
+            //return View(servers.Where(m => m.Owner == "true").ToList());
+            return View(servers2.Where(m => m.Owner == "true").ToList());
         }
 
-        //[Authorize(AuthenticationSchemes = "Discord")]
-        //public async Task<IActionResult> ServerChannels(string? serverId)
-        //{
-        //    string botToken = _configuration["API:BotToken"];
-        //    var servers = _serverRepository.GetAll();
-        //    var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> AddServerLottery(string serverId)
+        {
+            Server selectedServer = _serverRepository.GetAll().Where(m => m.Id == serverId).FirstOrDefault();
+            ServerLotteryFunctionality lottoFunction = new(_serverRepository);
+            if(selectedServer.InLottery == "null")
+            {
+                _serverRepository.AddingServerToLottery(serverId);
+            }
+            if (selectedServer.InLottery != "trueWinner")
+            {
+                lottoFunction.FunctionalityEquation(serverId);
+            }
+            return RedirectToAction("Servers");
+        }
 
-        //    IList<Channel> channels = new List<Channel>();
-        //    if (selectedServer != null)
-        //    {
-        //        if (selectedServer.HasBot == "true")
-        //        {
-        //            channels = _channelRepository.GetAll().Where(x => x.GuildId == selectedServer.Id).ToList();
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> RemoveServerLottery(string serverId)
+        {
 
-        //            ViewBag.hasBot = "true";
+            _serverRepository.RemoveServerFromLottery(serverId);
 
-        //        }
-        //        else
-        //        {
-        //            ViewBag.hasBot = "false";
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ViewBag.hasBot = "false";
-        //    }
-
-        //    return View(channels);
-        //}
+            return RedirectToAction("Servers");
+        }
 
         [HttpPost]
         public IActionResult ChangePrivacy(string privacyString)
@@ -154,7 +187,15 @@ namespace DiscordStats.Controllers
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             string botToken = _configuration["API:BotToken"];
             IEnumerable<Server>? servers = await _discord.GetCurrentUserGuilds(bearerToken);
+            if(servers == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             var SelectedServer = servers.Where(m => m.Name == name).FirstOrDefault();
+            if(SelectedServer == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
             SelectedServer.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], SelectedServer.Id);
             var vm = new ServerOwnerViewModel();
             
@@ -266,69 +307,110 @@ namespace DiscordStats.Controllers
         [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<IActionResult> Games(string ServerId)
         {
-            List<GamesVM> games = new List<GamesVM>();
-            var presence_list = _discord.GetPresencesForServer(ServerId).Result;
-
-            foreach (var presence in presence_list)
-
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
             {
-                var duplicate = false;
-                foreach (var game in games)
-                {
-                    if (game.name == presence.Name)
-                    {
-                        game.UserCount++;
-                        duplicate = true;
-                    }
-                }
-                if (duplicate == false)
-                {
-                    GamesVM newGame = new GamesVM();
-                    newGame.ServerId = ServerId;
-                    newGame.name = presence.Name;
-                    newGame.UserCount = 1;
-
-                    if (presence.Image == null)
-                        newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
-                    else
-                        newGame.GameImage = presence.Image;
-                    newGame.smallImageId = presence.SmallImageId;
-                    if (newGame.smallImageId != null)
-                        if (newGame.smallImageId.Contains("playstation"))
-                            newGame.GameImage = "https://blog.playstation.com/tachyon/2021/03/Playstation-logo.jpg";
-                    if (newGame.GameImage == null)
-
-                    {
-                        var game = await _discord.GetJsonStringFromEndpointGames(newGame.name);
-                        if (game == null)
-                        {
-                            newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
-                            newGame.id = "1";
-                        }
-                        else
-                        {
-                            if (game.icon == null)
-                                newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
-                            else
-                                newGame.icon = game.icon;
-                            newGame.id = game.id;
-                        }
-
-                    }
-                    games.Add(newGame);
-                }
+                return RedirectToAction("Account", "Account");
             }
-            return View(games);
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if(u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                List<GamesVM> games = new List<GamesVM>();
+
+                var presence_list = _discord.GetPresencesForServer(ServerId).Result;
+
+                foreach (var presence in presence_list)
+
+                {
+                    var duplicate = false;
+                    foreach (var game in games)
+                    {
+                        if (game.name == presence.Name)
+                        {
+                            game.UserCount++;
+                            duplicate = true;
+                        }
+                    }
+                    if (duplicate == false)
+                    {
+                        GamesVM newGame = new GamesVM();
+                        newGame.ServerId = ServerId;
+                        newGame.name = presence.Name;
+                        newGame.UserCount = 1;
+
+                        if (presence.Image == null)
+                            newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                        else
+                            newGame.GameImage = presence.Image;
+                        newGame.smallImageId = presence.SmallImageId;
+                        if (newGame.smallImageId != null)
+                            if (newGame.smallImageId.Contains("playstation"))
+                                newGame.GameImage = "https://blog.playstation.com/tachyon/2021/03/Playstation-logo.jpg";
+                        if (newGame.GameImage == null)
+
+                        {
+                            var game = await _discord.GetJsonStringFromEndpointGames(newGame.name);
+                            if (game == null)
+                            {
+                                newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                                newGame.id = "1";
+                            }
+                            else
+                            {
+                                if (game.icon == null)
+                                    newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                                else
+                                    newGame.icon = game.icon;
+                                newGame.id = game.id;
+                            }
+
+                        }
+                        games.Add(newGame);
+                    }
+                }
+                return View(games);
+            }
+            else
+            {
+                return RedirectToAction("Account", "Account");
+            }
         }
+        
+
         [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<IActionResult> GameDetails(string gameName, string ServerId )
         {
-            var ps = new ServerIdAndGameNameVM()
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
             {
-                ServerId = ServerId,
-                GameName = gameName
-            };
-            return View(ps);
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var ps = new ServerIdAndGameNameVM()
+                {
+                    ServerId = ServerId,
+                    GameName = gameName
+                };
+                return View(ps);
+            }
+            else
+            {
+                return RedirectToAction("Account", "Account");
+            }
         }
         [HttpGet]
         public IActionResult GetVoiceChannelInfoFromDatabase(string ServerId)
