@@ -1,0 +1,124 @@
+﻿@model IEnumerable<DiscordStats.ViewModel.WebhookUsageVM>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Server Details</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>@ViewData["Title"] - DiscordStat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="~/assets/css/templatemo-host-cloud.css">
+    <link rel="stylesheet" href="~/assets/css/owl.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+</head>
+ <body>
+          <!-- ***** Preloader Start ***** -->
+    <div id="preloader">
+        <div class="jumper">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>  
+    <!-- ***** Preloader End ***** -->
+    <!-- Page Content -->
+    <!-- Page Content -->
+    <!-- Heading Starts Here -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Webhooks</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Heading Ends Here -->
+    <!-- Services Starts Here -->
+    <div class="services-section services-page">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+              <h2>Click on webhook to send message.</h2>              
+            </div>
+          </div>
+          <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+           @if(Model.Count() != 0)
+{
+	<div class="row">
+		<div class="col">
+			<table class="table" id="serverTable">
+				@foreach(var w in Model)
+				{
+					<tr>
+						<td>
+							 <h3><a href="@Url.Action("WebhookMessage", "Channel", new {Name = w.name, Id = w.Id, Token = w.Token, guild_id = w.guild_id, channel_id = w.channel_id})"> @w.name</a></h3>  
+						</td>
+						<td>
+							 <input type="button" class="btn btn-danger" value="Delete Webhook" onclick="location.href='@Url.Action("DeleteWebhook", "Channel", new {Id = w.Id, channel_id= w.channel_id})'"/>
+						</td>
+					 </tr>
+
+				}
+			</table>
+		</div>
+        </div>
+        <div class="row" >
+		<div class="col-12" >
+			<input type="button" class="btn btn-primary" value="New Webhook" style="margin-top: 5%; margin-bottom: 2%" onclick="location.href='@Url.Action("WebhookForm", "Channel", new {channelId = ViewBag.channel_id})'"/>
+		</div>
+	</div>
+}
+else
+{
+	<input type="button" class="btn btn-primary" value="New Webhook" style="margin-bottom: 2%" onclick="location.href='@Url.Action("WebhookForm", "Channel", new {channelId = ViewBag.channel_id})'"/>
+
+
+}
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Services Ends Here -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+    </html>
+
+<!-- Bootstrap core JavaScript -->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Additional Scripts -->
+    <script src="~/assets/js/custom.js"></script>
+    <script src="~/assets/js/owl.js"></script>
+    <script src="~/assets/js/accordions.js"></script>
+@section Scripts {
+
+     <script type="text/javascript" src="~/js/site.js"></script>
+}

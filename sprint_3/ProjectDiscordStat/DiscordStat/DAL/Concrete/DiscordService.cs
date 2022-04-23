@@ -25,15 +25,22 @@ namespace DiscordStats.DAL.Concrete
         private readonly IServerRepository _serverRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly IChannelRepository _channelRepository;
+        private readonly IVoiceChannelRepository _voiceChannelRepository;
+        private readonly IMessageInfoRepository _messageInfoRepository;
+        private readonly IConfiguration _configuration;
+
 
         private DiscordDataDbContext _db = new DiscordDataDbContext();
 
-        public DiscordService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, IPresenceRepository presenceRepository, IChannelRepository channelRepository)
+        public DiscordService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, IPresenceRepository presenceRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IConfiguration config)
         {
             _serverRepository = serverRepository;
             _httpClientFactory = httpClientFactory;
             _presenceRepository = presenceRepository;
             _channelRepository = channelRepository; 
+            _voiceChannelRepository = voiceChannelRepository;
+            _messageInfoRepository = messageInfoRepository;
+            _configuration = config;
         }
 
 
@@ -61,7 +68,7 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
             }
         }
         public async Task<string> GetJsonStringFromEndpointWithUserParam(string botToken, string uri)
@@ -88,7 +95,8 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
+            
             }
         }
 
@@ -116,7 +124,7 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
             }
         }
         public async Task<string> PostToDiscordEndPoint(string botToken, string uri)
@@ -233,8 +241,12 @@ namespace DiscordStats.DAL.Concrete
             // Remember to handle errors here
             string response = await GetJsonStringFromEndpoint(bearerToken, $"https://discord.com/api/users/@me/guilds");
             // And here
-            List<Server>? servers = JsonConvert.DeserializeObject<List<Server>>(response);
-            return servers;
+            if (response != null)
+            {
+                List<Server>? servers = JsonConvert.DeserializeObject<List<Server>>(response);
+                return servers;
+            }
+            else return null;
         }
 
         public async Task<DiscordUser?> GetCurrentUserInfo(string bearerToken)
@@ -249,6 +261,9 @@ namespace DiscordStats.DAL.Concrete
         {
             string uri = "https://discord.com/api/guilds/" + serverId + "/members?limit=1000";
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
+            if( response == null)
+                return null;
+
             List<GuildUsers>? userInfo = JsonConvert.DeserializeObject<List<GuildUsers>?>(response);
             return userInfo;
         }
@@ -260,18 +275,6 @@ namespace DiscordStats.DAL.Concrete
             DiscordUser? userInfo = JsonConvert.DeserializeObject<DiscordUser>(response);
             return userInfo;
         }
-
-        public async Task<List<Channel>?> GetGuildChannels(string botToken, string serverId)
-        {
-            string uri = "https://discord.com/api/guilds/" + serverId + "/channels";
-            // Remember to handle errors here
-            string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
-            // And here
-            List<Channel>? channel = JsonConvert.DeserializeObject<List<Channel>>(response);
-            return channel;
-        }
-
-
 
         public async Task<ServerOwnerViewModel?> GetFullGuild(string botToken, string serverId)
         {
@@ -355,20 +358,20 @@ namespace DiscordStats.DAL.Concrete
             foreach (var presence in presences)
             {
                 Debug.Write(presence.Name);
-
+                presence.CreatedAt = presence.CreatedAt?.ToLocalTime();
 
                 Task.Delay(300).Wait();
                 await Task.Run(() =>
                 {
                     var duplicate = false;
-                    var upDatePresence = false;
+                    var updatePresence = false;
 
 
                     var allPresences = _presenceRepository.GetAll().ToList();
 
-                    for (int i = 0; i < allPresences.Count(); i++)
+                    foreach (var p in allPresences)
                     {
-                        if (presence.UserId == allPresences[i].UserId && presence.Name == allPresences[i].Name)
+                        if (presence.ServerId == p.ServerId && presence.Name == p.Name && presence.UserId == p.UserId && presence.CreatedAt?.Hour == p.CreatedAt?.Hour && presence.CreatedAt?.Date == p.CreatedAt?.Date)
                         {
                             duplicate = true;
                         }
@@ -382,38 +385,41 @@ namespace DiscordStats.DAL.Concrete
             return "It Worked";
         }
 
-        public async Task<string?> ChannelEntryAndUpdateDbCheck(Channel[] channels)
+
+        public async Task<string?> VoiceChannelEntryAndUpdateDbCheck(VoiceChannel[] voiceChannels)
         {
-            foreach (var channel in channels)
+            var allChannels =  _voiceChannelRepository.GetAll().ToList();
+            
+            foreach (var channel in voiceChannels)
             {
                 var duplicate = false;
 
                 Task.Delay(300).Wait();
                 await Task.Run(() =>
                 {
-                    var allChannels = _channelRepository.GetAll().ToList();
-                    var duplicateChannel = new Channel();
-                    for (int i = 0; i < allChannels.Count(); i++)
+                    var similarchannels = allChannels.Where(c => c.Id == channel.Id).ToList();
+
+                    foreach (var originalChannel in similarchannels)
                     {
-                        if (channel.Id == allChannels[i].Id)
-                        {
-                            duplicate = true;
-                            duplicateChannel = allChannels[i];
-                        }
+                            if (channel.Count > originalChannel.Count && channel.Time.Value.Day == originalChannel.Time.Value.Day && channel.Time.Value.Hour == originalChannel.Time.Value.Hour)
+                            {
+                                originalChannel.Count = channel.Count;
+                                duplicate = true;
+                                _voiceChannelRepository.AddOrUpdate(originalChannel);
+                            }
+                            if(channel.Time.Value.Day == originalChannel.Time.Value.Day && channel.Time.Value.Hour == originalChannel.Time.Value.Hour && channel.Count == originalChannel.Count)
+                            {
+                                duplicate = true;
+                            }                    
                     }
                     if (!duplicate)
-                    {
-                        _channelRepository.AddOrUpdate(channel);
-                    }
-                    if (duplicate)
-                    {
-
-                        _channelRepository.AddOrUpdate(duplicateChannel);
-                    }
+                        _voiceChannelRepository.AddOrUpdate(channel);
                 });
             }
+            
             return "It Worked";
         }
+        
 
         public async Task<string?> RemoveUserServer(string botToken, string serverId, string UserId)
         {
@@ -432,6 +438,97 @@ namespace DiscordStats.DAL.Concrete
             string uri = "https://discord.com/api/guilds/" + serverId;
             string response = await PatchToDiscordEndPoint(botToken, uri, currentUser);
             return response;
+        }
+        public async Task<List<Presence>?> GetPresencesForServer(string serverId)
+        {
+            var presences = _presenceRepository.GetPresences(serverId);
+            return presences;
+        }
+        public async Task<GamesVM> GetJsonStringFromEndpointGames(string gameName)
+        {
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://discord.com/api/applications/detectable")
+            {
+                Headers =
+                {
+                    { HeaderNames.Accept, "application/json" }
+                }
+            };
+            HttpClient httpClient = _httpClientFactory.CreateClient();
+            // Note this is the blocking version.  Would be better to use the Async version
+            HttpResponseMessage response = await httpClient.SendAsync(httpRequestMessage);
+            // This is only a minimal version; make sure to cover all your bases here
+            if (response.IsSuccessStatusCode)
+            {
+                // same here, this is blocking; use ReadAsStreamAsync instead
+                string responseText = await response.Content.ReadAsStringAsync();
+                var converted = JsonConvert.DeserializeObject<List<GamesVM>>(responseText);
+                return converted.Where(x => x.name.ToUpper() == gameName.ToUpper()).FirstOrDefault();
+            }
+            else
+            {
+                // What to do if failure? Should throw specific exceptions that explain what happened
+                throw new HttpRequestException();
+            }
+        }
+        public async Task<List<UserMessageVM>> UpdatedMessagesByDates(DateTime StartDate, DateTime EndDate, string serverId)
+        {
+            string botToken = _configuration["API:BotToken"];
+            var ServerMessages = _messageInfoRepository.GetAll().Where(m => m.ServerId == serverId).ToList();
+
+            var updatedMessages = new List<MessageInfo>();
+            if (StartDate.Date.ToString("M-d-yyyy") != "1-1-0001" && EndDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {
+                    var messagedate = Convert.ToDateTime(message.CreatedAt).Date;
+                    if (messagedate >= StartDate.Date && messagedate <= EndDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") != "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {
+                    var messagedate = Convert.ToDateTime(message.CreatedAt).Date;
+                    if (messagedate <= EndDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {
+                    var messagedate = Convert.ToDateTime(message.CreatedAt).Date;
+                    if (messagedate >= StartDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {                    
+                        updatedMessages.Add(message);                   
+                }
+            }
+            var UsersMessagesFiltered = updatedMessages.GroupBy(x => x.UserId).Select(x => x.ToList()).Take(3).ToList();
+            var users = new List<UserMessageVM>();
+            foreach (var u in UsersMessagesFiltered)
+            {
+                var user = await GetUserInfoById(botToken, u[0].UserId);
+                UserMessageVM MessageUser = new();
+                MessageUser.Id = user.Id;
+                MessageUser.Username = user.Username;
+                MessageUser.Avatar = user.Avatar;
+                MessageUser.MessageCount = u.Count();
+                users.Add(MessageUser);
+            }
+            return users.OrderByDescending(m => m.MessageCount ).ToList();
         }
     }
 }
