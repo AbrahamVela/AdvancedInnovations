@@ -2,6 +2,27 @@
 @using System.Security.Claims
 <!DOCTYPE html>
 <html lang="en">
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
+      integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script
+    type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"
+      integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
+      crossorigin="anonymous"
+      defer>
+    </script>
+
     <head>
     <title>Server Details</title>
 
@@ -99,13 +120,12 @@
                     <tr>
                         <th><b>Avatar</b></th>
                         <th><b>Name</b></th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach (var u in @Model.users)
                     {
-                        <tr>
+                        <tr style ="background-color: #f7f7f7">
                             @if (u.user.Avatar == null)
                             {
                                 var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
@@ -146,7 +166,7 @@
                                         
                <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" value="Update" />
                <div id="viewPlaceHolder">
-                <table class="table" id="serverTable">
+                <table class="table" id="serverTable2">
                      <thead class="thead-dark">
                     <tr>
                         <th><b></b></th>
@@ -317,6 +337,13 @@
 
 </body>
     </html>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#serverTable').DataTable();
+        });
+    </script>
+
 <div id="ServerId" value="@Model.Id"></div>
 
 <!-- Bootstrap core JavaScript -->
