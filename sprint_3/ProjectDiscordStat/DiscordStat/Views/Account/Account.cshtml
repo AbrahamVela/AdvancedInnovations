@@ -40,13 +40,26 @@
     <div class="page-heading header-text">
       <div class="container">
         <div class="row">
-            <div class="col">
-                <a>@{var link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";}
-                <img class="discordImage"  src="@link" style="width:175px"/></a>
-            </div>
-            <div class="col" style="text-align:center">
-                <h1>Welcome home  @ViewBag.name, this is your account page.</h1>
-            </div>      
+
+          <div class="col">
+              @{
+                        string link = null;
+                    }
+              @if (ViewBag.hash == null)
+                {
+                     link = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";                  
+                }
+                else
+                    {
+                       link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";
+                    }
+
+        <img class="discordImage"  src="@link" style="width:175px"/>
+    </div>
+    <div class="col" style="text-align:center">
+        <h1 id="displayMessage" >Welcome home @ViewBag.name, this is your account page.</h1>
+    </div>
+          </div>
         </div>
       </div>
     </div>
@@ -56,7 +69,7 @@
     <!-- Services Starts Here -->
     <div class="services-section services-page">
       <div class="container">
-        <div class="row">
+        <div class="row" id="ServersBlock">
               <h3>Your STAT TRACKER profile info:</h3>
                 <div class="row">
                     <p>First name: @Model.ProfileFirstName</p>
@@ -111,7 +124,11 @@
                                         </td>
                                             <td style="padding-top: 1%">@Model.Servers[i].Name</td>
                                             <td style="padding-top: 1%">
-                                            <a href="@Url.Action("Details", "Account", new {name = @Model.Servers[i].Name})" class="btn btn-primary"/>
+
+                                            <a href="@Url.Action("Details", "Account", new {name = item.Name})" id="@item.Name" class="btn btn-primary" />
+
+                                            //<a href="@Url.Action("Details", "Account", new {name = @Model.Servers[i].Name})" class="btn btn-primary"/>
+
                                             <i class="fa fa-info" ></i>
                                         </td>
                                     </tr>

@@ -62,7 +62,7 @@
             <div class="section-heading">
                 @if (@Model.HasBot == "false")
                     {
-            <h2 style="text-align: center">This is all the information we could gather about this server. Please add the bot to see more.</h2>
+            <h2 style="text-align: center" id="">This is all the information we could gather about this server. Please add the bot to see more.</h2>
                     }
                     @if (@Model.HasBot == "true")
                     {
@@ -75,7 +75,7 @@
           <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="service-item">
               <i class="fa fa-cloud"></i>
-              <h4>Details</h4>             
+              <h4 id="DetailsContainer">Details</h4>             
                 <p>Owner: @Model.Owner</p>
                 <P>Total members: @Model.Approximate_Member_Count</P>
                 <P>Online members: @Model.Approximate_Presence_Count</P>
@@ -85,14 +85,15 @@
                 <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
                 </div>
                 <div class="row" style="margin-top:3%">
-                <button type="button" class="btn btn-info" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
+                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
                 </div>
             </div>
           </div>
           <div class="col-md-8 col-sm-8 col-xs-12">
             <div class="service-item">
-              <i class="fa fa-server"></i>
+              <i class="fa fa-users"></i>
               <h4>Users</h4>
+              
                    <table class="table" id="serverTable">
                      <thead class="thead-dark">
                     <tr>
@@ -127,6 +128,55 @@
                     }
                     </tbody>
                 </table>
+           
+            </div>
+          </div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="service-item">
+              <i class="fa fa-trophy"></i>
+              <h4>Top Users</h4>        
+              <label for="start">Start date:</label>
+                <input type="date" id="start" name="tripstart"                
+                 min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+
+                <label for="start">End date:</label>
+                <input type="date" id="end" name="tripend"               
+                 min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                        
+               <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" value="Update" />
+               <div id="viewPlaceHolder">
+                <table class="table" id="serverTable">
+                     <thead class="thead-dark">
+                    <tr>
+                        <th><b></b></th>
+                        <th><b>Name</b></th>
+                        <th><b>Messages Sent</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var u in @Model.userMessageVMs)
+                    {
+                        <tr>
+                            @if (u.Avatar == null)
+                            {
+                                var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
+                               <td style="padding-bottom: 2%"><img src="@i" style="height: 80px;"/></td>
+                            }
+                            else
+                            {
+                                var i = "https://cdn.discordapp.com/avatars/" + u.Id + "//" + u.Avatar + ".png";
+                                <td><img src="@i" style="height: 80px;"/></td>
+                            }
+
+                            <td style="padding-top: 4%">@u.Username</td>
+                            <td style="padding-top: 4%">@u.MessageCount Messages</td>
+
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+                </div>
             </div>
           </div>
           }
@@ -158,6 +208,7 @@
         <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
             <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
         </div>
+
         </div>
     </div>
     <!-- Testimonials Ends Here -->
@@ -277,7 +328,32 @@
     <script src="~/assets/js/owl.js"></script>
     <script src="~/assets/js/accordions.js"></script>
 <script>
-    
+    function UpdateMessages(){
+var startDate = document.getElementById('start').value;
+var endDate = document.getElementById('end').value;
+var id = document.getElementById('ServerId').getAttribute("value");
+
+         $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("UpdateMessagesByDate", "Account")?StartDate=${startDate}&EndDate=${endDate}&serverId=${id}`,
+                    success: function(msg) {
+                        $('#viewPlaceHolder').html(msg);                    
+                    }
+});
+    }
+
+function GoToGamesPage(){
+var Serverid = document.getElementById('ServerId').getAttribute("value");
+
+         $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("Games", "Account")?ServerId=${Serverid}`,
+                    success: function() {
+                                          
+                    }
+});
+    }
+
     function OpenModal() {
         $('#myModal').modal('show');
     }
