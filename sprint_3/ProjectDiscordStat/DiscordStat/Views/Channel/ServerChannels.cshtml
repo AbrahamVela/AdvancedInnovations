@@ -42,51 +42,56 @@
       </div>
     </div>
     <!-- Heading Ends Here -->
+    @{var counter = 0;}
     @if(@ViewBag.hasBot == "true")
 {
     <!-- Services Starts Here -->
     <div class="services-section services-page">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="section-heading">      
-              <h2>Click on acceptable channels for webhook features.</h2>             
+        <div class="container">
+            <div class="row">
+
+                <div class="section-heading">      
+                    <h2>Click on acceptable channels for webhook features.</h2>             
+                </div>
             </div>
-          </div>
-
-
-          <div class="col-md-12 col-sm-12 col-xs-12">          
-               <table class="table" id="serverTable">
-    <thead>
-    <tr>
-        <th><b>Channel Name</b></th>
-        <th><b>Message Count</b></th>
-    </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model.OrderByDescending(c => c.Count))
-        {
-                @if (!c.Type.Equals("GUILD_CATEGORY"))
-                {
+            <div class="row">          
+                <table class="table" id="serverTable">
+                    <thead class="thead-dark">
                     <tr>
-                        @if (!c.Type.Equals("GUILD_VOICE") && !c.Name.Equals("Voice Channels"))
-                        {
-                            <td><h3><a href="@Url.Action("ChannelWebhooks", "Channel", new {Id = c.Id})"> @c.Name</a></h3></td>
-                        }
-                        else
-                        {
-                            <td><h3>@c.Name</h3></td>
-                        }                       
-                        <td>@c.Count</td>
-                       
+                        <th><b>Delete Channel</b></th>
+                        <th><b>Channel Name</b></th>
+                        <th><b>Message Count</b></th>
                     </tr>
-                }
-            }
-                </tbody>
-            </table>
-          </div>         
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.OrderByDescending(c => c.Count))
+                        {
+                                @if (!c.Type.Equals("GUILD_CATEGORY"))
+                                {
+                                    <tr>                                        
+                                        <td><input type="checkbox" value="@c.Id" id="editChannel-@(counter)"></td>
+                                        @{counter++;}
+                                        @if (!c.Type.Equals("GUILD_VOICE") && !c.Name.Equals("Voice Channels"))
+                                        {
+                                            <td><h3><a href="@Url.Action("ChannelWebhooks", "Channel", new {Id = c.Id})">@c.Name</a></h3></td>
+                                        }
+                                        else
+                                        {
+                                            <td><h3>@c.Name</h3></td>
+                                        }                       
+                                        <td>@c.Count</td>
+                       
+                                    </tr>
+                                }
+                            }
+                    </tbody>
+                </table>         
+            </div>         
+            <div class="row">
+                <button value="Submit" onclick="OpenModalOne()" class="btn btn-primary" style="margin-top: 2%; margin-bottom:2%">Delete Channel</button>
+                <button value="Submit" onclick="OpenModalTwo()" class="btn btn-primary" style="margin-top: 2%; margin-bottom:2%">Create Channel</button>
+            </div>
         </div>
-      </div>
     </div>
     <!-- Services Ends Here -->
 }
@@ -94,6 +99,52 @@ else
 {
     <h1 style="text-align:center">We are unable to list channels. Please add the bot to see channels.</h1>
 }
+
+
+  <div class="modal fade" id="myModalOne">
+    <div class="modal-dialog">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Leave Server</h4>
+                </div>
+                <div class="modal-body" style="text-align: center; font-weight: bold">
+                    Are you sure you want to delete channel(s)?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="CloseModalOne()" style="margin-right: 59%">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" onclick="GetCheckMark(@counter)">
+                        Delete
+                    </button>
+                </div>           
+        </div>
+    </div>
+</div>
+
+  <div class="modal fade" id="myModalTwo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Leave Server</h4>
+                </div>
+                <div class="modal-body" style="text-align: center; font-weight: bold">
+                    Are you sure you want to delete channel(s) and create new channel?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="CloseModalTwo()" style="margin-right: 59%">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" onclick="GetCheckMark(@counter)">
+                        Delete and Create
+                    </button>
+                </div>           
+        </div>
+    </div>
+</div>
+
+
+
 </body>
     </html>
     <!-- Bootstrap core JavaScript -->
@@ -108,4 +159,36 @@ else
 @section Scripts {
 
      <script type="text/javascript" src="~/js/site.js"></script>
+
+    <script>
+        function OpenModalOne() {
+        $('#myModalOne').modal('show');
+    }
+            function OpenModalTwo() {
+        $('#myModalTwo').modal('show');
+    }
+
+        function CloseModalOne() {
+        $('#myModalOne').modal('hide');
+    }
+            function CloseModalTwo() {
+        $('#myModalTwo').modal('hide');
+    }
+
+        function GetCheckMark(counter){
+            for(var i = 0; i < counter; i++)
+            {
+                if(document.getElementById('editChannel-'+i).checked)
+                {
+                    var channelId = document.getElementById('editChannel-'+i).getAttribute("value");
+                   $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("DeleteChannel", "Api")?id=${channelId}`,
+                    success: function(msg) {}
+                    });
+                }
+            }
+        }
+    </script>
+
 }

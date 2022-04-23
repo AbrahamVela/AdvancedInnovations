@@ -94,10 +94,5 @@ namespace DiscordStats.DAL.Concrete
             AddOrUpdate(selectedServer);
         }
 
-        public void ServerLotteryWinner(Server server)
-        {
-            server.InLottery = "trueWinner";
-            AddOrUpdate(server);
-        }
     }
 }

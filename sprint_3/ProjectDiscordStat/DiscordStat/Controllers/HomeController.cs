@@ -31,8 +31,8 @@ namespace DiscordStats.Controllers
         public IActionResult Index()
         {
             ServerLotteryFunctionality resetLotteryWinner = new(_serverRepository);
-            resetLotteryWinner.ResetFunctionalityEquation();
-            return View(_serverRepository.GetAll().ToList());
+            var server = resetLotteryWinner.FunctionalityEquation();
+            return View(server);
         }
 
 

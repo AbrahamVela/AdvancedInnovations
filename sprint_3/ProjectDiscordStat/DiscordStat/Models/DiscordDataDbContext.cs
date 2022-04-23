@@ -41,7 +41,7 @@ namespace DiscordStats.Models
             modelBuilder.Entity<Channel>(entity =>
             {
                 entity.HasKey(e => e.ChannelPk)
-                    .HasName("PK__Channel__38C3B126A82456E7");
+                    .HasName("PK__Channel__38C3B126B57AFF6B");
             });
 
             modelBuilder.Entity<ChannelWebhookJoin>(entity =>
@@ -60,25 +60,25 @@ namespace DiscordStats.Models
             modelBuilder.Entity<DiscordUserAndUserWebSiteInfo>(entity =>
             {
                 entity.HasKey(e => e.DiscordUserPk)
-                    .HasName("PK__DiscordU__1F12BE959EAB2B70");
+                    .HasName("PK__DiscordU__1F12BE95CB90F394");
             });
 
             modelBuilder.Entity<MessageInfo>(entity =>
             {
                 entity.HasKey(e => e.MessageDataPk)
-                    .HasName("PK__MessageI__2389D5B52AD19637");
+                    .HasName("PK__MessageI__2389D5B5F2C59A1F");
             });
 
             modelBuilder.Entity<Presence>(entity =>
             {
                 entity.HasKey(e => e.PresencePk)
-                    .HasName("PK__Presence__4981B3D9DC211D36");
+                    .HasName("PK__Presence__4981B3D978CB5EEC");
             });
 
             modelBuilder.Entity<Server>(entity =>
             {
                 entity.HasKey(e => e.ServerPk)
-                    .HasName("PK__Server__C56B038615E5A574");
+                    .HasName("PK__Server__C56B03861C27704D");
             });
 
             modelBuilder.Entity<ServerChannelJoin>(entity =>
@@ -123,13 +123,13 @@ namespace DiscordStats.Models
             modelBuilder.Entity<VoiceChannel>(entity =>
             {
                 entity.HasKey(e => e.VoiceChannelPk)
-                    .HasName("PK__VoiceCha__004F00F9D419B0CF");
+                    .HasName("PK__VoiceCha__004F00F9938F1F89");
             });
 
             modelBuilder.Entity<Webhook>(entity =>
             {
                 entity.HasKey(e => e.WebhookPk)
-                    .HasName("PK__Webhook__238C26FD4175FBB5");
+                    .HasName("PK__Webhook__238C26FD680AD0F4");
             });
 
             OnModelCreatingPartial(modelBuilder);

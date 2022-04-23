@@ -1,27 +1,9 @@
 ﻿using DiscordStats.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using Newtonsoft.Json;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using RestSharp;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Azure.Core;
-using System.Net;
-using Newtonsoft.Json.Linq;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using DiscordStats.DAL.Abstract;
 using DiscordStats.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using DiscordStats.ViewModels;
+
 
 namespace DiscordStats.Controllers
 {
@@ -178,6 +160,19 @@ namespace DiscordStats.Controllers
 
             return Json(itWorked);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteChannel(string id)
+        {
+            return Json("Hello");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteAndCreateChannel(string id)
+        {
+            return Json("Hello");
+        }
+  
 
 
         [HttpPost]

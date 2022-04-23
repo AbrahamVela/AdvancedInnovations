@@ -85,6 +85,7 @@ CREATE TABLE [Channel]
   [Name] nvarchar(256) Null,
   [Count] int Null,
   [Guild_id] nvarchar(256) Null,
+  [Edit] nvarchar(256) Null
 );
 
 CREATE TABLE [ServerChannelJoin]
