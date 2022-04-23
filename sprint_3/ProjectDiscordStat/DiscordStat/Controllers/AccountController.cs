@@ -134,17 +134,12 @@ namespace DiscordStats.Controllers
             {
                 _serverRepository.AddingServerToLottery(serverId);
             }
-            //if (selectedServer.InLottery != "trueWinner")
-            //{
-            //    lottoFunction.FunctionalityEquation(serverId);
-            //}
             return RedirectToAction("Servers");
         }
 
         [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<IActionResult> RemoveServerLottery(string serverId)
         {
-
             _serverRepository.RemoveServerFromLottery(serverId);
 
             return RedirectToAction("Servers");
