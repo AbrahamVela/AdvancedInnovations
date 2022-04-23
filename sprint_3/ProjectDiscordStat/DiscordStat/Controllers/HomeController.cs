@@ -1,12 +1,26 @@
 ﻿using DiscordStats.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using RestSharp;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Azure.Core;
+using System.Net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using DiscordStats.DAL.Abstract;
 using DiscordStats.ViewModel;
-using DiscordStats.ViewModels;
 
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using DiscordStats.ViewModels;
 
 namespace DiscordStats.Controllers
 {
@@ -30,9 +44,8 @@ namespace DiscordStats.Controllers
 
         public IActionResult Index()
         {
-            ServerLotteryFunctionality resetLotteryWinner = new(_serverRepository);
-            resetLotteryWinner.ResetFunctionalityEquation();
-            return View(_serverRepository.GetAll().ToList());
+
+            return View();
         }
 
 
@@ -48,6 +61,7 @@ namespace DiscordStats.Controllers
             return View();
         }
 
+        [Authorize]
         public async Task<IActionResult> AllServers()
         {
             AllServersVM allServersNameMemCountAndPresenceInfoVM = new (_serverRepository, _presenceRepository);

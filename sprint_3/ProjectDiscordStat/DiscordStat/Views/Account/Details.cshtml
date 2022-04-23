@@ -2,16 +2,37 @@
 @using System.Security.Claims
 <!DOCTYPE html>
 <html lang="en">
+    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
+      integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script
+    type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"
+      integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
+      crossorigin="anonymous"
+      defer>
+    </script>
+
     <head>
     <title>Server Details</title>
 
-    <meta charset="utf-8" />
+     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>@ViewData["Title"] - DiscordStat</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
     <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/assets/css/fontawesome.css">
@@ -62,7 +83,7 @@
             <div class="section-heading">
                 @if (@Model.HasBot == "false")
                     {
-            <h2 style="text-align: center" id="">This is all the information we could gather about this server. Please add the bot to see more.</h2>
+            <h2 style="text-align: center">This is all the information we could gather about this server. Please add the bot to see more.</h2>
                     }
                     @if (@Model.HasBot == "true")
                     {
@@ -75,7 +96,7 @@
           <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="service-item">
               <i class="fa fa-cloud"></i>
-              <h4 id="DetailsContainer">Details</h4>             
+              <h4>Details</h4>             
                 <p>Owner: @Model.Owner</p>
                 <P>Total members: @Model.Approximate_Member_Count</P>
                 <P>Online members: @Model.Approximate_Presence_Count</P>
@@ -85,7 +106,7 @@
                 <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
                 </div>
                 <div class="row" style="margin-top:3%">
-                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
+                <button type="button" class="btn btn-info" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
                 </div>
             </div>
           </div>
@@ -99,13 +120,13 @@
                     <tr>
                         <th><b>Avatar</b></th>
                         <th><b>Name</b></th>
-                        <th></th>
+                        
                     </tr>
                     </thead>
                     <tbody>
                     @foreach (var u in @Model.users)
                     {
-                        <tr>
+                        <tr style ="background-color: #f7f7f7"> 
                             @if (u.user.Avatar == null)
                             {
                                 var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
@@ -146,7 +167,7 @@
                                         
                <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" value="Update" />
                <div id="viewPlaceHolder">
-                <table class="table" id="serverTable">
+                <table class="table" id="serverTable2">
                      <thead class="thead-dark">
                     <tr>
                         <th><b></b></th>
@@ -317,9 +338,15 @@
 
 </body>
     </html>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#serverTable').DataTable();
+        });
+    </script>
 <div id="ServerId" value="@Model.Id"></div>
 
 <!-- Bootstrap core JavaScript -->
+
     <script src="~/vendor/jquery/jquery.min.js"></script>
     <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
@@ -327,6 +354,10 @@
     <script src="~/assets/js/custom.js"></script>
     <script src="~/assets/js/owl.js"></script>
     <script src="~/assets/js/accordions.js"></script>
+        
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/statistics.js"></script>
+    <script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>
 <script>
     function UpdateMessages(){
 var startDate = document.getElementById('start').value;
@@ -341,7 +372,9 @@ var id = document.getElementById('ServerId').getAttribute("value");
                     }
 });
     }
-
+<<<<<<< Updated upstream
+=======
+    
 function GoToGamesPage(){
 var Serverid = document.getElementById('ServerId').getAttribute("value");
 
@@ -353,6 +386,7 @@ var Serverid = document.getElementById('ServerId').getAttribute("value");
                     }
 });
     }
+>>>>>>> Stashed changes
 
     function OpenModal() {
         $('#myModal').modal('show');
@@ -396,8 +430,5 @@ var Serverid = document.getElementById('ServerId').getAttribute("value");
             });
         }
     </script>
-    
-    <script type="text/javascript" src="~/js/site.js"></script>
-    <script type="text/javascript" src="~/js/statistics.js"></script>
-    <script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>
+
 }

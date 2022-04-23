@@ -20,9 +20,9 @@ namespace DiscordStats.DAL.Abstract
         /// <returns></returns>
         Task<List<Server>?> GetCurrentUserGuilds(string bearerToken);
 
-        Task<DiscordUserAndUserWebSiteInfo?> GetCurrentUserInfo(string bearerToken);
+        Task<DiscordUser?> GetCurrentUserInfo(string bearerToken);
 
-        Task<DiscordUserAndUserWebSiteInfo?> GetUserInfoById(string bearerToken, string UserId);
+        Task<DiscordUser?> GetUserInfoById(string bearerToken, string UserId);
 
         Task<string?> CheckForBot(string botToken, string serverId);
 
