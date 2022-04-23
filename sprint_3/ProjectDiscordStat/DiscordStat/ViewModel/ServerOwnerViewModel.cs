@@ -29,7 +29,7 @@ namespace DiscordStats.ViewModels
 
         public int? Approximate_Presence_Count { get; set; }
         public List<GuildUsers> users { get; set; }
-
         public Presence presence { get; set; }
+        public List<UserMessageVM> userMessageVMs { get; set; }
     }
 }

@@ -42,7 +42,7 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+               return null;
             }
         }
 
@@ -138,6 +138,8 @@ namespace DiscordStats.DAL.Concrete
             string uri = "https://discord.com/api/channels/" + channelId + "/webhooks";
             // Remember to handle errors here
             string response = await GetWebHooksInfoInFormOfJsonStringFromEndpoint(botToken, uri);
+            if (response == null)
+                return null;
             // And here
             List<WebhookUsageVM>? webhooks = JsonConvert.DeserializeObject<List<WebhookUsageVM>>(response);
             return webhooks;

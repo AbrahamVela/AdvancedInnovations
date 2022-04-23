@@ -2,16 +2,37 @@
 @using System.Security.Claims
 <!DOCTYPE html>
 <html lang="en">
+    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
+      integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script
+    type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"
+      integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
+      crossorigin="anonymous"
+      defer>
+    </script>
+
     <head>
     <title>Server Details</title>
 
-    <meta charset="utf-8" />
+     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>@ViewData["Title"] - DiscordStat</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
     <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/assets/css/fontawesome.css">
@@ -91,20 +112,21 @@
           </div>
           <div class="col-md-8 col-sm-8 col-xs-12">
             <div class="service-item">
-              <i class="fa fa-server"></i>
+              <i class="fa fa-users"></i>
               <h4>Users</h4>
+              
                    <table class="table" id="serverTable">
                      <thead class="thead-dark">
                     <tr>
                         <th><b>Avatar</b></th>
                         <th><b>Name</b></th>
-                        <th></th>
+                        
                     </tr>
                     </thead>
                     <tbody>
                     @foreach (var u in @Model.users)
                     {
-                        <tr>
+                        <tr style ="background-color: #f7f7f7"> 
                             @if (u.user.Avatar == null)
                             {
                                 var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
@@ -127,6 +149,55 @@
                     }
                     </tbody>
                 </table>
+           
+            </div>
+          </div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="service-item">
+              <i class="fa fa-trophy"></i>
+              <h4>Top Users</h4>        
+              <label for="start">Start date:</label>
+                <input type="date" id="start" name="tripstart"                
+                 min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+
+                <label for="start">End date:</label>
+                <input type="date" id="end" name="tripend"               
+                 min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                        
+               <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" value="Update" />
+               <div id="viewPlaceHolder">
+                <table class="table" id="serverTable2">
+                     <thead class="thead-dark">
+                    <tr>
+                        <th><b></b></th>
+                        <th><b>Name</b></th>
+                        <th><b>Messages Sent</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var u in @Model.userMessageVMs)
+                    {
+                        <tr>
+                            @if (u.Avatar == null)
+                            {
+                                var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
+                               <td style="padding-bottom: 2%"><img src="@i" style="height: 80px;"/></td>
+                            }
+                            else
+                            {
+                                var i = "https://cdn.discordapp.com/avatars/" + u.Id + "//" + u.Avatar + ".png";
+                                <td><img src="@i" style="height: 80px;"/></td>
+                            }
+
+                            <td style="padding-top: 4%">@u.Username</td>
+                            <td style="padding-top: 4%">@u.MessageCount Messages</td>
+
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+                </div>
             </div>
           </div>
           }
@@ -158,6 +229,7 @@
         <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
             <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
         </div>
+
         </div>
     </div>
     <!-- Testimonials Ends Here -->
@@ -266,9 +338,15 @@
 
 </body>
     </html>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#serverTable').DataTable();
+        });
+    </script>
 <div id="ServerId" value="@Model.Id"></div>
 
 <!-- Bootstrap core JavaScript -->
+
     <script src="~/vendor/jquery/jquery.min.js"></script>
     <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
@@ -276,8 +354,40 @@
     <script src="~/assets/js/custom.js"></script>
     <script src="~/assets/js/owl.js"></script>
     <script src="~/assets/js/accordions.js"></script>
+        
+    <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/statistics.js"></script>
+    <script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>
 <script>
+    function UpdateMessages(){
+var startDate = document.getElementById('start').value;
+var endDate = document.getElementById('end').value;
+var id = document.getElementById('ServerId').getAttribute("value");
+
+         $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("UpdateMessagesByDate", "Account")?StartDate=${startDate}&EndDate=${endDate}&serverId=${id}`,
+                    success: function(msg) {
+                        $('#viewPlaceHolder').html(msg);                    
+                    }
+});
+    }
+<<<<<<< Updated upstream
+=======
     
+function GoToGamesPage(){
+var Serverid = document.getElementById('ServerId').getAttribute("value");
+
+         $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("Games", "Account")?ServerId=${Serverid}`,
+                    success: function() {
+                                          
+                    }
+});
+    }
+>>>>>>> Stashed changes
+
     function OpenModal() {
         $('#myModal').modal('show');
     }
@@ -320,8 +430,5 @@
             });
         }
     </script>
-    
-    <script type="text/javascript" src="~/js/site.js"></script>
-    <script type="text/javascript" src="~/js/statistics.js"></script>
-    <script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>
+
 }

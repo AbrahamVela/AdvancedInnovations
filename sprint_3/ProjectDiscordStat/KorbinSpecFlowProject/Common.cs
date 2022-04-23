@@ -12,15 +12,16 @@
             public const string BaseUrl = "https://localhost:7228";
             // Page names that everyone should use
             public const string HomePageName = "Home";
-            public const string LoginPageName = "Login";
+            public const string AccountPageName = "Account";
 
             // File to store browser cookies in
-            public const string CookieFile = "..\\..\\..\\..\\..\\..\\..\\FujiCookies.txt";
+            public const string CookieFile = "C:\\Users\\Korbin Cardoza\\Desktop\\School\\cookies.txt";
 
             // A handy way to look these up
             public static readonly Dictionary<string, string> Paths = new()
             {
-                { HomePageName, "/" }
+                { HomePageName, "/" },
+                { AccountPageName, "/Account/Account" }
             };
 
             public static string PathFor(string pathName) => Paths[pathName];

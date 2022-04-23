@@ -2,7 +2,25 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
+      integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script
+    type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"
+      integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
+      crossorigin="anonymous"
+      defer>
+    </script>
     <head>
     <title>Account</title>
 
@@ -40,13 +58,25 @@
     <div class="page-heading header-text">
       <div class="container">
         <div class="row">
-            <div class="col">
-                <a>@{var link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";}
-                <img class="discordImage"  src="@link" style="width:175px"/></a>
-            </div>
-            <div class="col" style="text-align:center">
-                <h1>Welcome home  @ViewBag.name, this is your account page.</h1>
-            </div>      
+          <div class="col">
+              @{
+                        string link = null;
+                    }
+              @if (ViewBag.hash == null)
+                {
+                     link = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";                  
+                }
+                else
+                    {
+                       link = "https://cdn.discordapp.com/avatars/" + ViewBag.id + "//" + ViewBag.hash + ".png";
+                    }
+
+        <img class="discordImage"  src="@link" style="width:175px"/>
+    </div>
+    <div class="col" style="text-align:center">
+        <h1 id="displayMessage" >Welcome home @ViewBag.name, this is your account page.</h1>
+    </div>
+          </div>
         </div>
       </div>
     </div>
@@ -77,7 +107,7 @@
         </div>
        </div>
         <br /><br />
-        <div class="row">
+        <div class="row" id="ServersBlock">
           <div class="col-md-12">
             <div class="section-heading">
               <h2>Your Active Servers</h2>
@@ -161,7 +191,11 @@
     
     </body>
     </html>
-
+     <script type="text/javascript">
+        $(document).ready(function () {
+            $('#serverTable').DataTable();
+        });
+    </script>
 
 <!-- Bootstrap core JavaScript -->
     <script src="~/vendor/jquery/jquery.min.js"></script>
