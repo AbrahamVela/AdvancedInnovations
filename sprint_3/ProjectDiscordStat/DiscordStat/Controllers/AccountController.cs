@@ -134,10 +134,10 @@ namespace DiscordStats.Controllers
             {
                 _serverRepository.AddingServerToLottery(serverId);
             }
-            if (selectedServer.InLottery != "trueWinner")
-            {
-                lottoFunction.FunctionalityEquation(serverId);
-            }
+            //if (selectedServer.InLottery != "trueWinner")
+            //{
+            //    lottoFunction.FunctionalityEquation(serverId);
+            //}
             return RedirectToAction("Servers");
         }
 

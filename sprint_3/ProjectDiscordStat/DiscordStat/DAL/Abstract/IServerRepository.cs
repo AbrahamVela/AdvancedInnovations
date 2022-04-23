@@ -16,6 +16,5 @@ namespace DiscordStats.DAL.Abstract
 
         void RemoveServerFromLottery(string serverId);
 
-        void ServerLotteryWinner(Server server);
     }
 }

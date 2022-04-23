@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DiscordStats.Models.Server>
+﻿@model DiscordStats.Models.Server
 
 @{
     ViewData["Title"] = "Home Page";
@@ -68,15 +68,7 @@
         </div>
         <div class="row">
             <h3><center>Featured Server:</center></h3><br />
-            <h1 style="color:blue">
-                @foreach (var item in Model)
-                {
-                    if(item.InLottery == "trueWinner")
-                    {
-                        <center>@item.Name</center>
-                    }
-                }
-            </h1>
+            <h1 style="color:blue"><center>@Model.Name</center></h1>
         </div>
       </div>      
     </div>
