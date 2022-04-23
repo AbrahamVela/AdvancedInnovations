@@ -1,4 +1,6 @@
-﻿@{
+﻿@model DiscordStats.Models.Server
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -64,6 +66,10 @@
         <div class="col-5">   
             <canvas id="pieChart" style="width:100%;max-width:700px"></canvas>
         </div>
+        </div>
+        <div class="row">
+            <h3><center>Featured Server:</center></h3><br />
+            <h1 style="color:blue"><center>@Model.Name</center></h1>
         </div>
       </div>      
     </div>

@@ -16,8 +16,8 @@ namespace DiscordStats.Models
         public int? DiscordUserPk { get; set; }
 
         [ForeignKey(nameof(DiscordUserPk))]
-        [InverseProperty(nameof(DiscordUser.ServerUserJoins))]
-        public virtual DiscordUser? DiscordUserPkNavigation { get; set; }
+        [InverseProperty(nameof(DiscordUserAndUserWebSiteInfo.ServerUserJoins))]
+        public virtual DiscordUserAndUserWebSiteInfo? DiscordUserPkNavigation { get; set; }
         [ForeignKey(nameof(ServerPk))]
         [InverseProperty(nameof(Server.ServerUserJoins))]
         public virtual Server? ServerPkNavigation { get; set; }

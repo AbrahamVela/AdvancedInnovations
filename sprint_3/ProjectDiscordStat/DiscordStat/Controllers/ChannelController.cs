@@ -34,16 +34,6 @@ namespace DiscordStats.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //[Route("channel/[action]")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> PostChannels(Channel[] channels)
-        //{
-        //    var itWorked = await _discordServicesForChannels.ChannelEntryAndUpdateDbCheck(channels);
-
-        //    return Json(itWorked);
-        //}
-
         public async Task<IActionResult> ServerChannels(string? serverId)
         {
             bool authenticated = false;
@@ -91,6 +81,8 @@ namespace DiscordStats.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+
+
 
         public async Task<IActionResult> ChannelWebhooks(Channel channel)
         {

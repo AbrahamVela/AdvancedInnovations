@@ -249,12 +249,12 @@ namespace DiscordStats.DAL.Concrete
             else return null;
         }
 
-        public async Task<DiscordUser?> GetCurrentUserInfo(string bearerToken)
+        public async Task<DiscordUserAndUserWebSiteInfo?> GetCurrentUserInfo(string bearerToken)
         {
             // Remember to handle errors here
             string response = await GetJsonStringFromEndpoint(bearerToken, "https://discord.com/api/users/@me");
             // And here
-            DiscordUser? userInfo = JsonConvert.DeserializeObject<DiscordUser>(response);
+            DiscordUserAndUserWebSiteInfo? userInfo = JsonConvert.DeserializeObject<DiscordUserAndUserWebSiteInfo>(response);
             return userInfo;
         }
         public async Task<List<GuildUsers>?> GetCurrentGuildUsers(string botToken, string serverId)
@@ -268,11 +268,11 @@ namespace DiscordStats.DAL.Concrete
             return userInfo;
         }
 
-        public async Task<DiscordUser?> GetUserInfoById(string botToken, string UserId)
+        public async Task<DiscordUserAndUserWebSiteInfo?> GetUserInfoById(string botToken, string UserId)
         {
             string uri = "https://discord.com/api/users/" + UserId;
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
-            DiscordUser? userInfo = JsonConvert.DeserializeObject<DiscordUser>(response);
+            DiscordUserAndUserWebSiteInfo? userInfo = JsonConvert.DeserializeObject<DiscordUserAndUserWebSiteInfo>(response);
             return userInfo;
         }
 
@@ -326,7 +326,7 @@ namespace DiscordStats.DAL.Concrete
             if (dbServers.Count() == 0)
             {
                 var servMemberCount = server.Approximate_Member_Count;
-                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null" });
+                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null" , InLottery="null"});
                 duplicate = true;
 
             }
@@ -342,7 +342,7 @@ namespace DiscordStats.DAL.Concrete
             if (!duplicate)
             {
                 var servMemberCount = server.Approximate_Member_Count;
-                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null" });
+                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null", InLottery="null" });
 
             }
             if (duplicate)
