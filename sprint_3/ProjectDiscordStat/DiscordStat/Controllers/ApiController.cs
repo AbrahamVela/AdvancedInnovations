@@ -87,6 +87,14 @@ namespace DiscordStats.Controllers
 
             foreach (var presence in presences)
             {
+                if(presence.Name.Contains("™"))
+                {
+                    var trademark = presence.Name.IndexOf("™");
+                    presence.Name = presence.Name.Remove(trademark);
+                }
+            }
+                foreach (var presence in presences)
+            {
 
                     var itWorked = await _discord.PresenceEntryAndUpdateDbCheck(presences);
                     return Json(itWorked);
