@@ -363,7 +363,7 @@ namespace DiscordStats.Controllers
                         newGame.smallImageId = presence.SmallImageId;
                         if (newGame.smallImageId != null)
                             if (newGame.smallImageId.Contains("playstation"))
-                                newGame.GameImage = "https://blog.playstation.com/tachyon/2021/03/Playstation-logo.jpg";
+                                newGame.GameImage = "https://wallpapercave.com/wp/wp2605496.jpg";
                         if (newGame.GameImage == null)
 
                         {
