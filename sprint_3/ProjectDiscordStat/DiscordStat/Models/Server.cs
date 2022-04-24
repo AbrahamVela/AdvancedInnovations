@@ -51,6 +51,8 @@ namespace DiscordStats.Models
         public string? OnForum { get; set; }
         [StringLength(256)]
         public string? Message { get; set; }
+        [StringLength(256)]
+        public string? InLottery { get; set; }
 
         [InverseProperty(nameof(ServerChannelJoin.ServerPkNavigation))]
         public virtual ICollection<ServerChannelJoin> ServerChannelJoins { get; set; }

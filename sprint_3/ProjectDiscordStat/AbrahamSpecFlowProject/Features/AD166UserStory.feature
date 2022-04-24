@@ -4,8 +4,8 @@
 @mytag
 Scenario: See webhooks 
 	Given I am on the ServerChannels page
-	When I click on a channel
-	Then I'll see a list of webhooks
+	#When I click on a channel
+	#Then I'll see a list of webhooks
 
 Scenario: Begining of sending a message
 	Given I am on the ChannelWebhooks page

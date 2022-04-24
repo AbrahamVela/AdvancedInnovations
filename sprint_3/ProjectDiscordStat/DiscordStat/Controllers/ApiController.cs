@@ -1,27 +1,9 @@
 ﻿using DiscordStats.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using Newtonsoft.Json;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using RestSharp;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Azure.Core;
-using System.Net;
-using Newtonsoft.Json.Linq;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using DiscordStats.DAL.Abstract;
 using DiscordStats.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using DiscordStats.ViewModels;
+
 
 namespace DiscordStats.Controllers
 {
@@ -35,7 +17,7 @@ namespace DiscordStats.Controllers
         };
 
 
-        private readonly IDiscordUserRepository _discordUserRepository;
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly ILogger<ApiController> _logger;
         private readonly IDiscordService _discord;
@@ -45,12 +27,11 @@ namespace DiscordStats.Controllers
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IVoiceStateRepository _voiceStateRepository;
-
-
         public ApiController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
+
         {
             _logger = logger;
-            _discordUserRepository = discordUserRepo;
+            _userRepository = userRepo;
             _presenceRepository = presenceRepository;
             _discord = discord;
             _discordServicesForChannels = discordServicesForChannels;
@@ -63,7 +44,7 @@ namespace DiscordStats.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostUsers(DiscordUser[] users)
+        public async Task<IActionResult> PostUsers(DiscordUserAndUserWebSiteInfo[] users)
         {
             foreach (var user in users)
             {
@@ -72,7 +53,7 @@ namespace DiscordStats.Controllers
                 Task.Delay(300).Wait();
                 await Task.Run(() =>
                 {
-                    var allDiscordUsers = _discordUserRepository.GetAll().ToList();
+                    var allDiscordUsers = _userRepository.GetAll().ToList();
 
                     for (int i = 0; i < allDiscordUsers.Count(); i++)
                     {
@@ -83,7 +64,7 @@ namespace DiscordStats.Controllers
                     }
                     if (!duplicate)
                     {
-                        _discordUserRepository.AddOrUpdate(user);
+                        _userRepository.AddOrUpdate(user);
                     }
                 });
 
@@ -108,6 +89,14 @@ namespace DiscordStats.Controllers
 
             foreach (var presence in presences)
             {
+                if(presence.Name.Contains("™"))
+                {
+                    var trademark = presence.Name.IndexOf("™");
+                    presence.Name = presence.Name.Remove(trademark);
+                }
+            }
+                foreach (var presence in presences)
+            {
 
                     var itWorked = await _discord.PresenceEntryAndUpdateDbCheck(presences);
                     return Json(itWorked);
@@ -125,8 +114,6 @@ namespace DiscordStats.Controllers
 
             return Json(new { userPerGame = presencesNameAndCount });
         }
-
-
 
 
 
@@ -181,7 +168,6 @@ namespace DiscordStats.Controllers
 
             return Json(itWorked);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> PostMessageData(MessageInfo message)

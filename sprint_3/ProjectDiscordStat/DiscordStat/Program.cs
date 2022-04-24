@@ -46,13 +46,13 @@ builder.Services.AddDbContext<DiscordDataDbContext>(options => options.UseSqlSer
 
 // Register an IHttpClientFactory to enable injection of HttpClients
 builder.Services.AddHttpClient();
-
+builder.Services.AddMvc().AddRazorRuntimeCompilation();
 // Add our repositories and services
 builder.Services.AddScoped<IDiscordService, DiscordService>();
 builder.Services.AddScoped<IServerRepository, ServerRepository>();
 builder.Services.AddScoped<ServerOwnerViewModel, ServerOwnerViewModel>();
 builder.Services.AddScoped<IServerUserJoinRepository, ServerUserJoinRepository>();
-builder.Services.AddScoped<IDiscordUserRepository, DiscordUserRepository>();
+builder.Services.AddScoped<IDiscordUserAndUserWebSiteInfoRepository, DiscordUserAndUserWebSiteInfoRepository>();
 builder.Services.AddScoped<IDiscordServicesForChannels, DiscordServicesForChannels>();  
 builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
 builder.Services.AddScoped<IChannelRepository, ChannelRepository>();

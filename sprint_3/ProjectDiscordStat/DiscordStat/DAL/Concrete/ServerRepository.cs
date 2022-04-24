@@ -76,5 +76,23 @@ namespace DiscordStats.DAL.Concrete
             }
 
         }
+
+        public void AddingServerToLottery(string serverId)
+        {
+            Server selectedServer = _dbSet.Where(m => m.Id == serverId).FirstOrDefault();
+            if (selectedServer.InLottery == "false")
+            {
+                selectedServer.InLottery = "true";
+                AddOrUpdate(selectedServer);
+            }
+        }
+
+        public void RemoveServerFromLottery(string serverId)
+        {
+            Server selectedServer = _dbSet.Where(m => m.Id == serverId).FirstOrDefault();
+            selectedServer.InLottery = "false";
+            AddOrUpdate(selectedServer);
+        }
+
     }
 }

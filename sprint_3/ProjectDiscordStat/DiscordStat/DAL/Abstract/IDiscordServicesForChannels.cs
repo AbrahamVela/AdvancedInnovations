@@ -6,6 +6,9 @@ namespace DiscordStats.DAL.Abstract
 {
     public interface IDiscordServicesForChannels
     {
+        Task<List<ServerChannelsVM>> GetServerChannels(string botToken, string serverId);
+        Task<string?> CreateChannel(string botToken, string serverId, string channelName, string type, string parentId);
+        Task<string?> DeleteChannel(string botToken, string channelId);
         Task<List<WebhookUsageVM>?> GetChannelWebHooks(string botToken, string channelId);
         Task<string?> CreateWebhook(string botToken, string channelId, string webhookName);
         Task<string?> ChannelEntryAndUpdateDbCheck(Channel[] channel);

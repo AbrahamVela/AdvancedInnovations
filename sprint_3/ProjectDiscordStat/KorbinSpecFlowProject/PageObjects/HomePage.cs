@@ -6,9 +6,10 @@ namespace KorbinSpecFlowProject.PageObjects
 {
     public class HomePage : Page
     {
-        private IWebElement Title => _browserInteractions.WaitAndReturnElement(By.Id("title"));
+        private IWebElement Title => _browserInteractions.WaitAndReturnElement(By.Id("displayMessage"));
         private IWebElement WelcomeText => _browserInteractions.WaitAndReturnElement(By.Id("loggedin-welcome"));
         private IEnumerable<IWebElement> AppleButtons => _browserInteractions.WaitAndReturnElements(By.CssSelector("#listOfApples button"));
+        private IWebElement ServerNav => _browserInteractions.WaitAndReturnElement(By.Id("serversNav"));
 
         public HomePage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
@@ -16,8 +17,11 @@ namespace KorbinSpecFlowProject.PageObjects
             PageName = Common.HomePageName;
         }
 
+        public string GetServerNav => ServerNav.Text;
         public string GetTitle => Title.Text;
         public string GetWelcomeText => WelcomeText.Text;
+
+       
 
         public string GetAppleButtonText(int index) => AppleButtons.ElementAt(index).Text;
 

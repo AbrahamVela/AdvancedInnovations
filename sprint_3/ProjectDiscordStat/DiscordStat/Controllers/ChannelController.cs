@@ -5,6 +5,8 @@ using DiscordStats.DAL.Abstract;
 using DiscordStats.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DiscordStats.Controllers
 {
@@ -16,14 +18,16 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IDiscordServicesForChannels _discordServicesForChannels;
         private readonly IServerRepository _serverRepository;
+        private readonly IDiscordService _discord;
 
-        public ChannelController(ILogger<ChannelController> logger, IConfiguration configuration, IChannelRepository channelRepository, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository)
+        public ChannelController(ILogger<ChannelController> logger, IConfiguration configuration, IChannelRepository channelRepository, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IDiscordService discord)
         {
             _logger = logger;
             _configuration = configuration;
             _channelRepository = channelRepository;
             _serverRepository = serverRepository;
             _discordServicesForChannels = discordServicesForChannels;
+            _discord = discord;
         }
 
         public IActionResult Index()
@@ -31,52 +35,102 @@ namespace DiscordStats.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //[Route("channel/[action]")]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> PostChannels(Channel[] channels)
-        //{
-        //    var itWorked = await _discordServicesForChannels.ChannelEntryAndUpdateDbCheck(channels);
-
-        //    return Json(itWorked);
-        //}
-
         public async Task<IActionResult> ServerChannels(string? serverId)
         {
-            string botToken = _configuration["API:BotToken"];
-            var servers = _serverRepository.GetAll();
-            var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
-
-            IList<Channel> channels = new List<Channel>();
-            if (selectedServer != null)
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], serverId);
+            if (usersInGuild == null)
             {
-                if (selectedServer.HasBot == "true")
+                return RedirectToAction("Index", "Home");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                string botToken = _configuration["API:BotToken"];
+                var servers = _serverRepository.GetAll();
+                var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
+
+                ServerChannelsVM serverChannels = new();
+                ChannelsFromDatabase channelsWithCount = new(_channelRepository);
+                if (selectedServer != null)
                 {
-                    channels = _channelRepository.GetAll().Where(x => x.GuildId == selectedServer.Id).ToList();
+                    if (selectedServer.HasBot == "true")
+                    {
+                        serverChannels.serverChannels = await _discordServicesForChannels.GetServerChannels(botToken, selectedServer.Id);
+                        serverChannels.serverChannels = channelsWithCount.ServersWithCount(serverChannels.serverChannels);
+                        var selectList = new SelectList(
+                         serverChannels.serverChannels.Where(m => m.type == "4").ToList().Select(s => new { Text = $"{s.name}", Value = s.id }),
+                        "Value", "Text");
+                        ViewData["Id"] = selectList;
+                        serverChannels.guild_id = serverId;
+                        ViewBag.hasBot = "true";
 
-                    ViewBag.hasBot = "true";
-
+                    }
+                    else
+                    {
+                        ViewBag.hasBot = "false";
+                    }
                 }
                 else
                 {
                     ViewBag.hasBot = "false";
                 }
+
+                //return View(channels);
+                return View(serverChannels);
             }
             else
             {
-                ViewBag.hasBot = "false";
+                return RedirectToAction("Index", "Home");
             }
-
-            return View(channels);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteChannel(string id)
+        {
+            string botToken = _configuration["API:BotToken"];
+            var channel = _channelRepository.GetAll().Where(c => c.Id == id).SingleOrDefault();
+            _channelRepository.DeleteById(channel.ChannelPk);
+            await _discordServicesForChannels.DeleteChannel(botToken, id);
+            return RedirectToAction("Servers", "Account");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateChannel(ServerChannelsVM create)
+        {
+            string botToken = _configuration["API:BotToken"];
+            if (create.type_text == true ) create.type = "0";
+            if (create.type_text == false && create.type_voice == false) create.type = "0";
+            if (create.type_voice == true) create.type = "2";
+            await _discordServicesForChannels.CreateChannel(botToken, create.guild_id, create.name, create.type, create.parent_id);
+            return RedirectToAction("ServerChannels");
+        }
+
+
 
         public async Task<IActionResult> ChannelWebhooks(Channel channel)
         {
+            bool authenticated = true;
             string botToken = _configuration["API:BotToken"];
             string channelId = channel.Id;
-            ViewBag.channel_id = channelId;
             IEnumerable<WebhookUsageVM> webhooks = await _discordServicesForChannels.GetChannelWebHooks(botToken, channelId);
-            return View(webhooks);
+
+            if (webhooks != null)
+            {
+                
+                ViewBag.channel_id = channelId;
+                
+                return View(webhooks);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         public async Task<IActionResult> WebhookForm(string channelId)
