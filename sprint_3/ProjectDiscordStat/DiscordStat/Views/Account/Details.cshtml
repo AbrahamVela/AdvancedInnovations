@@ -228,7 +228,18 @@
         <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
             <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
         </div>
-
+                
+                
+                <br /><div class="dropdown" style="width:50px"><select name="allUsers" id="allUsers">
+                    <option>All Users</option>
+                    </select></div>
+                    <label for="start">Start date:</label>
+                    <input type="date" id="start" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    <label for="start">End date:</label>
+                    <input type="date" id="end" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                
+                
+                
         </div>
     </div>
     <!-- Testimonials Ends Here -->
@@ -427,5 +438,6 @@ var Serverid = document.getElementById('ServerId').getAttribute("value");
     
     <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/statistics.js"></script>
-    <script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>
+    <script type="text/javascript" src="~/js/voicestats.js"></script>
+    @*<script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>*@
 }

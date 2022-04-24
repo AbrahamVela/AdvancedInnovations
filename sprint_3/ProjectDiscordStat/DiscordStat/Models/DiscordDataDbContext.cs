@@ -26,6 +26,7 @@ namespace DiscordStats.Models
         public virtual DbSet<ServerPresenceJoin> ServerPresenceJoins { get; set; } = null!;
         public virtual DbSet<ServerUserJoin> ServerUserJoins { get; set; } = null!;
         public virtual DbSet<VoiceChannel> VoiceChannels { get; set; } = null!;
+        public virtual DbSet<VoiceState> VoiceStates { get; set; } = null!;
         public virtual DbSet<Webhook> Webhooks { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

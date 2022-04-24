@@ -26,8 +26,9 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
-       
-        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository userRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository)
+        private readonly IVoiceStateRepository _voiceStateRepository;
+        public ApiController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
+
         {
             _logger = logger;
             _userRepository = userRepo;
@@ -38,6 +39,7 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _messageInfoRepository = messageInfoRepository;
             _voiceChannelRepository = voiceChannelRepository;
+            _voiceStateRepository = voiceStateRepository;
         }
 
 
@@ -55,7 +57,7 @@ namespace DiscordStats.Controllers
 
                     for (int i = 0; i < allDiscordUsers.Count(); i++)
                     {
-                        if (user.Id == allDiscordUsers[i].Id)
+                        if (user.Id == allDiscordUsers[i].Id && user.Servers == allDiscordUsers[i].Servers)
                         {
                             duplicate = true;
                         }
@@ -115,8 +117,6 @@ namespace DiscordStats.Controllers
 
 
 
-
-
         [HttpPost]
         public async Task<IActionResult> PostServers(Server[] servers)
         {
@@ -169,25 +169,43 @@ namespace DiscordStats.Controllers
             return Json(itWorked);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> DeleteChannel(string id)
-        {
-            return Json("Hello");
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> DeleteAndCreateChannel(string id)
-        {
-            return Json("Hello");
-        }
-  
-
-
         [HttpPost]
         public async Task<IActionResult> PostMessageData(MessageInfo message)
         {
             _messageInfoRepository.AddOrUpdate(message);
             await _channelRepository.UpdateMessageCount(message);
+            return Json("It worked");
+        }
+
+        [HttpPost]
+        public IActionResult PostVoiceStates(VoiceState[] voiceStates)
+        {
+            var duplicate = false;
+            foreach (var voiceState in voiceStates)
+            {
+                foreach (var voice in _voiceStateRepository.GetAll().ToList())
+                {
+                    if (voice.UserId == voiceState.UserId && voice.ServerId == voiceState.ServerId && voice.CreatedAt?.Hour == voiceState.CreatedAt?.Hour && voice.CreatedAt?.Date == voiceState.CreatedAt?.Date)
+                    {
+                        duplicate = true;
+                    }
+                }
+                if (duplicate)
+                {
+                    if (voiceState.CreatedAt?.Hour != DateTime.UtcNow.Hour)
+                    {
+                        var newVoiceState = voiceState;
+                        newVoiceState.CreatedAt = DateTime.UtcNow;
+                        _voiceStateRepository.AddOrUpdate(voiceState);
+
+                    }
+                }
+                if (!duplicate)
+                {
+                    _voiceStateRepository.AddOrUpdate(voiceState);
+                }
+            }
+
             return Json("It worked");
         }
     }

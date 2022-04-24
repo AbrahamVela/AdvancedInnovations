@@ -18,7 +18,7 @@ namespace DiscordStats.DAL.Concrete
         }
 
 
-        public async Task<string> GetWebHooksInfoInFormOfJsonStringFromEndpoint(string botToken, string uri)
+        public async Task<string> GetChannelsOrWebHooksInfoInFormOfJsonStringFromEndpoint(string botToken, string uri)
         {
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri)
             {
@@ -43,6 +43,36 @@ namespace DiscordStats.DAL.Concrete
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
                return null;
+            }
+        }
+
+        public async Task<string> PostToDiscordCreateChannel(string botToken, string uri, string channelName, string type, string parentId)
+        {
+            var bodyAsJSON = $"{{\"name\": \"{channelName}\", \"type\": \"{type}\", \"parent_id\": \"{parentId}\"}}";
+            HttpContent body = new StringContent(bodyAsJSON);
+            body.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, uri)
+            {
+                Headers =
+                {
+                    { HeaderNames.Accept, "application/json" },
+                    { HeaderNames.Authorization, "Bot " + botToken},
+                    { HeaderNames.UserAgent, "DiscordStat" }
+                },
+                Content = body
+            };
+            HttpClient httpClient = _httpClientFactory.CreateClient();
+            HttpResponseMessage response = await httpClient.SendAsync(httpRequestMessage);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string responseText = await response.Content.ReadAsStringAsync();
+                return responseText;
+            }
+            else
+            {
+                throw new HttpRequestException();
             }
         }
 
@@ -106,7 +136,7 @@ namespace DiscordStats.DAL.Concrete
             }
         }
 
-        public async Task<string> DeleteToDiscordDeleteWebhook(string botToken, string uri)
+        public async Task<string> DeleteToDiscordDeleteChannelOrWebhook(string botToken, string uri)
         {
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, uri)
             {
@@ -132,12 +162,39 @@ namespace DiscordStats.DAL.Concrete
             }
         }
 
+        public async Task<List<ServerChannelsVM>> GetServerChannels(string botToken, string serverId)
+        {
+            string uri = "https://discord.com/api/guilds/" + serverId + "/channels";
+            // Remember to handle errors here
+            string response = await GetChannelsOrWebHooksInfoInFormOfJsonStringFromEndpoint(botToken, uri);
+            if (response == null)
+                return null;
+            // And here
+            
+            List<ServerChannelsVM>? channels = JsonConvert.DeserializeObject<List<ServerChannelsVM>>(response);
+            return channels;
+        }
+
+
+        public async Task<string?> CreateChannel(string botToken, string serverId, string channelName, string type, string parentId)
+        {
+            string uri = "https://discord.com/api/guilds/" + serverId + "/channels";
+            string response = await PostToDiscordCreateChannel(botToken, uri, channelName, type, parentId);
+            return response;
+        }
+
+        public async Task<string?> DeleteChannel(string botToken, string channelId)
+        {
+            string uri = "https://discord.com/api/channels/" + channelId;
+            string response = await DeleteToDiscordDeleteChannelOrWebhook(botToken, uri);
+            return response;
+        }
 
         public async Task<List<WebhookUsageVM>?> GetChannelWebHooks(string botToken, string channelId)
         {
             string uri = "https://discord.com/api/channels/" + channelId + "/webhooks";
             // Remember to handle errors here
-            string response = await GetWebHooksInfoInFormOfJsonStringFromEndpoint(botToken, uri);
+            string response = await GetChannelsOrWebHooksInfoInFormOfJsonStringFromEndpoint(botToken, uri);
             if (response == null)
                 return null;
             // And here
@@ -162,7 +219,7 @@ namespace DiscordStats.DAL.Concrete
         public async Task<string?> DeleteWebhook(string botToken, string webhookId)
         {
             string uri = "https://discord.com/api/webhooks/" + webhookId;
-            string response = await DeleteToDiscordDeleteWebhook(botToken, uri);
+            string response = await DeleteToDiscordDeleteChannelOrWebhook(botToken, uri);
             return response;
         }
 

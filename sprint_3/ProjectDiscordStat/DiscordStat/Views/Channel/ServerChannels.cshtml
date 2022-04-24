@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DiscordStats.Models.Channel>
+﻿@model DiscordStats.ViewModel.ServerChannelsVM
 
 <!DOCTYPE html>
 <html lang="en">
@@ -43,6 +43,9 @@
     </div>
     <!-- Heading Ends Here -->
     @{var counter = 0;}
+    @{var channelName = "";}
+    @{var type = 0;}
+@*    @{var counter = 0;}*@
     @if(@ViewBag.hasBot == "true")
 {
     <!-- Services Starts Here -->
@@ -64,22 +67,23 @@
                     </tr>
                     </thead>
                     <tbody>
-                        @foreach (var c in Model.OrderByDescending(c => c.Count))
+                        @foreach (var c in Model.serverChannels.OrderByDescending(c => c.count))
+                       @* @for(int i = 0; i < Model.serverChannels.Count; ++i)*@
                         {
-                                @if (!c.Type.Equals("GUILD_CATEGORY"))
+                                @if (!c.type.Equals("4"))
                                 {
                                     <tr>                                        
-                                        <td><input type="checkbox" value="@c.Id" id="editChannel-@(counter)"></td>
+                                        <td><input type="checkbox" value="@c.id" id="editChannel-@(counter)"></td>
                                         @{counter++;}
-                                        @if (!c.Type.Equals("GUILD_VOICE") && !c.Name.Equals("Voice Channels"))
+                                        @if (!@c.type.Equals("2"))
                                         {
-                                            <td><h3><a href="@Url.Action("ChannelWebhooks", "Channel", new {Id = c.Id})">@c.Name</a></h3></td>
+                                            <td><h3><a href="@Url.Action("ChannelWebhooks", "Channel", new {Id = @c.id})">@c.name</a></h3></td>
                                         }
                                         else
                                         {
-                                            <td><h3>@c.Name</h3></td>
+                                            <td><h3>@c.name</h3></td>
                                         }                       
-                                        <td>@c.Count</td>
+                                        <td>@c.count</td>
                        
                                     </tr>
                                 }
@@ -87,10 +91,40 @@
                     </tbody>
                 </table>         
             </div>         
-            <div class="row">
-                <button value="Submit" onclick="OpenModalOne()" class="btn btn-primary" style="margin-top: 2%; margin-bottom:2%">Delete Channel</button>
-                <button value="Submit" onclick="OpenModalTwo()" class="btn btn-primary" style="margin-top: 2%; margin-bottom:2%">Create Channel</button>
+            <div>
+               <center><button value="Submit" onclick="OpenModalOne()" class="btn btn-danger" style="margin-top: 1%" >Delete Channel</button></center> <br>
             </div>
+
+            <form asp-action="CreateChannel">
+                <div class="row" required="required">
+                    <div class="col-md-6 col-sm-12 justify-content-center">
+                        <br>
+                        <h2 style="white-space: nowrap">Check box for text channel.</h2> 
+                        <label style="margin-left: 50%">@Html.CheckBoxFor(t => t.type_text)</label>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <br>
+                        <h2>Check box for voice channel.</h2>  
+                       <label style="margin-left: 35%"> @Html.CheckBoxFor(t => t.type_voice)</label>
+                   </div>
+                </div>
+                <div class="row">
+                    <label for="text" asp-for="name" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Channel Name:</label>
+                    <input type="text" asp-for="name" class="form-control" required="required" maxlength="32">
+                    <span asp-validation-for="name" class="text-danger"></span>
+                </div>
+                <div class="row" >
+                    <label asp-for="parent_id" class="control-label" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Which catagory would you like to add the channel to?</label>
+                    <select asp-for="parent_id" class="form-control" asp-items="ViewBag.Id"></select>
+                    <span asp-validation-for="parent_id" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    @Html.HiddenFor(i => i.guild_id, new { @readonly="readonly" })
+                </div>   
+                <button value="Submit"  class="btn btn-primary" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Create Channel</button>
+            </form>
+
+
         </div>
     </div>
     <!-- Services Ends Here -->
@@ -122,28 +156,6 @@ else
     </div>
 </div>
 
-  <div class="modal fade" id="myModalTwo">
-    <div class="modal-dialog">
-        <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Leave Server</h4>
-                </div>
-                <div class="modal-body" style="text-align: center; font-weight: bold">
-                    Are you sure you want to delete channel(s) and create new channel?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="CloseModalTwo()" style="margin-right: 59%">
-                        Close
-                    </button>
-                    <button type="button" class="btn btn-danger" data-toggle="modal" onclick="GetCheckMark(@counter)">
-                        Delete and Create
-                    </button>
-                </div>           
-        </div>
-    </div>
-</div>
-
-
 
 </body>
     </html>
@@ -161,19 +173,23 @@ else
      <script type="text/javascript" src="~/js/site.js"></script>
 
     <script>
+        $(document).ready(function(){
+            $('input:checkbox').click(function() {
+                $('input:checkbox').not(this).prop('checked', false);
+            });
+        });
+    </script>
+
+    <script>
         function OpenModalOne() {
         $('#myModalOne').modal('show');
     }
-            function OpenModalTwo() {
-        $('#myModalTwo').modal('show');
-    }
+
 
         function CloseModalOne() {
         $('#myModalOne').modal('hide');
     }
-            function CloseModalTwo() {
-        $('#myModalTwo').modal('hide');
-    }
+
 
         function GetCheckMark(counter){
             for(var i = 0; i < counter; i++)
@@ -182,8 +198,8 @@ else
                 {
                     var channelId = document.getElementById('editChannel-'+i).getAttribute("value");
                    $.ajax({
-                    type: "GET",
-                    url: `@Url.Action("DeleteChannel", "Api")?id=${channelId}`,
+                    type: "Delete",
+                    url: `@Url.Action("DeleteChannel", "Channel")?id=${channelId}`,
                     success: function(msg) {}
                     });
                 }

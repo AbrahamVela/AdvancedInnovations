@@ -6,6 +6,7 @@ using DiscordStats.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DiscordStats.Controllers
 {
@@ -54,13 +55,19 @@ namespace DiscordStats.Controllers
                 var servers = _serverRepository.GetAll();
                 var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
 
-                IList<Channel> channels = new List<Channel>();
+                ServerChannelsVM serverChannels = new();
+                ChannelsFromDatabase channelsWithCount = new(_channelRepository);
                 if (selectedServer != null)
                 {
                     if (selectedServer.HasBot == "true")
                     {
-                        channels = _channelRepository.GetAll().Where(x => x.GuildId == selectedServer.Id).ToList();
-
+                        serverChannels.serverChannels = await _discordServicesForChannels.GetServerChannels(botToken, selectedServer.Id);
+                        serverChannels.serverChannels = channelsWithCount.ServersWithCount(serverChannels.serverChannels);
+                        var selectList = new SelectList(
+                         serverChannels.serverChannels.Where(m => m.type == "4").ToList().Select(s => new { Text = $"{s.name}", Value = s.id }),
+                        "Value", "Text");
+                        ViewData["Id"] = selectList;
+                        serverChannels.guild_id = serverId;
                         ViewBag.hasBot = "true";
 
                     }
@@ -74,12 +81,34 @@ namespace DiscordStats.Controllers
                     ViewBag.hasBot = "false";
                 }
 
-                return View(channels);
+                //return View(channels);
+                return View(serverChannels);
             }
             else
             {
                 return RedirectToAction("Index", "Home");
             }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteChannel(string id)
+        {
+            string botToken = _configuration["API:BotToken"];
+            var channel = _channelRepository.GetAll().Where(c => c.Id == id).SingleOrDefault();
+            _channelRepository.DeleteById(channel.ChannelPk);
+            await _discordServicesForChannels.DeleteChannel(botToken, id);
+            return RedirectToAction("Servers", "Account");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateChannel(ServerChannelsVM create)
+        {
+            string botToken = _configuration["API:BotToken"];
+            if (create.type_text == true ) create.type = "0";
+            if (create.type_text == false && create.type_voice == false) create.type = "0";
+            if (create.type_voice == true) create.type = "2";
+            await _discordServicesForChannels.CreateChannel(botToken, create.guild_id, create.name, create.type, create.parent_id);
+            return RedirectToAction("ServerChannels");
         }
 
 
