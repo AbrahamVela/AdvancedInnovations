@@ -23,11 +23,14 @@
     <div id="GameName" value="@Model.GameName"></div>
     <center><h1>@Model.GameName</h1></center>
 
-    <br><center><canvas id="presencesHourlyAllTimeChart" style="color: white width:100%;max-width:1000px"></canvas></center>
+    <br><center><canvas id="presencesHourlyAllTimeChart" style="color: white; width:100%;max-width:1000px"></canvas></center>
     <br /><div class="dropdown" style="width:50px"><select name="allUsersPresences" id="allUsersPresences">
     <option>All Users</option>
     </select></div>
-
+    <label for="start">Start date:</label>
+    <input type="date" id="start" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+    <label for="start">End date:</label>
+    <input type="date" id="end" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
 }
 </body>
 @section scripts {

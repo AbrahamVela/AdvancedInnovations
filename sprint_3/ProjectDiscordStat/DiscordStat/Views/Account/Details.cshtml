@@ -100,6 +100,10 @@ Dark mode:
                     <br /><div class="dropdown" style="width:50px"><select name="allUsers" id="allUsers">
                     <option>All Users</option>
                     </select></div>
+                    <label for="start">Start date:</label>
+                    <input type="date" id="start" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    <label for="start">End date:</label>
+                    <input type="date" id="end" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
                 <div class="row justify-content-center">
                     <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:1000px"></canvas>

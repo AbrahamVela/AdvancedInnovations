@@ -22,6 +22,8 @@
 const timezone = -3
 var presenceActivityData = [];
 var presencesChart;
+var startDate = new Date("December 17, 2020");
+var endDate = new Date();
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -37,8 +39,27 @@ function graphDropDownBox(data) {
         elPresence.textContent = opt.username;
         elPresence.value = opt.id;
         allUsersPresences.appendChild(elPresence);
+        //graphingPresenceActivity(newList)
+
     }
 }
+
+$("#start").change(function () {
+    startDateUTC = new Date($(this).val() + " 00:00");
+    if (presencesChart != null) {
+        presencesChart.destroy();
+    }
+    graphingPresenceActivity(presenceActivityData);
+
+});
+
+$("#end").change(function () {
+    endDate = new Date($(this).val() + " 00:00");
+    if (presencesChart != null) {
+        presencesChart.destroy();
+    }
+    graphingPresenceActivity(presenceActivityData);
+});
 
 $("#allUsersPresences").change(function () {
     $("#usersHourlyAllTimeChart").empty();
@@ -60,9 +81,28 @@ $("#allUsersPresences").change(function () {
         if (presencesChart != null) {
             presencesChart.destroy();
         }
-        graphingPresenceActivity(newList)
+        presenceActivityData = newList;
+        graphingPresenceActivity(presenceActivityData);
     }
 });
+
+//$(function () {
+//    $('input[name="daterange"]').daterangepicker({
+//        opens: 'left'
+//    }, function (start, end, label) {
+//        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+//    });
+//});
+
+//$('#sandbox-container .input-daterange').datepicker({
+//    endDate: "today"
+//});
+
+//$("#datepicker").change(function (startDate, endDate) {
+//    alert("Start Date: " + startDate)
+//    alert("End Date: " + endDate)
+
+//})
 
 
 function barGraphHourlyPresenceActivity(data) {
@@ -76,21 +116,23 @@ function graphingPresenceActivity(data) {
 
     $("#presencesHourlyAllTimeChart").empty();
 
-    var count = 0;
     var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
     var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
     for (var i = 0; i < data.length; i++) {
-        var date = new Date(data[i].createdAt)
-        var dateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()))
-        let hour = new Date(dateUTC.toString()).getHours()
-        subtraction = hour - 1 + timezone;
-        if (subtraction < 0) {
-            subtraction = yValues.length + subtraction;
+        var dateUTC = new Date(data[i].createdAt)
+        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+
+        if (date > startDate && date < endDate) {
+            let hour = date.getHours()
+            subtraction = hour - 1 + timezone;
+            if (subtraction < 0) {
+                subtraction = yValues.length + subtraction;
+            }
+            console.log(subtraction);
+            yValues[subtraction] += 1;
         }
-        console.log(subtraction);
-        yValues[subtraction] += 1;
     }
     console.log(xValues);
     console.log(yValues);

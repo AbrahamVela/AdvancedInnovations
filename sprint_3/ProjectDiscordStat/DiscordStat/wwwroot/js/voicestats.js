@@ -21,22 +21,30 @@
 
 var voiceStateActivityData = [];
 var voiceStatesChart;
+var startDate = new Date("December 17, 2020");
+var endDate = new Date();
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
 }
 
 
-//function graphVoiceDropDownBox(data) {
-//    var allUsersVoiceStates = document.getElementById("allUsersVoice");
-//    for (i = 0; i < data.length; i++) {
-//        var opt = data[i];
-//        var elVoiceState = document.createElement("option");
-//        elVoiceState.textContent = opt.username;
-//        elVoiceState.value = opt.id;
-//        allUsersVoiceStates.appendChild(elVoiceState);
-//    }
-//}
+$("#start").change(function () {
+    startDate = new Date($(this).val() + " 00:00");
+    if (voiceStatesChart != null) {
+        voiceStatesChart.destroy();
+    }
+    graphingVoiceStateActivity(voiceStateActivityData);
+
+});
+
+$("#end").change(function () {
+    endDate = new Date($(this).val() + " 00:00");
+    if (voiceStatesChart != null) {
+        voiceStatesChart.destroy();
+    }
+    graphingVoiceStateActivity(voiceStateActivityData);
+});
 
 $("#allUsers").change(function () {
     $("#usersHourlyAllTimeChart").empty();
@@ -80,16 +88,18 @@ function graphingVoiceStateActivity(data) {
 
 
     for (var i = 0; i < data.length; i++) {
-        var date = new Date(data[i].createdAt)
-        var dateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()))
-        let hour = new Date(dateUTC.toString()).getHours()
+        var dateUTC = new Date(data[i].createdAt)
+        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
 
-        subtraction = hour - 4;
-        if (subtraction < 0) {
-            subtraction = yValues.length + subtraction;
+        if (date > startDate && date < endDate) {
+            let hour = date.getHours()
+            subtraction = hour - 4;
+            if (subtraction < 0) {
+                subtraction = yValues.length + subtraction;
+            }
+            console.log(subtraction);
+            yValues[subtraction] += 1;
         }
-        console.log(subtraction);
-        yValues[subtraction] += 1;
     }
     console.log(xValues);
     console.log(yValues);

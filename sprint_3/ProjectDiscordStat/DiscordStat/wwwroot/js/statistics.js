@@ -18,7 +18,8 @@ $(document).ready(function () {
 
 var messageActivityData = [];
 var messagesChart;
-
+var startDate = new Date("December 17, 2020");
+var endDate = new Date();
 
 function graphMessageDropDownBox(data) {
     var allUsers = document.getElementById("allUsers");
@@ -58,6 +59,23 @@ $("#allUsers").change(function () {
     }
 });
 
+$("#start").change(function () {
+    startDate = new Date($(this).val() + " 00:00");
+    if (messagesChart != null) {
+        messagesChart.destroy();
+    }
+    graphingMessageActivity(messageActivityData);
+
+});
+
+$("#end").change(function () {
+    endDate = new Date($(this).val() + " 00:00");
+    if (messagesChart != null) {
+        messagesChart.destroy();
+    }
+    graphingMessageActivity(messageActivityData);
+});
+
 function barGraphHourlyMessageActivity(data) {
     messageActivityData = data
     graphingMessageActivity(messageActivityData)
@@ -70,13 +88,32 @@ function graphingMessageActivity(data) {
     var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
+    //for (var i = 0; i < data.length; i++) {
+    //    var date = new Date(data[i].createdAt)
+    //    //alert(date + ">" + startDate + "&&" + date + "<" + endDate)
+    //    if (date > startDate && date < endDate) {
+    //        let hour = new Date(data[i].createdAt).getHours();
+    //        subtraction = hour - 4;
+    //        if (subtraction < 0) {
+    //            subtraction = yValues.length + subtraction;
+    //        }
+    //        yValues[subtraction] += 1;
+    //    }
+    //}
+
     for (var i = 0; i < data.length; i++) {
-        let hour = new Date(data[i].createdAt).getHours();
-        subtraction = hour - 4;
-        if (subtraction < 0) {
-            subtraction = yValues.length + subtraction;
+        var dateUTC = new Date(data[i].createdAt)
+        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+
+        if (date > startDate && date < endDate) {
+            let hour = date.getHours()
+            subtraction = hour - 4;
+            if (subtraction < 0) {
+                subtraction = yValues.length + subtraction;
+            }
+            console.log(subtraction);
+            yValues[subtraction] += 1;
         }
-        yValues[subtraction] += 1;
     }
 
     messagesChart = new Chart("usersHourlyAllTimeChart", {
