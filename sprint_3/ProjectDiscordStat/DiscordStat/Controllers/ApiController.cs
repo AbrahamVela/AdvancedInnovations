@@ -107,8 +107,6 @@ namespace DiscordStats.Controllers
 
 
 
-
-
         [HttpPost]
         public async Task<IActionResult> PostServers(Server[] servers)
         {
@@ -160,20 +158,6 @@ namespace DiscordStats.Controllers
 
             return Json(itWorked);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> DeleteChannel(string id)
-        {
-            return Json("Hello");
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> DeleteAndCreateChannel(string id)
-        {
-            return Json("Hello");
-        }
-  
-
 
         [HttpPost]
         public async Task<IActionResult> PostMessageData(MessageInfo message)
