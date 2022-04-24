@@ -109,6 +109,8 @@ namespace KorbinSpecFlowProject.StepDefinitions
         [When(@"I click on the server details page")]
         public void ClickOnDetailsButton()
         {
+            _accountPage.clickNextButton();
+            _accountPage.clickNextButton();
             _accountPage.clickServerInfo();
         }
         [Then(@"I will see the information for that server")]
@@ -142,6 +144,7 @@ namespace KorbinSpecFlowProject.StepDefinitions
         [When(@"I click on the server details page without a bot")]
         public void ClickOnDetailsButtonNoBot()
         {
+
             _accountPage.clickServerInfoNoBot();
         }
         [Then(@"I will see the an alert message")]

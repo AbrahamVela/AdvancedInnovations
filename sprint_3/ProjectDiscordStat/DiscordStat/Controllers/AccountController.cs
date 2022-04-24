@@ -123,15 +123,32 @@ namespace DiscordStats.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
             foreach (var s in servers.Where(m => m.Owner == "true"))
             {
                 s.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], s.Id);
+                foreach (var server in _serverRepository.GetAll().ToList())
+                {
+
+                    if (s.Id == server.Id)                        
+                            if(server.InLottery == "true")                    
+                            s.InLottery = "true";
+                    if (server.InLottery == "false")
+                        s.InLottery = "false";
+                    
+                }
+
             }
-
-            var servers2 = _serverRepository.GetAll();
-
-            //return View(servers.Where(m => m.Owner == "true").ToList());
-            return View(servers2.Where(m => m.Owner == "true").ToList());
+            //836721845570895872
+            var test = servers.Where(m => m.Owner == "true").ToList();
+            foreach(var server in test)
+            {
+                if (server.HasBot == "false")
+                    server.InLottery = null;
+            }
+            //var servers2 = _serverRepository.GetAll().ToList();
+            return View(test);
+            //return View(servers2.Where(m => m.Owner == "true").ToList());
         }
 
         [Authorize(AuthenticationSchemes = "Discord")]
@@ -139,7 +156,7 @@ namespace DiscordStats.Controllers
         {
             Server selectedServer = _serverRepository.GetAll().Where(m => m.Id == serverId).FirstOrDefault();
             ServerLotteryFunctionality lottoFunction = new(_serverRepository);
-            if(selectedServer.InLottery == "null")
+            if(selectedServer.InLottery == "false")
             {
                 _serverRepository.AddingServerToLottery(serverId);
             }

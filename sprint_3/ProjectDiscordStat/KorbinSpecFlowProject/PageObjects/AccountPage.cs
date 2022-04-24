@@ -13,8 +13,9 @@ namespace KorbinSpecFlowProject.PageObjects
         private IWebElement logoutButton => _browserInteractions.WaitAndReturnElement(By.Id("logoutButton"));
         private IWebElement UserServers => _browserInteractions.WaitAndReturnElement(By.Id("ServersBlock"));
         private IWebElement ServerInfoButton => _browserInteractions.WaitAndReturnElement(By.Id("Advanced Innovations"));
-        private IWebElement ServerInfoButtonNoBot => _browserInteractions.WaitAndReturnElement(By.Id("Discord Developers"));
+        private IWebElement ServerInfoButtonNoBot => _browserInteractions.WaitAndReturnElement(By.Id("Pizza Pals"));
         private IWebElement noBotMessage => _browserInteractions.WaitAndReturnElement(By.Id("noBotMessage"));
+        private IWebElement NextButton => _browserInteractions.WaitAndReturnElement(By.Id("serverTable_next"));
         public AccountPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
         {
@@ -26,6 +27,10 @@ namespace KorbinSpecFlowProject.PageObjects
         public bool GetServers => UserServers.Enabled;
         public string GetTitle => Title.Text;
         public string GetWelcomeText => WelcomeText.Text;
+        public void clickNextButton()
+        {
+            NextButton.ClickWithRetry(30);
+        }
         public void clickServerInfoNoBot()
         {
             ServerInfoButtonNoBot.ClickWithRetry(30);

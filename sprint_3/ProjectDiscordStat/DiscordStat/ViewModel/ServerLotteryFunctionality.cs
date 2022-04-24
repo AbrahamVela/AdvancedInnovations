@@ -17,10 +17,22 @@ namespace DiscordStats.ViewModel
             Random rnd = new Random();
             List<Server> servers = _serverRepository.GetAll().Where(p => p.Privacy == "public").Where(t => t.InLottery == "true").ToList();
             int countOfServer = servers.Count;
-
-            int randomNumber = rnd.Next(0, countOfServer);
-            Server server = servers[randomNumber];
-            return server;
+            var emptyServer = new Server();
+            if(countOfServer == 0)
+            {
+                return emptyServer;
+            }
+            if (countOfServer == 1)
+            {
+                return servers[0];
+            }
+            else
+            {
+                int randomNumber = rnd.Next(0, countOfServer);
+                Server server = servers[randomNumber];
+                return server;
+            }
+             
         }
 
     }

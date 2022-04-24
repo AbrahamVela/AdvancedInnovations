@@ -480,7 +480,9 @@ namespace DiscordStats.DAL.Concrete
             {
                 foreach (var message in ServerMessages)
                 {
-                    var messagedate = Convert.ToDateTime(message.CreatedAt).Date;
+                    
+                    var messageDateOnly = message.CreatedAt.Substring(0, 10);
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
                     if (messagedate >= StartDate.Date && messagedate <= EndDate.Date)
                     {
                         updatedMessages.Add(message);
@@ -491,7 +493,8 @@ namespace DiscordStats.DAL.Concrete
             {
                 foreach (var message in ServerMessages)
                 {
-                    var messagedate = Convert.ToDateTime(message.CreatedAt).Date;
+                    var messageDateOnly = message.CreatedAt.Substring(0, 10);
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
                     if (messagedate <= EndDate.Date)
                     {
                         updatedMessages.Add(message);
@@ -502,7 +505,8 @@ namespace DiscordStats.DAL.Concrete
             {
                 foreach (var message in ServerMessages)
                 {
-                    var messagedate = Convert.ToDateTime(message.CreatedAt).Date;
+                    var messageDateOnly = message.CreatedAt.Substring(0, 10);
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
                     if (messagedate >= StartDate.Date)
                     {
                         updatedMessages.Add(message);
