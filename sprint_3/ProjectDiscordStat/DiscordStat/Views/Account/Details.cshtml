@@ -83,7 +83,7 @@
             <div class="section-heading">
                 @if (@Model.HasBot == "false")
                     {
-            <h2 style="text-align: center" id="">This is all the information we could gather about this server. Please add the bot to see more.</h2>
+            <h2 style="text-align: center" id="noBotMessage">This is all the information we could gather about this server. Please add the bot to see more.</h2>
                     }
                     @if (@Model.HasBot == "true")
                     {
@@ -355,6 +355,7 @@
     <script src="~/assets/js/owl.js"></script>
     <script src="~/assets/js/accordions.js"></script>
 <script>
+
     function UpdateMessages(){
 var startDate = document.getElementById('start').value;
 var endDate = document.getElementById('end').value;

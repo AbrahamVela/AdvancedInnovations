@@ -65,8 +65,8 @@
              <tbody>
               @foreach (var s in Model)
                 {
-
-                    <td style="padding-bottom: 2%">
+                   <tr>
+                       <td style="padding-bottom: 2%">
                         @if (s.Icon == null)
                         {
                             <img src="https://nektony.com/wp-content/uploads/2019/07/discord-icon.png" width="125" height="125"/>
@@ -114,16 +114,18 @@
                             <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> Channels</a></h3>
                     </td>
                     <td style="padding-bottom: 2%">
-                        @if (s.InLottery == "null")
+                        @if (s.InLottery == "false")
                         {
                             <h3>Add: <a href="@Url.Action("AddServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
                         }
-                        else
+                        @if (s.InLottery == "true")
                         {
                             <h3>Remove: <a href="@Url.Action("RemoveServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
                         }
                     </td>
 
+                
+                    </tr>
                 }
             </tbody>
         </table>
