@@ -358,7 +358,6 @@ namespace DiscordStats.DAL.Concrete
             foreach (var presence in presences)
             {
                 Debug.Write(presence.Name);
-                presence.CreatedAt = presence.CreatedAt?.ToLocalTime();
 
                 Task.Delay(300).Wait();
                 await Task.Run(() =>

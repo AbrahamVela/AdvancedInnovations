@@ -337,8 +337,8 @@ namespace DiscordStats.Controllers
 
                 var presence_list = _discord.GetPresencesForServer(ServerId).Result;
 
-                foreach (var presence in presence_list)
 
+                foreach (var presence in presence_list)
                 {
                     var duplicate = false;
                     foreach (var game in games)

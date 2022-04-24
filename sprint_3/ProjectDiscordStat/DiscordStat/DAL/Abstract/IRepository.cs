@@ -50,6 +50,7 @@ namespace DiscordStats.DAL.Abstract
         /// <returns>The entity that was added or updated, suitably synced with the DB</returns>
         TEntity AddOrUpdate(TEntity entity);
 
+
         /// <summary>
         /// Remove this entity from the DB.  If the entity is not in the DB or has not been
         /// previously added, it "should" do nothing (note: I haven't checked this yet)
