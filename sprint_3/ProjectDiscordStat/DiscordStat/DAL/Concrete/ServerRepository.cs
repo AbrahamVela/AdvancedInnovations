@@ -80,7 +80,7 @@ namespace DiscordStats.DAL.Concrete
         public void AddingServerToLottery(string serverId)
         {
             Server selectedServer = _dbSet.Where(m => m.Id == serverId).FirstOrDefault();
-            if (selectedServer.InLottery == "false")
+            if (selectedServer.InLottery == "false" || selectedServer.InLottery == null)
             {
                 selectedServer.InLottery = "true";
                 AddOrUpdate(selectedServer);

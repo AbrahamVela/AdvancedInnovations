@@ -42,8 +42,8 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <h1>Fourms</h1>
-            <p>Add or Remove From Fourms</p>
+            <h1>Forums</h1>
+            <p>Add or Remove From Forums</p>
           </div>
         </div>
       </div>
@@ -69,7 +69,7 @@
 
          <div class="row">
                 <label for="text" asp-for="Message" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Leave a message:</label>
-                <input type="text" asp-for="Message" class="form-control" >
+                <input type="text" asp-for="Message" class="form-control" maxlength="32">
                 <span asp-validation-for="Message" class="text-danger"></span>
         </div>
         <div class="col">
@@ -91,7 +91,7 @@
  
         <div class="col">
             <div class="form-group mt-3 text-center">
-                <input type="submit" value="Un-Add from Forum"  class="btn btn-primary"/>
+                <input class="btn btn-danger" type="submit" value="Remove from Forum"  class="btn btn-primary"/>
             </div>
         </div>
 </form>

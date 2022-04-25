@@ -38,15 +38,18 @@ function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
 }
 
+
 $("#allUsers").change(function () {
     $("#usersHourlyAllTimeChart").empty();
 
     var newList = []
     if ($(this).val() == "All Users") {
+
         if (messagesChart != null) {
             messagesChart.destroy();
         }
-        graphingMessageActivity(messageActivityData)    }
+        graphingMessageActivity(messageActivityData)
+    }
     else {
         for (var i = 0; i < messageActivityData.length; i++) {
             if (messageActivityData[i].userId == $(this).val()) {
@@ -56,12 +59,12 @@ $("#allUsers").change(function () {
         if (messagesChart != null) {
             messagesChart.destroy();
         }
-        tempPresenceActivityData = newList
+        tempMessageActivityData = newList
         graphingMessageActivity(tempMessageActivityData)
     }
 });
 
-$("#start").change(function () {
+$("#startDateGraph").change(function () {
     startDate = new Date($(this).val() + " 00:00");
     if (messagesChart != null) {
         messagesChart.destroy();
@@ -70,7 +73,7 @@ $("#start").change(function () {
 
 });
 
-$("#end").change(function () {
+$("#endDateGraph").change(function () {
     endDate = new Date($(this).val() + " 00:00");
     if (messagesChart != null) {
         messagesChart.destroy();

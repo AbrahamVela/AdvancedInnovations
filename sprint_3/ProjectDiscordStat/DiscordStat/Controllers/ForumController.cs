@@ -27,7 +27,7 @@ namespace DiscordStats.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Server> servers = _serverRepository.GetAll();
+            IEnumerable<Server> servers = _serverRepository.GetAll().Where(x => x.Privacy == "public");
             return View(servers);
         }
 
@@ -39,12 +39,13 @@ namespace DiscordStats.Controllers
             //var servers = getAllServersFromDb.RetrieveServers(_serverRepository);
             var servers = _serverRepository.GetAll();
 
+            var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
             var selectList = new SelectList(
-            servers.Where(m => m.Owner == "true").ToList().Select(s => new { Text = $"{s.Name}", Value = s.Id }),
+            servers.Where(m => m.OwnerId == userId).ToList().Select(s => new { Text = $"{s.Name}", Value = s.Id }),
             "Value", "Text");
             ViewData["Id"] = selectList;
 
-            ViewData["Message"] = servers.Where(m => m.Owner == "true").ToList().Select(s => s.Message);
+            ViewData["Message"] = servers.Where(m => m.OwnerId == userId).ToList().Select(s => s.Message);
 
             return View();
         }

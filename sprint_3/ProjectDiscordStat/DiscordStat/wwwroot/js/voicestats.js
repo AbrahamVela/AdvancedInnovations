@@ -30,7 +30,7 @@ function handleError(xhr, ajaxOptions, thrownError) {
 }
 
 
-$("#start").change(function () {
+$("#startDateGraph").change(function () {
     startDate = new Date($(this).val() + " 00:00");
     if (voiceStatesChart != null) {
         voiceStatesChart.destroy();
@@ -39,7 +39,8 @@ $("#start").change(function () {
 
 });
 
-$("#end").change(function () {
+$("#endDateGraph").change(function () {
+
     endDate = new Date($(this).val() + " 00:00");
     if (voiceStatesChart != null) {
         voiceStatesChart.destroy();
@@ -48,7 +49,7 @@ $("#end").change(function () {
 });
 
 $("#allUsers").change(function () {
-    $("#usersHourlyAllTimeChart").empty();
+    $("#usersVoiceHourlyAllTimeChart").empty();
 
     var newList = []
     if ($(this).val() == "All Users") {
@@ -188,4 +189,4 @@ function graphingVoiceStateActivity(data) {
 
 //        }
 //    })
-//};
+////};

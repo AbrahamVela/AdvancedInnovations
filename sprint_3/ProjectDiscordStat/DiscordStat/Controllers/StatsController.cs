@@ -73,7 +73,7 @@ namespace DiscordStats.Controllers
         [HttpGet]
         public IActionResult GetUsersFromDatabase(string ServerId)
         {
-           
+            var test = _userRepository.GetAll().Where(s => s.Servers == ServerId).ToList();
             return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
         }
 

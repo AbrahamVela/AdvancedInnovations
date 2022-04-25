@@ -276,7 +276,7 @@ namespace DiscordStats.DAL.Concrete
             return userInfo;
         }
 
-        public async Task<ServerOwnerViewModel?> GetFullGuild(string botToken, string serverId)
+        public async Task<ServerOwnerViewModel?> GetFullGuild(string botToken, string serverId) 
         {
             string uri = "https://discord.com/api/guilds/" + serverId + "?with_counts=true";
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);

@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     let gameDetailsGameName = $("#GameName").attr('value');
+
     console.log("URL: " + '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId);
 
     $.ajax({
@@ -60,6 +61,7 @@ $("#end").change(function () {
     if (presencesChart != null) {
         presencesChart.destroy();
     }
+
     graphingPresenceActivity(tempPresenceActivityData);
 });
 
@@ -72,6 +74,7 @@ $("#allUsersPresences").change(function () {
         if (presencesChart != null) {
             presencesChart.destroy();
         }
+
         graphingPresenceActivity(presenceActivityData)
     }
     else {
@@ -83,6 +86,7 @@ $("#allUsersPresences").change(function () {
         if (presencesChart != null) {
             presencesChart.destroy();
         }
+
         tempPresenceActivityData = newList;
         graphingPresenceActivity(tempPresenceActivityData);
     }
