@@ -55,9 +55,18 @@ CREATE TABLE [MessageInfo]
 
 );
 
+CREATE TABLE [VoiceState] 
+(
+  [VoiceStatePk] int           PRIMARY KEY IDENTITY(1, 1),
+  [ServerId] nvarchar(256) NULL,
+  [ChannelId] nvarchar(256) NULL,
+  [UserId] nvarchar(256) NULL,
+  [CreatedAt] DATETIME NULL,
+);
+
 CREATE TABLE [Presence]
 (
-  [PresencePk] int PRIMARY KEY IDENTITY(1, 1),
+  [PresencePk] int			PRIMARY KEY IDENTITY(1, 1),
   [ID] nvarchar(256) NULL,
   [applicationID] nvarchar(256) Null,
   [Name]    nvarchar(256)  NULL,
@@ -84,8 +93,7 @@ CREATE TABLE [Channel]
   [Type] nvarchar(256) Null,
   [Name] nvarchar(256) Null,
   [Count] int Null,
-  [Guild_id] nvarchar(256) Null,
-  [Edit] nvarchar(256) Null
+  [Guild_id] nvarchar(256) Null
 );
 
 CREATE TABLE [ServerChannelJoin]

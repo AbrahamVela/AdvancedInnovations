@@ -108,7 +108,7 @@ namespace DiscordStats.Controllers
             if (create.type_text == false && create.type_voice == false) create.type = "0";
             if (create.type_voice == true) create.type = "2";
             await _discordServicesForChannels.CreateChannel(botToken, create.guild_id, create.name, create.type, create.parent_id);
-            return RedirectToAction("ServerChannels");
+            return RedirectToAction("ServerChannels", new {serverId = create.guild_id});
         }
 
 

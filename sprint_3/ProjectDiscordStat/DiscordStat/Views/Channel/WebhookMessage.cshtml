@@ -120,9 +120,31 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="~/js/site.js"></script>
     <script>
-        $(document).ready(function(){
+       $(document).ready(function(){
             $('input:checkbox').click(function() {
                 $('input:checkbox').not(this).prop('checked', false);
+            });
+             $("#memberValue").attr('required', 'required');
+             $("#activityValue").attr('required', 'required');
+        });
+
+        $(function(){
+            $("#activityValue").change(function(){
+                alert("activityValue changed")
+                if($("#activityValue").is(':checked')) {
+                    $("#memberValue").removeAttr('required');
+                } else {
+                    $("#memberValue").attr('required', 'required');
+                }
+            });
+
+            $("#memberValue").change(function(){
+                alert("memberValue changed")
+                if($("#memberValue").is(':checked')) {
+                    $("#activityValue").removeAttr('required');
+                } else {
+                    $("#activityValue").attr('required', 'required');
+                }
             });
         });
     </script>

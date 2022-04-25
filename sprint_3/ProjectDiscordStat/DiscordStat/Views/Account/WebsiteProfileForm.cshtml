@@ -85,7 +85,7 @@
                             <p style=" color: black; font-weight: 400;font-size:16px">Birth Date:</p>
                         </div>
                         <div class="col-6">
-                            <input asp-for="ProfileBirthDate" type="date" id="Date" class="form-control" onchange="CheckDate(Date)"/>
+                            <input asp-for="ProfileBirthDate" type="date" id="Date" class="form-control"  min="1850-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")" onchange="CheckDate(Date)"/>
                             <span asp-validation-for="ProfileBirthDate" class="text-danger"></span>
                         </div>
                     </div>

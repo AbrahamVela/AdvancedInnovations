@@ -43,9 +43,6 @@
     </div>
     <!-- Heading Ends Here -->
     @{var counter = 0;}
-    @{var channelName = "";}
-    @{var type = 0;}
-@*    @{var counter = 0;}*@
     @if(@ViewBag.hasBot == "true")
 {
     <!-- Services Starts Here -->
@@ -189,7 +186,6 @@ else
         function CloseModalOne() {
         $('#myModalOne').modal('hide');
     }
-
 
         function GetCheckMark(counter){
             for(var i = 0; i < counter; i++)

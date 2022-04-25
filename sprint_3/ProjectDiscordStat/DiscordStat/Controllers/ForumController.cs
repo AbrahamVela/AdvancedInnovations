@@ -35,8 +35,6 @@ namespace DiscordStats.Controllers
         [Authorize(AuthenticationSchemes = "Discord")]
         public IActionResult Forum()
         {
-            //RetrieveItemFromDbForForumVM getAllServersFromDb = new(_serverRepository);
-            //var servers = getAllServersFromDb.RetrieveServers(_serverRepository);
             var servers = _serverRepository.GetAll();
 
             var selectList = new SelectList(
