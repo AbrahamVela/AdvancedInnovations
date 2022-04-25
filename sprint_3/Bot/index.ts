@@ -509,7 +509,6 @@ function UpdateVoiceChannel() {
     sendServers();
     sendChannels();
 }
-  
 
  setInterval(updataData, 300000);
  setInterval(UpdateVoiceChannel, 1800000);

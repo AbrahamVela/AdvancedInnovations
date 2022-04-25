@@ -1,27 +1,19 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    let gameDetailsGameName = $("#GameName").attr('value');
-    console.log("URL: " + '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId);
+
+    console.log("URL: " + '../Stats/GetPresencesFromDatabase?serverid=' + detailsServerId);
 
     $.ajax({
         type: 'GET',
-        url: '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId,
-        success: barGraphHourlyVoiceStateActivity,
+        url: '../Stats/GetAllPresencesFromDatabase?serverid=' + detailsServerId,
+        success: barGraphHourlyUserPresenceActivity,
         error: handleError
     });
-
-    //$.ajax({
-    //    type: 'GET',
-    //    url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
-    //    success: graphVoiceDropDownBox,
-    //    error: handleError
-    //});
-
 })
 
-var voiceStateActivityData = [];
-var tempVoiceStateActivityData = [];
-var voiceStatesChart;
+var userPresenceActivityData = [];
+var tempUserPresenceActivityData = [];
+var userPresencesChart;
 var startDate = new Date("December 17, 2020");
 var endDate = new Date();
 
@@ -32,59 +24,59 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 $("#startDateGraph").change(function () {
     startDate = new Date($(this).val() + " 00:00");
-    if (voiceStatesChart != null) {
-        voiceStatesChart.destroy();
+    if (userPresencesChart != null) {
+        userPresencesChart.destroy();
     }
-    graphingVoiceStateActivity(tempVoiceStateActivityData);
+    graphingUserPresenceActivity(tempUserPresenceActivityData);
 
 });
 
 $("#endDateGraph").change(function () {
 
     endDate = new Date($(this).val() + " 00:00");
-    if (voiceStatesChart != null) {
-        voiceStatesChart.destroy();
+    if (userPresencesChart != null) {
+        userPresencesChart.destroy();
     }
-    graphingVoiceStateActivity(tempVoiceStateActivityData);
+    graphingUserPresenceActivity(tempUserPresenceActivityData);
 });
 
 $("#allUsers").change(function () {
-    $("#usersVoiceHourlyAllTimeChart").empty();
+    $("#userPresenceHourlyAllTimeChart").empty();
 
     var newList = []
     if ($(this).val() == "All Users") {
 
-        if (voiceStatesChart != null) {
-            voiceStatesChart.destroy();
+        if (userPresencesChart != null) {
+            userPresencesChart.destroy();
         }
-        graphingVoiceStateActivity(voiceStateActivityData)
+        graphingUserPresenceActivity(userPresenceActivityData)
     }
     else {
-        for (var i = 0; i < voiceStateActivityData.length; i++) {
-            if (voiceStateActivityData[i].userId == $(this).val()) {
-                newList.push(voiceStateActivityData[i]);
+        for (var i = 0; i < userPresenceActivityData.length; i++) {
+            if (userPresenceActivityData[i].userId == $(this).val()) {
+                newList.push(userPresenceActivityData[i]);
             }
         }
-        if (voiceStatesChart != null) {
-            voiceStatesChart.destroy();
+        if (userPresencesChart != null) {
+            userPresencesChart.destroy();
         }
-        tempVoiceStateActivityData = newList
-        graphingVoiceStateActivity(tempVoiceStateActivityData)
+        tempUserPresenceActivityData = newList
+        graphingUserPresenceActivity(tempUserPresenceActivityData)
     }
 });
 
 
-function barGraphHourlyVoiceStateActivity(data) {
-    voiceStateActivityData = data
-    tempVoiceStateActivityData = data
-    graphingVoiceStateActivity(tempVoiceStateActivityData)
+function barGraphHourlyUserPresenceActivity(data) {
+    userPresenceActivityData = data
+    tempUserPresenceActivityData = data
+    graphingUserPresenceActivity(tempUserPresenceActivityData)
 }
 
 
-function graphingVoiceStateActivity(data) {
+function graphingUserPresenceActivity(data) {
     //broken chart
 
-    $("#usersVoiceHourlyAllTimeChart").empty();
+    $("#userPresenceHourlyAllTimeChart").empty();
 
     var count = 0;
     var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
@@ -110,7 +102,7 @@ function graphingVoiceStateActivity(data) {
 
 
 
-    voiceStatesChart = new Chart("usersVoiceHourlyAllTimeChart", {
+    userPresencesChart = new Chart("userPresenceHourlyAllTimeChart", {
         type: "bar",
         data: {
             labels: xValues,
@@ -129,7 +121,7 @@ function graphingVoiceStateActivity(data) {
                 },
                 title: {
                     display: true,
-                    text: "Active Voice Channel Time",
+                    text: "Active Gaming Time",
                     padding: 10,
                     color: 'black',
                     font: {
@@ -141,7 +133,7 @@ function graphingVoiceStateActivity(data) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Channel Frequency',
+                        text: 'Game Frequency',
                         padding: 10,
                         color: 'black',
                         font: {
