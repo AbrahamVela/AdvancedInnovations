@@ -107,6 +107,7 @@ namespace DiscordStats.Controllers
         [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<IActionResult> ProfileFormSubmit([Bind("id, ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
         {
+            ModelState.Remove("Servers");
             _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo);
             return RedirectToAction("Account");
         }

@@ -27,13 +27,20 @@ namespace DiscordStats.DAL.Concrete
 
         public void UpdateWebsiteProfileInfo(ServerAndDiscordUserInfoAndWebsiteProfileVM profileInfo)
         {
-            var test = _dbSet.ToList();
+
+            var userNotIn = false;
+
+            DiscordUserAndUserWebSiteInfo user = new();
 
             foreach (var websiteUser in _dbSet.ToList())
             {
-
+                if (websiteUser.Id != profileInfo.id)
+                {
+                    userNotIn = true;
+                }
                 if (websiteUser.Id == profileInfo.id)
                 {
+                    userNotIn = false;
                     if (profileInfo.ProfileFirstName != null)
                     {
                         websiteUser.FirstName = profileInfo.ProfileFirstName;
@@ -56,6 +63,16 @@ namespace DiscordStats.DAL.Concrete
                     }
                 }
 
+            }
+
+            if (userNotIn == true)
+            {
+                user.Id = profileInfo.id;
+                user.FirstName = profileInfo.ProfileFirstName;
+                user.LastName = profileInfo.ProfileLastName;
+                user.BirthDate = profileInfo.ProfileBirthDate;
+                user.Email = profileInfo.ProfileEmail;
+                AddOrUpdate(user);
             }
         }
     }
