@@ -69,9 +69,13 @@
         </div>
         <br /><br /><br /><br />
         <div class="row">
-            <h3><center>Featured Server:</center></h3><br />
+            @if(@Model.Name != null)
+            {
+                <h3><center>Featured Server:</center></h3><br />
+                <h1 style="color:blue"><center>@Model.Name</center></h1>
 
-            <h1 style="color:blue"><center>@Model.Name</center></h1>
+            }
+
 
         </div>
       </div>      
