@@ -27,6 +27,7 @@ namespace DiscordStats.DAL.Concrete
 
         public void UpdateWebsiteProfileInfo(ServerAndDiscordUserInfoAndWebsiteProfileVM profileInfo)
         {
+            var test = _dbSet.ToList();
 
             foreach (var websiteUser in _dbSet.ToList())
             {

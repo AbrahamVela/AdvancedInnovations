@@ -54,30 +54,23 @@
             </div>
           </div>
           <form asp-action="WebhookForm">
-    <div class="row">
-        <label for="text" asp-for="name" style="margin-bottom: -0.5%; margin-left: -1%" class="control-label">Webhook Name:</label>
-        <input type="text" asp-for="name" class="form-control" required="required" maxlength="32">
-        <span asp-validation-for="name" class="text-danger"></span>
-    </div>
-    <div class="row">
-        <label for="text" asp-for="channelId" style="margin-bottom: -0.5%; margin-top: 1%; margin-left: -1%" class="control-label">Channel Id:</label>
-        @Html.TextBoxFor(m => m.channelId, new { @readonly="readonly" })
-    </div>
+            <div class="row">
+                <label for="text" asp-for="name" style="margin-bottom: -0.5%; margin-left: -1%" class="control-label">Webhook Name:</label>
+                <input type="text" asp-for="name" class="form-control" required="required" maxlength="32" pattern="^\S+$" ErrorMessage="No whitespace">
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <label for="text" asp-for="channelId" style="margin-bottom: -0.5%; margin-top: 1%; margin-left: -1%" class="control-label">Channel Id:</label>
+                @Html.TextBoxFor(m => m.channelId, new { @readonly="readonly" })
+            </div>
      
-    <button value="Submit"  class="btn btn-primary" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Create Webhook</button>
-</form>
+            <button value="Submit"  class="btn btn-primary" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Create Webhook</button>
+        </form>
         </div>
       </div>      
     </div>
     
     <!-- Services Ends Here -->
-
-
-
-
-
-
-
 
 
 

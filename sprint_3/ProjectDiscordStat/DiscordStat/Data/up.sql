@@ -66,7 +66,7 @@ CREATE TABLE [VoiceState]
 
 CREATE TABLE [Presence]
 (
-  [PresencePk] int PRIMARY KEY IDENTITY(1, 1),
+  [PresencePk] int			PRIMARY KEY IDENTITY(1, 1),
   [ID] nvarchar(256) NULL,
   [applicationID] nvarchar(256) Null,
   [Name]    nvarchar(256)  NULL,

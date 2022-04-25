@@ -509,6 +509,7 @@ function updataData() {
     sendUsers();
    sendVoiceStates();
 }
+
 function UpdateVoiceChannel() {
    sendVoiceChannels();
    sendServers();
@@ -518,9 +519,6 @@ function UpdateVoiceChannel() {
 // setInterval(updataData, 300000);
 setInterval(UpdateVoiceChannel, 5000);
 setInterval(updataData, 5000);
-
-// setInterval(UpdateVoiceChannel, 1800000);
-
 
 
 client.login(process.env.TOKEN);
