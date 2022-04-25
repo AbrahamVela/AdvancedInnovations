@@ -137,7 +137,7 @@ function graphingVoiceStateActivity(data) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Voice Channel Frequency',
+                        text: 'Channel Frequency',
                         padding: 10,
                         color: 'black',
                         font: {
