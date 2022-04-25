@@ -51,11 +51,12 @@ namespace DiscordStats.Controllers
             foreach (var user in users)
             {
 
-                var duplicate = false;
 
                 Task.Delay(300).Wait();
                 await Task.Run(() =>
                 {
+                    var duplicate = false;
+
                     var allDiscordUsers = _userRepository.GetAll().ToList();
 
                     for (int i = 0; i < allDiscordUsers.Count(); i++)

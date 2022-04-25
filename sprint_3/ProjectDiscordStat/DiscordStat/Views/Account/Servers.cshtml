@@ -35,7 +35,8 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <h1>Start Your Journey</h1>           
+              <h1>Servers</h1>
+            <p>Start Your Journey</p>           
           </div>
         </div>
       </div>
@@ -47,7 +48,6 @@
         <div class="row">
           <div class="col-md-12">
             <div class="section-heading">
-                <span>Servers</span>
               <h2>Here is a list of servers that you own</h2>
                 @* <p>Please select which one you would like to add our bot to</p>*@
             </div>
@@ -57,6 +57,7 @@
               <thead class="thead-dark">
                 <tr>
                     <th><b>Server</b></th>
+                    <th><b>Icon</b></th>
                     <th><b>Privacy Level/Add bot</b></th>
                     <th><b>Server channels</b></th>
                     <th><b>Drawing for server on home page</b></th>
@@ -66,6 +67,7 @@
               @foreach (var s in Model)
                 {
                    <tr>
+                       <td><h3>@s.Name</h3></td>
                        <td style="padding-bottom: 2%">
                         @if (s.Icon == null)
                         {
@@ -110,19 +112,26 @@
                             </div>
                         }
                     </td>
-                    <td style="padding-bottom: 2%">
-                            <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> Channels</a></h3>
-                    </td>
-                    <td style="padding-bottom: 2%">
-                        @if (s.InLottery == "false")
-                        {
-                            <h3>Add: <a href="@Url.Action("AddServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
-                        }
-                        @if (s.InLottery == "true")
-                        {
-                            <h3>Remove: <a href="@Url.Action("RemoveServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
-                        }
-                    </td>
+                    @if (s.HasBot == "true")
+                    {
+                        <td style="padding-bottom: 2%">
+                        
+                        
+                        <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> Channels</a></h3>
+                        
+                        </td>
+                        <td style="padding-bottom: 2%">
+                            @if (s.InLottery == "false" || s.InLottery == null)
+                            {
+                                <h3>Add: <a href="@Url.Action("AddServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
+                            }
+                            @if (s.InLottery == "true")
+                            {
+                                <h3>Remove: <a href="@Url.Action("RemoveServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
+                            }
+                        </td> 
+                    }
+                               
 
                 
                     </tr>

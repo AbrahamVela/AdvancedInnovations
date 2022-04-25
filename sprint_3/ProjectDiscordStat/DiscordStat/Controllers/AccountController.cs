@@ -64,7 +64,7 @@ namespace DiscordStats.Controllers
                 {
                      var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
 
-                     _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
+                    _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
                 }
             }
 
@@ -129,13 +129,13 @@ namespace DiscordStats.Controllers
                 s.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], s.Id);
                 foreach (var server in _serverRepository.GetAll().ToList())
                 {
-
-                    if (s.Id == server.Id)                        
-                            if(server.InLottery == "true")                    
+                    if (s.Id == server.Id)
+                    {
+                        if (server.InLottery == "true")
                             s.InLottery = "true";
-                    if (server.InLottery == "false")
-                        s.InLottery = "false";
-                    
+                        if (server.InLottery == "false")
+                            s.InLottery = "false";
+                    }
                 }
 
             }
@@ -156,7 +156,7 @@ namespace DiscordStats.Controllers
         {
             Server selectedServer = _serverRepository.GetAll().Where(m => m.Id == serverId).FirstOrDefault();
             ServerLotteryFunctionality lottoFunction = new(_serverRepository);
-            if(selectedServer.InLottery == "false")
+            if(selectedServer.InLottery == "false" || selectedServer.InLottery == null)
             {
                 _serverRepository.AddingServerToLottery(serverId);
             }

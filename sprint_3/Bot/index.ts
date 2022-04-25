@@ -173,55 +173,61 @@ client.on('messageCreate', async(message) => {
 
 async function sendUsers (){
     let users: any = []
-    let test = client.guilds.cache;
-    client.guilds.cache.each(async (guild) => {
+    await client.guilds.cache.each(async (guild) => {
+
+        if (guild.id == "967551158182879232") {
+            // console.log(await client.guilds.cache.get(String(guild.id))?.members.fetch())
+            // console.log(await client.guilds.cache.get(String(guild.id)))
+        }
+
+        // console.log(guild.id)
         let list = await client.guilds.cache.get(String(guild.id))?.members.fetch()
-       
-            let a = list;
         
+        let a = list;
         list?.each((user) => {
             if (user.user.bot === false) {
-                if (user.user.avatar === null) {
-                    user.user.avatar = "null";
-                }
                 let newUser = {
-                    "Id": user.user.id.toString(),
+                    "Id": user.user.id,
                     "Username": user.user.username,
                     "Servers": guild.id,
-                    "Avatar": user.user.avatar
+                    "Avatar": user.user.avatar,
+                    "FirstName": null,
+                    "LastName": null,
+                    "BirthDate": null,
+                    "Email": null
                 }
-                // console.log(newUser)
                 users.push(newUser);
-                console.log("The users of all servers: ")
-                console.log(users)
-                axios.post(url + '/api/postusers', users)
-                .then((result: any) => {
-                                    console.log(result);
-                                })
-                                .catch((error: any) => {
-                                    console.log(error);
-                                })
-                            }
-    
 
-
+                // console.log(newUser)
+            }
+        })
     })
     
-})
-}
-//     setTimeout(() => {
-//         console.log("The users of all servers: ")
-//         console.log(users)
-//         axios.post(url + '/api/postusers', users)
+    
 
-//             .then((result: any) => {
-//                 console.log(result);
-//             })
-//             .catch((error: any) => {
-//                 console.log(error);
-//             });
-//     }, 5000);
+    // console.log("The users of all servers: ")
+    // console.log(users)
+    // axios.post(url + '/api/postusers', users)
+    // .then((result: any) => {
+    //     // console.log(result);
+    // })
+    // .catch((error: any) => {
+    //     console.log(error);
+    // })
 // }
+    setTimeout(() => {
+        // console.log("The users of all servers: ")
+        console.log(users)
+        axios.post(url + '/api/postusers', users)
+
+            .then((result: any) => {
+                // console.log(result);
+            })
+            .catch((error: any) => {
+                // console.log(error);
+            });
+    }, 5000);
+}
 
 
 
@@ -251,9 +257,10 @@ async function sendServers (){
             Description: guild.description,
             Premiumtier: guild.premiumTier,
             ApproximatePresenceCount: presenceCount,
-            Privacy: "null",
-            OnForum: "null",
-            Message: "null"
+            Privacy: null,
+            OnForum: null,
+            Message: null,
+            InLottery: null
         }
         servers.push(server);
     })
@@ -297,14 +304,6 @@ async function sendChannels (){
                 .catch((error: any) => {
                     console.log(error);
                 });
-
-            //axios.post('https://discordstats.azurewebsites.net/channel/postchannels', channels)
-            //    .then((result: any) => {
-            //        console.log(result);
-            //    })
-            //    .catch((error: any) => {
-            //        console.log(error);
-            //    });
         }
     }, 5000);
 }
@@ -516,8 +515,11 @@ function UpdateVoiceChannel() {
     sendChannels();
 }
   
-setInterval(updataData, 300000);
-setInterval(UpdateVoiceChannel, 1800000);
+// setInterval(updataData, 300000);
+setInterval(UpdateVoiceChannel, 5000);
+setInterval(updataData, 5000);
+
+// setInterval(UpdateVoiceChannel, 1800000);
 
 
 
