@@ -9,6 +9,13 @@ namespace DiscordStats.Models
     [Table("Server")]
     public partial class Server
     {
+        public Server()
+        {
+            ServerChannelJoins = new HashSet<ServerChannelJoin>();
+            ServerPresenceJoins = new HashSet<ServerPresenceJoin>();
+            ServerUserJoins = new HashSet<ServerUserJoin>();
+        }
+
         [Column("ID")]
         [StringLength(128)]
         public string Id { get; set; } = null!;
@@ -46,5 +53,12 @@ namespace DiscordStats.Models
         public string? Message { get; set; }
         [StringLength(256)]
         public string? InLottery { get; set; }
+
+        [InverseProperty(nameof(ServerChannelJoin.ServerPkNavigation))]
+        public virtual ICollection<ServerChannelJoin> ServerChannelJoins { get; set; }
+        [InverseProperty(nameof(ServerPresenceJoin.ServerPkNavigation))]
+        public virtual ICollection<ServerPresenceJoin> ServerPresenceJoins { get; set; }
+        [InverseProperty(nameof(ServerUserJoin.ServerPkNavigation))]
+        public virtual ICollection<ServerUserJoin> ServerUserJoins { get; set; }
     }
 }

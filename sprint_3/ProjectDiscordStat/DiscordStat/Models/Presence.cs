@@ -9,6 +9,11 @@ namespace DiscordStats.Models
     [Table("Presence")]
     public partial class Presence
     {
+        public Presence()
+        {
+            ServerPresenceJoins = new HashSet<ServerPresenceJoin>();
+        }
+
         [Key]
         public int PresencePk { get; set; }
         [Column("ID")]
@@ -33,5 +38,8 @@ namespace DiscordStats.Models
         public string? UserId { get; set; }
         [StringLength(256)]
         public string? Image { get; set; }
+
+        [InverseProperty(nameof(ServerPresenceJoin.PresencePkNavigation))]
+        public virtual ICollection<ServerPresenceJoin> ServerPresenceJoins { get; set; }
     }
 }

@@ -9,6 +9,11 @@ namespace DiscordStats.Models
     [Table("Webhook")]
     public partial class Webhook
     {
+        public Webhook()
+        {
+            ChannelWebhookJoins = new HashSet<ChannelWebhookJoin>();
+        }
+
         [Key]
         public int WebhookPk { get; set; }
         [Column("ID")]
@@ -31,5 +36,8 @@ namespace DiscordStats.Models
         public string? ApplicationId { get; set; }
         [StringLength(256)]
         public string? Token { get; set; }
+
+        [InverseProperty(nameof(ChannelWebhookJoin.WebhookPkNavigation))]
+        public virtual ICollection<ChannelWebhookJoin> ChannelWebhookJoins { get; set; }
     }
 }
