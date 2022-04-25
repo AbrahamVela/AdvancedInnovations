@@ -370,6 +370,8 @@ namespace DiscordStats.DAL.Concrete
 
                     foreach (var p in allPresences)
                     {
+                        if(presence.CreatedAt?.Hour != DateTime.UtcNow.Hour && presence.CreatedAt?.Date == DateTime.UtcNow.Date)
+                            presence.CreatedAt = DateTime.Now;
                         if (presence.ServerId == p.ServerId && presence.Name == p.Name && presence.UserId == p.UserId && presence.CreatedAt?.Hour == p.CreatedAt?.Hour && presence.CreatedAt?.Date == p.CreatedAt?.Date)
                         {
                             duplicate = true;

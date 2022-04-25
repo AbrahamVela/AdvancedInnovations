@@ -92,68 +92,86 @@
             </div>
           </div>
           @if (@Model.HasBot == "true")
-          {
-          <div class="col-md-4 col-sm-6 col-xs-12">
-            <div class="service-item">
-              <i class="fa fa-cloud"></i>
-              <h4 id="DetailsContainer">Details</h4>             
-                <p>Owner: @Model.Owner</p>
-                <P>Total members: @Model.Approximate_Member_Count</P>
-                <P>Online members: @Model.Approximate_Presence_Count</P>
-                <P>Verification Level: @Model.Verification_Level</P>
-                <P>Boost Level: @Model.Premium_Tier</P>
-                <div class="row" style="margin-top:3%">
-                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
-                </div>
-                <div class="row" style="margin-top:3%">
-                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
-                </div>
-            </div>
-          </div>
-          <div class="col-md-8 col-sm-8 col-xs-12">
-            <div class="service-item">
-              <i class="fa fa-users"></i>
-              <h4>Users</h4>
-              
-                   <table class="table" id="serverTable">
-                     <thead class="thead-dark">
-                    <tr>
-                        <th><b>Avatar</b></th>
-                        <th><b>Name</b></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var u in @Model.users)
-                    {
-                        <tr style ="background-color: #f7f7f7">
-                            @if (u.user.Avatar == null)
-                            {
-                                var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
-                               <td style="padding-bottom: 2%"><img src="@i" style="height: 80px;"/></td>
-                            }
-                            else
-                            {
-                                var i = "https://cdn.discordapp.com/avatars/" + u.user.Id + "//" + u.user.Avatar + ".png";
-                                <td><img src="@i" style="height: 80px;"/></td>
-                            }
+                {
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="service-item">
+                            <i class="fa fa-cloud"></i>
+                            <h4 id="DetailsContainer">Details</h4>             
+                            <p>Owner: @Model.Owner</p>
+                            <P>Total members: @Model.Approximate_Member_Count</P>
+                            <P>Online members: @Model.Approximate_Presence_Count</P>
+                            <P>Verification Level: @Model.Verification_Level</P>
+                            <P>Boost Level: @Model.Premium_Tier</P>
 
-                            <td style="padding-bottom: 2%">@u.user.UserName</td>
-                    @if (Model.Owner == User.Claims.First(c => c.Type == ClaimTypes.Name).Value){
-                    @if (User.Claims.First(c => c.Type == ClaimTypes.Name).Value != u.user.UserName && u.user.UserName != "Stat Tracker")
-                    {
-                        <td style="padding-bottom: 2%"><button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModalKick(this)" id="@u.user.UserName" data-target="#exampleModal">Kick</button></td>
-                    }
-                            }
-                        </tr>
-                    }
-                    </tbody>
-                </table>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="document.getElementById('TopUsersContainer').scrollIntoView();" >View Top Users</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="document.getElementById('StatsContainer').scrollIntoView();" >View Stats</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <div class="service-item">
+                            <i class="fa fa-users"></i>
+                            <h4>Users</h4>
+
+                            <table class="table" id="serverTable">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th><b>Avatar</b></th>
+                                            <th><b>Name</b></th>                                          
+                                            <th><b>Kick User</b></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var u in @Model.users)
+                                        {
+                                            <tr style ="background-color: #f7f7f7">
+                                                @if (u.user.Avatar == null)
+                                                {
+                                                    var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
+                                                    <td style="padding-bottom: 2%"><img src="@i" style="height: 80px;"/></td>
+                                                }
+                                                else
+                                                {
+                                                    var i = "https://cdn.discordapp.com/avatars/" + u.user.Id + "//" + u.user.Avatar + ".png";
+                                                    <td><img src="@i" style="height: 80px;"/></td>
+                                                }
+
+                                                <td style="padding-bottom: 2%">@u.user.UserName</td>
+                                                 @if (Model.Owner == User.Claims.First(c => c.Type == ClaimTypes.Name).Value)
+                                                {
+                                                    @if (User.Claims.First(c => c.Type == ClaimTypes.Name).Value != u.user.UserName && u.user.UserName != "Stat Tracker")
+                                                    {
+                                                        <td style="padding-bottom: 2%"><button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModalKick(this)" id="@u.user.UserName" data-target="#exampleModal">Kick</button></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td></td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
            
             </div>
           </div>
 
 <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="service-item">
+            <div class="service-item" id="TopUsersContainer">
               <i class="fa fa-trophy"></i>
               <h4>Top Users</h4>        
               <label for="start">Start date:</label>
@@ -204,47 +222,53 @@
       </div>
     </div>
     <!-- Services Ends Here -->
-
-    <!-- Testimonials Starts Here -->
-    <div class="testimonials-section">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="section-heading">
-              <h2>Stats</h2>
-              <div class="testimonial-item" >
-               <div class="icon">
-                  <i class="fa fa-bar-chart"></i>
+    @if (@Model.HasBot == "true")
+    {
+        <!-- Testimonials Starts Here -->
+        <div class="testimonials-section" id="StatsContainer">
+            <div class="container" >
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="section-heading">
+                            <h2>Stats</h2>
+                            <div class="testimonial-item" >
+                                <div class="icon">
+                                    <i class="fa fa-bar-chart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                        <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
+                        <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
+                        <canvas id="userPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
+                        <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    </div>
+
+
+                    <div class="col">
+                        <br /><div class="dropdown" style="width:50px"><select name="allUsers" id="allUsers">
+                                <option>All Users</option>
+                            </select></div>
+                        <label for="start">Start date:</label>
+                        <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        <label for="start">End date:</label>
+                        <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    </div>   
                 </div>
             </div>
-          </div>
         </div>
-
-              <div class="row justify-content-center">
-        <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
-            <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
-       </div>
-        <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
-            <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-        </div>
-                
-                
-                <br /><div class="dropdown" style="width:50px"><select name="allUsers" id="allUsers">
-
-                    <option>All Users</option>
-                    </select></div>
-                    <label for="start">Start date:</label>
-                    <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
-                    <label for="start">End date:</label>
-                    <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
-                
-                
-                
-        </div>
-          </div>
-    </div>
-    <!-- Testimonials Ends Here -->
+        <!-- Testimonials Ends Here -->
+    }
         <!-- Graphs Starts Here -->
     <div class="pricing-section">
 
@@ -441,5 +465,7 @@ var Serverid = document.getElementById('ServerId').getAttribute("value");
     <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/statistics.js"></script>
     <script type="text/javascript" src="~/js/voicestats.js"></script>
+    <script type="text/javascript" src="~/js/ServerDetailsGameStats.js"></script>
+    <script type="text/javascript" src="~/js/ServerDetailsAllGames.js"></script>
     @*<script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>*@
 }

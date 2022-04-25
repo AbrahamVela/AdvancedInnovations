@@ -1,27 +1,19 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    let gameDetailsGameName = $("#GameName").attr('value');
-    console.log("URL: " + '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId);
+
+    console.log("URL: " + '../Stats/GetPresencesFromDatabase?serverid=' + detailsServerId);
 
     $.ajax({
         type: 'GET',
-        url: '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId,
-        success: barGraphHourlyVoiceStateActivity,
+        url: '../Stats/GetAllPresencesFromDatabase?serverid=' + detailsServerId,
+        success: barGraphHourlyAllPresenceActivity,
         error: handleError
     });
-
-    //$.ajax({
-    //    type: 'GET',
-    //    url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
-    //    success: graphVoiceDropDownBox,
-    //    error: handleError
-    //});
-
 })
 
-var voiceStateActivityData = [];
-var tempVoiceStateActivityData = [];
-var voiceStatesChart;
+var allPresenceActivityData = [];
+var tempAllPresenceActivityData = [];
+var allPresencesChart;
 var startDate = new Date("December 17, 2020");
 var endDate = new Date();
 
@@ -32,63 +24,62 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 $("#startDateGraph").change(function () {
     startDate = new Date($(this).val() + " 00:00");
-    if (voiceStatesChart != null) {
-        voiceStatesChart.destroy();
+    if (allPresencesChart != null) {
+        allPresencesChart.destroy();
     }
-    graphingVoiceStateActivity(tempVoiceStateActivityData);
+    graphingAllPresenceActivity(tempAllPresenceActivityData);
 
 });
 
 $("#endDateGraph").change(function () {
 
     endDate = new Date($(this).val() + " 00:00");
-    if (voiceStatesChart != null) {
-        voiceStatesChart.destroy();
+    if (allPresencesChart != null) {
+        allPresencesChart.destroy();
     }
-    graphingVoiceStateActivity(tempVoiceStateActivityData);
+    graphingAllPresenceActivity(tempAllPresenceActivityData);
 });
 
 $("#allUsers").change(function () {
-    $("#usersVoiceHourlyAllTimeChart").empty();
+    $("#allPresenceHourlyAllTimeChart").empty();
 
     var newList = []
     if ($(this).val() == "All Users") {
 
-        if (voiceStatesChart != null) {
-            voiceStatesChart.destroy();
+        if (allPresencesChart != null) {
+            allPresencesChart.destroy();
         }
-        graphingVoiceStateActivity(voiceStateActivityData)
+        graphingAllPresenceActivity(allPresenceActivityData)
     }
     else {
-        for (var i = 0; i < voiceStateActivityData.length; i++) {
-            if (voiceStateActivityData[i].userId == $(this).val()) {
-                newList.push(voiceStateActivityData[i]);
+        for (var i = 0; i < allPresenceActivityData.length; i++) {
+            if (allPresenceActivityData[i].userId == $(this).val()) {
+                newList.push(allPresenceActivityData[i]);
             }
         }
-        if (voiceStatesChart != null) {
-            voiceStatesChart.destroy();
+        if (allPresencesChart != null) {
+            allPresencesChart.destroy();
         }
-        tempVoiceStateActivityData = newList
-        graphingVoiceStateActivity(tempVoiceStateActivityData)
+        tempAllPresenceActivityData = newList
+        graphingAllPresenceActivity(tempAllPresenceActivityData)
     }
 });
 
 
-function barGraphHourlyVoiceStateActivity(data) {
-    voiceStateActivityData = data
-    tempVoiceStateActivityData = data
-    graphingVoiceStateActivity(tempVoiceStateActivityData)
+function barGraphHourlyAllPresenceActivity(data) {
+    allPresenceActivityData = data
+    tempAllPresenceActivityData = data
+    graphingAllPresenceActivity(tempAllPresenceActivityData)
 }
 
-
-function graphingVoiceStateActivity(data) {
+function graphingAllPresenceActivity(data) {
     //broken chart
 
-    $("#usersVoiceHourlyAllTimeChart").empty();
+    $("#allPresenceHourlyAllTimeChart").empty();
 
     var count = 0;
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var xValues = [];
+    var yValues = [];
 
 
     for (var i = 0; i < data.length; i++) {
@@ -96,21 +87,30 @@ function graphingVoiceStateActivity(data) {
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
 
         if (date > startDate && date < endDate) {
-            let hour = date.getHours()
-            subtraction = hour - 4;
-            if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
+            if (xValues.includes(data[i].name) == false) {
+                xValues.push(data[i].name)
+                yValues.push(1)
+                var index;
             }
-            console.log(subtraction);
-            yValues[subtraction] += 1;
+            else if (xValues.includes(data[i].name)) {
+                xValues.some(function (entry, i) {
+                    if (entry == data[i].name) {
+                        index = i;
+                        return true;
+                    }
+                });
+                yValues[index] += 1
+            }
         }
     }
-    //console.log(xValues);
-    //console.log(yValues);
+    console.log("all X: ")
+    console.log(xValues);
+    console.log("all Y: ")
+    console.log(yValues);
 
 
 
-    voiceStatesChart = new Chart("usersVoiceHourlyAllTimeChart", {
+    allPresencesChart = new Chart("allPresenceHourlyAllTimeChart", {
         type: "bar",
         data: {
             labels: xValues,
@@ -129,7 +129,7 @@ function graphingVoiceStateActivity(data) {
                 },
                 title: {
                     display: true,
-                    text: "Active Voice Channel Time",
+                    text: "Active AllPresence Channel Time",
                     padding: 10,
                     color: 'black',
                     font: {
