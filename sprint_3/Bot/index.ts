@@ -173,61 +173,55 @@ client.on('messageCreate', async(message) => {
 
 async function sendUsers (){
     let users: any = []
-    await client.guilds.cache.each(async (guild) => {
-
-        if (guild.id == "967551158182879232") {
-            // console.log(await client.guilds.cache.get(String(guild.id))?.members.fetch())
-            // console.log(await client.guilds.cache.get(String(guild.id)))
-        }
-
-        // console.log(guild.id)
+    let test = client.guilds.cache;
+    client.guilds.cache.each(async (guild) => {
         let list = await client.guilds.cache.get(String(guild.id))?.members.fetch()
+       
+            let a = list;
         
-        let a = list;
         list?.each((user) => {
             if (user.user.bot === false) {
+                if (user.user.avatar === null) {
+                    user.user.avatar = "null";
+                }
                 let newUser = {
-                    "Id": user.user.id,
+                    "Id": user.user.id.toString(),
                     "Username": user.user.username,
                     "Servers": guild.id,
-                    "Avatar": user.user.avatar,
-                    "FirstName": null,
-                    "LastName": null,
-                    "BirthDate": null,
-                    "Email": null
+                    "Avatar": user.user.avatar
                 }
-                users.push(newUser);
-
                 // console.log(newUser)
-            }
-        })
+                users.push(newUser);
+                console.log("The users of all servers: ")
+                console.log(users)              
+                axios.post(url + '/api/postusers', users)
+                .then((result: any) => {
+                                    console.log(result);
+                                })
+                                .catch((error: any) => {
+                                    console.log(error);
+                                })
+                            }
+    
+
+
     })
     
-    
-
-    // console.log("The users of all servers: ")
-    // console.log(users)
-    // axios.post(url + '/api/postusers', users)
-    // .then((result: any) => {
-    //     // console.log(result);
-    // })
-    // .catch((error: any) => {
-    //     console.log(error);
-    // })
-// }
-    setTimeout(() => {
-        // console.log("The users of all servers: ")
-        console.log(users)
-        axios.post(url + '/api/postusers', users)
-
-            .then((result: any) => {
-                // console.log(result);
-            })
-            .catch((error: any) => {
-                // console.log(error);
-            });
-    }, 5000);
+})
 }
+//     setTimeout(() => {
+//         console.log("The users of all servers: ")
+//         console.log(users)
+//         axios.post(url + '/api/postusers', users)
+
+//             .then((result: any) => {
+//                 console.log(result);
+//             })
+//             .catch((error: any) => {
+//                 console.log(error);
+//             });
+//     }, 5000);
+// }
 
 
 
@@ -505,20 +499,23 @@ async function sendVoiceStates (){
 // }
 
 function updataData() {
-   sendPresence();
+    sendPresence();
     sendUsers();
-   sendVoiceStates();
+    sendVoiceStates();
 }
 
 function UpdateVoiceChannel() {
-   sendVoiceChannels();
-   sendServers();
+    sendVoiceChannels();
+    sendServers();
     sendChannels();
 }
   
-// setInterval(updataData, 300000);
-setInterval(UpdateVoiceChannel, 5000);
-setInterval(updataData, 5000);
+
+ setInterval(updataData, 300000);
+ setInterval(UpdateVoiceChannel, 1800000);
+//setInterval(UpdateVoiceChannel, 15000);
+//setInterval(updataData, 45000);
+
 
 
 client.login(process.env.TOKEN);

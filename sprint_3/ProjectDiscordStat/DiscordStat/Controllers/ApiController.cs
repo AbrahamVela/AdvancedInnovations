@@ -52,7 +52,7 @@ namespace DiscordStats.Controllers
             {
 
 
-                Task.Delay(300).Wait();
+                Task.Delay(1000).Wait();
                 await Task.Run(() =>
                 {
                     var duplicate = false;
@@ -71,6 +71,13 @@ namespace DiscordStats.Controllers
                         _userRepository.AddOrUpdate(user);
                     }
                 });
+
+                var query = _userRepository.GetAll()
+                .Where(m => m.Username == user.Username && m.Servers == user.Servers).Skip(1).ToList();
+                foreach (var dupe in query)
+                {
+                    _userRepository.Delete(dupe);
+                }
 
             }
             return Json("It worked");
