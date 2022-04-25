@@ -102,22 +102,28 @@
                             <P>Online members: @Model.Approximate_Presence_Count</P>
                             <P>Verification Level: @Model.Verification_Level</P>
                             <P>Boost Level: @Model.Premium_Tier</P>
+
                             <div class="row" style="margin-top:3%">
-                                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
+                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="document.getElementById('TopUsersContainer').scrollIntoView();" >View Top Users</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="document.getElementById('StatsContainer').scrollIntoView();" >View Stats</button>
                             </div>
                             <div class="row" style="margin-top:3%">
                                 <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
                             </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
+                            </div>
+
                         </div>
                     </div>
-
                     <div class="col-md-8 col-sm-8 col-xs-12">
                         <div class="service-item">
                             <i class="fa fa-users"></i>
                             <h4>Users</h4>
 
-
-                                <table class="table" id="serverTable">
+                            <table class="table" id="serverTable">
                                     <thead class="thead-dark">
                                         <tr>
                                             <th><b>Avatar</b></th>
@@ -159,12 +165,13 @@
                                             </tr>
                                         }
                                     </tbody>
-                                </table>        
-                        </div>
-                    </div>
-                    }
+                                </table>
+           
+            </div>
+          </div>
+
 <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="service-item">
+            <div class="service-item" id="TopUsersContainer">
               <i class="fa fa-trophy"></i>
               <h4>Top Users</h4>        
               <label for="start">Start date:</label>
@@ -215,14 +222,18 @@
       </div>
     </div>
     <!-- Services Ends Here -->
+        <!-- Testimonials Starts Here -->
+                        @if (@Model.HasBot == "true")
+    {
+        <div class="testimonials-section" id="StatsContainer" >
 
-    <!-- Testimonials Starts Here -->
-    <div class="testimonials-section">
       <div class="container">
         <div class="row">
           <div class="col-md-12">
             <div class="section-heading">
-              <h2>Stats</h2>
+
+                    <h2>Stats</h2>
+              
               <div class="testimonial-item" >
                <div class="icon">
                   <i class="fa fa-bar-chart"></i>
@@ -231,8 +242,8 @@
             </div>
           </div>
         </div>
-        <div class="row justify-content-center" style="margin-right:3%">
 
+        <div class="row justify-content-center" style="margin-right:3%">
                         <br />
                         <div class="col-1" style="width:50px; margin-bottom:1%; left:1%">
                             <select name="allUsers" id="allUsers">
@@ -240,7 +251,6 @@
                             </select>
                         </div>
 
-                    </row>
                     <div class="row justify-content-center">
                         <div class="col-3"  style="margin-left:29%">
                             <label for="start">Start date:</label>                 
@@ -262,7 +272,7 @@
 
               <div class="row justify-content-center">
 
-       <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                         <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
                     </div>
                     <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
@@ -275,11 +285,13 @@
                         <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
                     </div>
         
+            </div>
         </div>
-          </div>
     </div>
-     </div>
-    <!-- Testimonials Ends Here -->
+    </div>
+    }
+    
+        <!-- Testimonials Ends Here -->
         <!-- Graphs Starts Here -->
     <div class="pricing-section">
 
@@ -476,5 +488,7 @@ var Serverid = document.getElementById('ServerId').getAttribute("value");
     <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/statistics.js"></script>
     <script type="text/javascript" src="~/js/voicestats.js"></script>
+    <script type="text/javascript" src="~/js/ServerDetailsGameStats.js"></script>
+    <script type="text/javascript" src="~/js/ServerDetailsAllGames.js"></script>
     @*<script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>*@
 }
