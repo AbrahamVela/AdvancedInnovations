@@ -173,8 +173,12 @@ client.on('messageCreate', async(message) => {
 
 async function sendUsers (){
     let users: any = []
+    let test = client.guilds.cache;
     client.guilds.cache.each(async (guild) => {
         let list = await client.guilds.cache.get(String(guild.id))?.members.fetch()
+       
+            let a = list;
+        
         list?.each((user) => {
             if (user.user.bot === false) {
                 if (user.user.avatar === null) {
@@ -188,26 +192,36 @@ async function sendUsers (){
                 }
                 // console.log(newUser)
                 users.push(newUser);
-                setTimeout(() => 100);
-            }
-            // console.log(users.length)
-        })
+                console.log("The users of all servers: ")
+                console.log(users)
+                axios.post(url + '/api/postusers', users)
+                .then((result: any) => {
+                                    console.log(result);
+                                })
+                                .catch((error: any) => {
+                                    console.log(error);
+                                })
+                            }
+    
 
 
     })
-    setTimeout(() => {
-        console.log("The users of all servers: ")
-        console.log(users)
-        axios.post(url + '/api/postusers', users)
-
-            .then((result: any) => {
-                console.log(result);
-            })
-            .catch((error: any) => {
-                console.log(error);
-            });
-    }, 5000);
+    
+})
 }
+//     setTimeout(() => {
+//         console.log("The users of all servers: ")
+//         console.log(users)
+//         axios.post(url + '/api/postusers', users)
+
+//             .then((result: any) => {
+//                 console.log(result);
+//             })
+//             .catch((error: any) => {
+//                 console.log(error);
+//             });
+//     }, 5000);
+// }
 
 
 
@@ -492,21 +506,19 @@ async function sendVoiceStates (){
 // }
 
 function updataData() {
-    sendPresence();
+   sendPresence();
     sendUsers();
-    sendVoiceStates();
+   sendVoiceStates();
 }
 function UpdateVoiceChannel() {
-    sendVoiceChannels();
-    sendServers();
+   sendVoiceChannels();
+   sendServers();
     sendChannels();
 }
   
-// setInterval(updataData, 300000);
-// setInterval(UpdateVoiceChannel, 1800000);
-setInterval(UpdateVoiceChannel, 6000);
+setInterval(updataData, 300000);
+setInterval(UpdateVoiceChannel, 1800000);
 
-setInterval(updataData, 5000);
 
 
 client.login(process.env.TOKEN);
