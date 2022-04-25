@@ -222,25 +222,56 @@
       </div>
     </div>
     <!-- Services Ends Here -->
-    @if (@Model.HasBot == "true")
-    {
         <!-- Testimonials Starts Here -->
-        <div class="testimonials-section" id="StatsContainer">
-            <div class="container" >
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="section-heading">
-                            <h2>Stats</h2>
-                            <div class="testimonial-item" >
-                                <div class="icon">
-                                    <i class="fa fa-bar-chart"></i>
-                                </div>
-                            </div>
+                        @if (@Model.HasBot == "true")
+    {
+        <div class="testimonials-section" id="StatsContainer" >
+
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+
+                    <h2>Stats</h2>
+              
+              <div class="testimonial-item" >
+               <div class="icon">
+                  <i class="fa fa-bar-chart"></i>
+                </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row justify-content-center" style="margin-right:3%">
+                        <br />
+                        <div class="col-1" style="width:50px; margin-bottom:1%; left:1%">
+                            <select name="allUsers" id="allUsers">
+                                <option>All Users</option>
+                            </select>
+                        </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-3"  style="margin-left:29%">
+                            <label for="start">Start date:</label>                 
+                        </div>
+                        <div class="col-3" style="left:-10%" >
+                            <label for="start">End date:</label>       
                         </div>
                     </div>
-                </div>
 
-                <div class="row justify-content-center">
+                    <div class="row justify-content-center">
+                        <div class="col-3" style="margin-left:15%">          
+                            <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-3" style="margin-left:-9%">
+                            <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                    </div>
+
+
+              <div class="row justify-content-center">
+
                     <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                         <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
                     </div>
@@ -253,22 +284,14 @@
                     <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
                         <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
                     </div>
-
-
-                    <div class="col">
-                        <br /><div class="dropdown" style="width:50px"><select name="allUsers" id="allUsers">
-                                <option>All Users</option>
-                            </select></div>
-                        <label for="start">Start date:</label>
-                        <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
-                        <label for="start">End date:</label>
-                        <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
-                    </div>   
-                </div>
+        
             </div>
         </div>
-        <!-- Testimonials Ends Here -->
+    </div>
+    </div>
     }
+    
+        <!-- Testimonials Ends Here -->
         <!-- Graphs Starts Here -->
     <div class="pricing-section">
 

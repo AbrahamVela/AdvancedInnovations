@@ -129,7 +129,7 @@ function graphingAllPresenceActivity(data) {
                 },
                 title: {
                     display: true,
-                    text: "Active AllPresence Channel Time",
+                    text: "Hours per Game",
                     padding: 10,
                     color: 'black',
                     font: {
@@ -141,7 +141,7 @@ function graphingAllPresenceActivity(data) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Channel Frequency',
+                        text: 'Hours Played',
                         padding: 10,
                         color: 'black',
                         font: {

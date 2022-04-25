@@ -121,7 +121,7 @@ function graphingUserPresenceActivity(data) {
                 },
                 title: {
                     display: true,
-                    text: "Active UserPresence Channel Time",
+                    text: "Active Gaming Time",
                     padding: 10,
                     color: 'black',
                     font: {
@@ -133,7 +133,7 @@ function graphingUserPresenceActivity(data) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Channel Frequency',
+                        text: 'Game Frequency',
                         padding: 10,
                         color: 'black',
                         font: {
