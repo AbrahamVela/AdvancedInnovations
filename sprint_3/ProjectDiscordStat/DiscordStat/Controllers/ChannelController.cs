@@ -107,24 +107,12 @@ namespace DiscordStats.Controllers
             if (create.type_text == true ) create.type = "0";
             if (create.type_text == false && create.type_voice == false) create.type = "0";
             if (create.type_voice == true) create.type = "2";
+            
             var response = await _discordServicesForChannels.CreateChannel(botToken, create.guild_id, create.name, create.type, create.parent_id);
 
-
-            //Channel newChannel = new Channel() 
-            //{
-            //    Id = response.Id,
-            //    Type = response.Type,
-            //    Name = response.Name,
-            //    GuildId = response.GuildId,
-            //    Count = 0
-            //};
             response.GuildId = create.guild_id;
             _channelRepository.AddOrUpdate(response);
 
-
-
-            //return RedirectToAction("ServerChannels");
-            //var serverid = "947357087581765702";
             return RedirectToAction("ServerChannels", new { serverId = create.guild_id });
         }
 

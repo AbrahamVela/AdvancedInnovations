@@ -139,16 +139,15 @@ namespace DiscordStats.Controllers
                 }
 
             }
-            //836721845570895872
+
             var test = servers.Where(m => m.Owner == "true").ToList();
             foreach(var server in test)
             {
                 if (server.HasBot == "false")
                     server.InLottery = null;
             }
-            //var servers2 = _serverRepository.GetAll().ToList();
+
             return View(test);
-            //return View(servers2.Where(m => m.Owner == "true").ToList());
         }
 
         [Authorize(AuthenticationSchemes = "Discord")]
