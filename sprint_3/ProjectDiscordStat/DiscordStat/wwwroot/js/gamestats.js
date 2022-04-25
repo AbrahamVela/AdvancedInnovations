@@ -21,6 +21,8 @@
 
 const timezone = -3
 var presenceActivityData = [];
+var tempPresenceActivityData = [];
+
 var presencesChart;
 var startDate = new Date("December 17, 2020");
 var endDate = new Date();
@@ -49,7 +51,7 @@ $("#start").change(function () {
     if (presencesChart != null) {
         presencesChart.destroy();
     }
-    graphingPresenceActivity(presenceActivityData);
+    graphingPresenceActivity(tempPresenceActivityData);
 
 });
 
@@ -58,7 +60,7 @@ $("#end").change(function () {
     if (presencesChart != null) {
         presencesChart.destroy();
     }
-    graphingPresenceActivity(presenceActivityData);
+    graphingPresenceActivity(tempPresenceActivityData);
 });
 
 $("#allUsersPresences").change(function () {
@@ -81,8 +83,8 @@ $("#allUsersPresences").change(function () {
         if (presencesChart != null) {
             presencesChart.destroy();
         }
-        presenceActivityData = newList;
-        graphingPresenceActivity(presenceActivityData);
+        tempPresenceActivityData = newList;
+        graphingPresenceActivity(tempPresenceActivityData);
     }
 });
 
@@ -107,7 +109,8 @@ $("#allUsersPresences").change(function () {
 
 function barGraphHourlyPresenceActivity(data) {
     presenceActivityData = data
-    graphingPresenceActivity(presenceActivityData)
+    tempPresenceActivityData = data
+    graphingPresenceActivity(tempPresenceActivityData)
 }
 
 

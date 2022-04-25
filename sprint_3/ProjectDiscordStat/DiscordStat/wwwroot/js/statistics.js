@@ -17,6 +17,7 @@ $(document).ready(function () {
 })
 
 var messageActivityData = [];
+var tempMessageActivityData = [];
 var messagesChart;
 var startDate = new Date("December 17, 2020");
 var endDate = new Date();
@@ -55,7 +56,8 @@ $("#allUsers").change(function () {
         if (messagesChart != null) {
             messagesChart.destroy();
         }
-        graphingMessageActivity(newList)
+        tempPresenceActivityData = newList
+        graphingMessageActivity(tempMessageActivityData)
     }
 });
 
@@ -64,7 +66,7 @@ $("#start").change(function () {
     if (messagesChart != null) {
         messagesChart.destroy();
     }
-    graphingMessageActivity(messageActivityData);
+    graphingMessageActivity(tempMessageActivityData);
 
 });
 
@@ -73,12 +75,13 @@ $("#end").change(function () {
     if (messagesChart != null) {
         messagesChart.destroy();
     }
-    graphingMessageActivity(messageActivityData);
+    graphingMessageActivity(tempMessageActivityData);
 });
 
 function barGraphHourlyMessageActivity(data) {
     messageActivityData = data
-    graphingMessageActivity(messageActivityData)
+    tempMessageActivityData = data
+    graphingMessageActivity(tempMessageActivityData)
 }
 
 function graphingMessageActivity(data) {

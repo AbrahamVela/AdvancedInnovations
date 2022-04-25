@@ -20,6 +20,7 @@
 })
 
 var voiceStateActivityData = [];
+var tempVoiceStateActivityData = [];
 var voiceStatesChart;
 var startDate = new Date("December 17, 2020");
 var endDate = new Date();
@@ -34,7 +35,7 @@ $("#start").change(function () {
     if (voiceStatesChart != null) {
         voiceStatesChart.destroy();
     }
-    graphingVoiceStateActivity(voiceStateActivityData);
+    graphingVoiceStateActivity(tempVoiceStateActivityData);
 
 });
 
@@ -43,7 +44,7 @@ $("#end").change(function () {
     if (voiceStatesChart != null) {
         voiceStatesChart.destroy();
     }
-    graphingVoiceStateActivity(voiceStateActivityData);
+    graphingVoiceStateActivity(tempVoiceStateActivityData);
 });
 
 $("#allUsers").change(function () {
@@ -66,14 +67,16 @@ $("#allUsers").change(function () {
         if (voiceStatesChart != null) {
             voiceStatesChart.destroy();
         }
-        graphingVoiceStateActivity(newList)
+        tempVoiceStateActivityData = newList
+        graphingVoiceStateActivity(tempVoiceStateActivityData)
     }
 });
 
 
 function barGraphHourlyVoiceStateActivity(data) {
     voiceStateActivityData = data
-    graphingVoiceStateActivity(voiceStateActivityData)
+    tempVoiceStateActivityData = data
+    graphingVoiceStateActivity(tempVoiceStateActivityData)
 }
 
 
