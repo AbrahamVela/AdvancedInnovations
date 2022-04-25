@@ -176,10 +176,10 @@ namespace DiscordStats.DAL.Concrete
         }
 
 
-        public async Task<string?> CreateChannel(string botToken, string serverId, string channelName, string type, string parentId)
+        public async Task<Channel?> CreateChannel(string botToken, string serverId, string channelName, string type, string parentId)
         {
             string uri = "https://discord.com/api/guilds/" + serverId + "/channels";
-            string response = await PostToDiscordCreateChannel(botToken, uri, channelName, type, parentId);
+            Channel response = JsonConvert.DeserializeObject<Channel>(await PostToDiscordCreateChannel(botToken, uri, channelName, type, parentId));
             return response;
         }
 

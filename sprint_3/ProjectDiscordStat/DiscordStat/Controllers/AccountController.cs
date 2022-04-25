@@ -64,7 +64,7 @@ namespace DiscordStats.Controllers
                 {
                      var serverWithMemCount = await _discord.GetFullGuild(botToken, server.Id);
 
-                     _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
+                    _discord.ServerEntryDbCheck(serverWithMemCount, hasBot, server.Owner);
                 }
             }
 
@@ -129,13 +129,13 @@ namespace DiscordStats.Controllers
                 s.HasBot = await _discord.CheckForBot(_configuration["API:BotToken"], s.Id);
                 foreach (var server in _serverRepository.GetAll().ToList())
                 {
-
-                    if (s.Id == server.Id)                        
-                            if(server.InLottery == "true")                    
+                    if (s.Id == server.Id)
+                    {
+                        if (server.InLottery == "true")
                             s.InLottery = "true";
-                    if (server.InLottery == "false")
-                        s.InLottery = "false";
-                    
+                        if (server.InLottery == "false")
+                            s.InLottery = "false";
+                    }
                 }
 
             }
@@ -155,7 +155,7 @@ namespace DiscordStats.Controllers
         {
             Server selectedServer = _serverRepository.GetAll().Where(m => m.Id == serverId).FirstOrDefault();
             ServerLotteryFunctionality lottoFunction = new(_serverRepository);
-            if(selectedServer.InLottery == "false")
+            if(selectedServer.InLottery == "false" || selectedServer.InLottery == null)
             {
                 _serverRepository.AddingServerToLottery(serverId);
             }
@@ -336,8 +336,8 @@ namespace DiscordStats.Controllers
 
                 var presence_list = _discord.GetPresencesForServer(ServerId).Result;
 
-                foreach (var presence in presence_list)
 
+                foreach (var presence in presence_list)
                 {
                     var duplicate = false;
                     foreach (var game in games)
@@ -362,7 +362,7 @@ namespace DiscordStats.Controllers
                         newGame.smallImageId = presence.SmallImageId;
                         if (newGame.smallImageId != null)
                             if (newGame.smallImageId.Contains("playstation"))
-                                newGame.GameImage = "https://blog.playstation.com/tachyon/2021/03/Playstation-logo.jpg";
+                                newGame.GameImage = "https://wallpapercave.com/wp/wp2605496.jpg";
                         if (newGame.GameImage == null)
 
                         {

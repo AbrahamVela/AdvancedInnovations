@@ -130,7 +130,6 @@
 
         $(function(){
             $("#activityValue").change(function(){
-                alert("activityValue changed")
                 if($("#activityValue").is(':checked')) {
                     $("#memberValue").removeAttr('required');
                 } else {
@@ -139,7 +138,6 @@
             });
 
             $("#memberValue").change(function(){
-                alert("memberValue changed")
                 if($("#memberValue").is(':checked')) {
                     $("#activityValue").removeAttr('required');
                 } else {

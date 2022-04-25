@@ -171,36 +171,62 @@ else
 
     <script>
         $(document).ready(function(){
-            $('input:checkbox').click(function() {
-                $('input:checkbox').not(this).prop('checked', false);
-            });
+            //$('input:checkbox').click(function() {
+            //    $('input:checkbox').not(this).prop('checked', false);
+            //});
+
+            $("#type_text").attr('required', 'required');
+            $("#activityValue").attr('required', 'required');
         });
     </script>
 
     <script>
-        function OpenModalOne() {
-        $('#myModalOne').modal('show');
+    function OpenModalOne() {
+    $('#myModalOne').modal('show');
     }
 
 
-        function CloseModalOne() {
-        $('#myModalOne').modal('hide');
+    function CloseModalOne() {
+    $('#myModalOne').modal('hide');
     }
 
-        function GetCheckMark(counter){
-            for(var i = 0; i < counter; i++)
+
+    function GetCheckMark(counter){
+        for(var i = 0; i < counter; i++)
+        {
+            if(document.getElementById('editChannel-'+i).checked)
             {
-                if(document.getElementById('editChannel-'+i).checked)
-                {
-                    var channelId = document.getElementById('editChannel-'+i).getAttribute("value");
-                   $.ajax({
-                    type: "Delete",
-                    url: `@Url.Action("DeleteChannel", "Channel")?id=${channelId}`,
-                    success: function(msg) {}
-                    });
-                }
+                var channelId = document.getElementById('editChannel-'+i).getAttribute("value");
+                $.ajax({
+                type: "Delete",
+                url: `@Url.Action("DeleteChannel", "Channel")?id=${channelId}`,
+                success: function(msg) {}
+                });
+
+
+                location.reload();
+
             }
         }
+    }
+
+    $(function(){
+        $("#type_text").change(function(){
+            if($("#type_text").is(':checked')) {
+                $("#type_voice").removeAttr('required');
+            } else {
+                $("#type_voice").attr('required', 'required');
+            }
+        });
+
+        $("#type_voice").change(function(){
+            if($("#type_voice").is(':checked')) {
+                $("#type_text").removeAttr('required');
+            } else {
+                $("#type_text").attr('required', 'required');
+            }
+        });
+    });
     </script>
 
 }

@@ -276,7 +276,7 @@ namespace DiscordStats.DAL.Concrete
             return userInfo;
         }
 
-        public async Task<ServerOwnerViewModel?> GetFullGuild(string botToken, string serverId)
+        public async Task<ServerOwnerViewModel?> GetFullGuild(string botToken, string serverId) 
         {
             string uri = "https://discord.com/api/guilds/" + serverId + "?with_counts=true";
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
@@ -358,7 +358,6 @@ namespace DiscordStats.DAL.Concrete
             foreach (var presence in presences)
             {
                 Debug.Write(presence.Name);
-                presence.CreatedAt = presence.CreatedAt?.ToLocalTime();
 
                 Task.Delay(300).Wait();
                 await Task.Run(() =>

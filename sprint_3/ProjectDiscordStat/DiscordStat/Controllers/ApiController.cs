@@ -26,11 +26,13 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
-       
-        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository userRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository)
+        private readonly IVoiceStateRepository _voiceStateRepository;
+
+        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
+
         {
             _logger = logger;
-            _userRepository = userRepo;
+            _userRepository = discordUserRepo;
             _presenceRepository = presenceRepository;
             _discord = discord;
             _discordServicesForChannels = discordServicesForChannels;
@@ -38,24 +40,28 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _messageInfoRepository = messageInfoRepository;
             _voiceChannelRepository = voiceChannelRepository;
+            _voiceStateRepository = voiceStateRepository;
         }
 
 
         [HttpPost]
         public async Task<IActionResult> PostUsers(DiscordUserAndUserWebSiteInfo[] users)
         {
+           
             foreach (var user in users)
             {
-                var duplicate = false;
+
 
                 Task.Delay(300).Wait();
                 await Task.Run(() =>
                 {
+                    var duplicate = false;
+
                     var allDiscordUsers = _userRepository.GetAll().ToList();
 
                     for (int i = 0; i < allDiscordUsers.Count(); i++)
                     {
-                        if (user.Id == allDiscordUsers[i].Id)
+                        if (user.Id == allDiscordUsers[i].Id && user.Servers == allDiscordUsers[i].Servers)
                         {
                             duplicate = true;
                         }
@@ -86,6 +92,14 @@ namespace DiscordStats.Controllers
         {
 
             foreach (var presence in presences)
+            {
+                if(presence.Name.Contains("™"))
+                {
+                    var trademark = presence.Name.IndexOf("™");
+                    presence.Name = presence.Name.Remove(trademark);
+                }
+            }
+                foreach (var presence in presences)
             {
 
                     var itWorked = await _discord.PresenceEntryAndUpdateDbCheck(presences);
@@ -164,6 +178,38 @@ namespace DiscordStats.Controllers
         {
             _messageInfoRepository.AddOrUpdate(message);
             await _channelRepository.UpdateMessageCount(message);
+            return Json("It worked");
+        }
+
+        [HttpPost]
+        public IActionResult PostVoiceStates(VoiceState[] voiceStates)
+        {
+            var duplicate = false;
+            foreach (var voiceState in voiceStates)
+            {
+                foreach (var voice in _voiceStateRepository.GetAll().ToList())
+                {
+                    if (voice.UserId == voiceState.UserId && voice.ServerId == voiceState.ServerId && voice.CreatedAt?.Hour == voiceState.CreatedAt?.Hour && voice.CreatedAt?.Date == voiceState.CreatedAt?.Date)
+                    {
+                        duplicate = true;
+                    }
+                }
+                if (duplicate)
+                {
+                    if (voiceState.CreatedAt?.Hour != DateTime.UtcNow.Hour)
+                    {
+                        var newVoiceState = voiceState;
+                        newVoiceState.CreatedAt = DateTime.UtcNow;
+                        _voiceStateRepository.AddOrUpdate(voiceState);
+
+                    }
+                }
+                if (!duplicate)
+                {
+                    _voiceStateRepository.AddOrUpdate(voiceState);
+                }
+            }
+
             return Json("It worked");
         }
     }
