@@ -71,6 +71,12 @@ namespace DiscordStats.Controllers
         }
 
         [HttpGet]
+        public IActionResult GetAllPresencesFromDatabase(string ServerId)
+        {
+            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
+
+        [HttpGet]
         public IActionResult GetUsersFromDatabase(string ServerId)
         {
             var test = _userRepository.GetAll().Where(s => s.Servers == ServerId).ToList();
