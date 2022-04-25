@@ -27,11 +27,12 @@ namespace DiscordStats.Controllers
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IVoiceStateRepository _voiceStateRepository;
-        public ApiController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
+
+        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
 
         {
             _logger = logger;
-            _userRepository = userRepo;
+            _userRepository = discordUserRepo;
             _presenceRepository = presenceRepository;
             _discord = discord;
             _discordServicesForChannels = discordServicesForChannels;
@@ -46,8 +47,10 @@ namespace DiscordStats.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUsers(DiscordUserAndUserWebSiteInfo[] users)
         {
+           
             foreach (var user in users)
             {
+
                 var duplicate = false;
 
                 Task.Delay(300).Wait();

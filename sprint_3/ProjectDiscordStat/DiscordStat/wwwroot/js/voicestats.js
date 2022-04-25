@@ -78,7 +78,7 @@ function barGraphHourlyVoiceStateActivity(data) {
 
 
 function graphingVoiceStateActivity(data) {
-
+    //broken chart
 
     $("#usersVoiceHourlyAllTimeChart").empty();
 
@@ -119,13 +119,70 @@ function graphingVoiceStateActivity(data) {
             }]
         },
         options: {
-            legend: { display: false },
-            title: {
-                display: true,
-                text: "Activity Frequency"
-            }
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: "Active Voice Channel Time",
+                    padding: 10,
+                    color: 'black',
+                    font: {
+                        size: 25
+                    }
+                },
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Voice Channel Frequency',
+                        padding: 10,
+                        color: 'black',
+                        font: {
+                            size: 25
+                        }
+                    },
+                    ticks: {
+                        beginAtZero: false,
+                        precision: 0,
+                        color: 'black',
+                        font: {
+                            size: 20
+                        }
+                    }
 
+                },
+                x: {
+                    ticks: {
+                        precision: 0,
+                        color: 'Black',
+                        font: {
+                            size: 16,
+                            family: 'Helvetica'
+                        }
+                    }
+                }
+            },
 
         }
+
+
+
+
     })
+
+
 };
+//        options: {
+//            legend: { display: false },
+//            title: {
+//                display: true,
+//                text: "Activity Frequency"
+//            }
+
+
+//        }
+//    })
+//};
