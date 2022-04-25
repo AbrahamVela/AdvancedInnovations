@@ -37,7 +37,7 @@ CREATE TABLE [DiscordUserAndUserWebSiteInfo]
   [ID]      nvarchar(256) Not Null, 
   [DiscordUserPk] int           PRIMARY KEY IDENTITY(1, 1),
   [Username]    nvarchar(128)  NOT NULL,
-  [Servers] nvarchar(256) NOT NULL,
+  [Servers] nvarchar(256)   NULL,
   [Avatar] nvarchar(256)     NULL,
   [FirstName] nvarchar(128) NULL,
   [LastName] nvarchar(128) NULL,
