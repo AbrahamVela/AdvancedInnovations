@@ -202,8 +202,8 @@ namespace DiscordStats_Tests
         }
 
 
-[Test]
-        public async Task GetWebHooks_404Response_ShouldThrowException()
+        [Test]
+        public async Task GetWebHooks_404Response_ShouldReturnNull()
         {
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
@@ -214,9 +214,11 @@ namespace DiscordStats_Tests
             DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
 
             // Act
-            Task<List<WebhookUsageVM>?> Act() => discord.GetChannelWebHooks("fakeBotToken", "FakeChannelId");
+            Task<List<WebhookUsageVM>?> result = discord.GetChannelWebHooks("fakeBotToken", "FakeChannelId");
+
+            var nullTemp = result.Result;
             // Assert
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
+            Assert.AreEqual(nullTemp, null);
 
         }
 
@@ -520,7 +522,7 @@ namespace DiscordStats_Tests
             .Build();
             DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
 
-            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository);
+            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null);
             controller.ControllerContext = new ControllerContext();
 
             // Act
@@ -578,7 +580,7 @@ namespace DiscordStats_Tests
             .Build();
             DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
 
-            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository);
+            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null);
             controller.ControllerContext = new ControllerContext();
 
             // Act
@@ -623,7 +625,7 @@ namespace DiscordStats_Tests
             .Build();
             DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
 
-            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository);
+            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null);
             controller.ControllerContext = new ControllerContext();
 
             // Act
@@ -658,7 +660,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
 
-            ChannelController controller = new ChannelController(null, null, null, _discordServicesForChannels, _serverRepository);
+            ChannelController controller = new ChannelController(null, null, null, _discordServicesForChannels, _serverRepository, null);
             controller.ControllerContext = new ControllerContext();
             WebhookUsageVM vm = new WebhookUsageVM();
             vm.Id = "933605549457682442";
@@ -712,7 +714,7 @@ namespace DiscordStats_Tests
             .Build();
             DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
 
-            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository);
+            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null);
             controller.ControllerContext = new ControllerContext();
 
             // Act
@@ -767,7 +769,7 @@ namespace DiscordStats_Tests
             .Build();
             DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
 
-            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository);
+            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null);
             controller.ControllerContext = new ControllerContext();
 
             // Act

@@ -114,13 +114,13 @@
                     </td>
                     @if (s.HasBot == "true")
                     {
-                        <td style="padding-bottom: 2%">
+                        <td style="padding-bottom: 2%" id ="serverChannels">
                         
                         
                         <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> Channels</a></h3>
                         
                         </td>
-                        <td style="padding-bottom: 2%">
+                        <td style="padding-bottom: 2%" id="drawingSpot">
                             @if (s.InLottery == "false" || s.InLottery == null)
                             {
                                 <h3>Add: <a href="@Url.Action("AddServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
