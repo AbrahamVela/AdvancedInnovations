@@ -80,7 +80,7 @@
                         {
                             i = "https://cdn.discordapp.com/app-icons/" + u.id + "/" + u.icon + ".png";
                         }
-                                           
+                             
             <img class="zoom" src="@i" id="@u.name" onclick="location.href='@Url.Action("GameDetails", "Account", new { gameName = u.name, serverId = u.ServerId })'" style="height: 125px;"/>
                 }
               <h3 style="margin-top:10%">@u.name</h3>
