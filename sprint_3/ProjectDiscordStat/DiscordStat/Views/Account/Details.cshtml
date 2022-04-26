@@ -75,7 +75,7 @@
         </div>
       </div>
     <!-- Heading Ends Here -->
-     <!-- Services Starts Here -->
+    <!-- Services Starts Here -->
     <div class="services-section services-page">
       <div class="container">
         <div class="row">
@@ -104,10 +104,10 @@
                             <P>Boost Level: @Model.Premium_Tier</P>
 
                             <div class="row" style="margin-top:3%">
-                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="document.getElementById('TopUsersContainer').scrollIntoView();" >View Top Users</button>
+                                <button type="button" class="btn btn-info" onclick="document.getElementById('TopUsersContainer').scrollIntoView();" >View Top Users</button>
                             </div>
                             <div class="row" style="margin-top:3%">
-                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="document.getElementById('StatsContainer').scrollIntoView();" >View Stats</button>
+                                <button type="button" class="btn btn-info" onclick="document.getElementById('StatsContainer').scrollIntoView();" >View Stats</button>
                             </div>
                             <div class="row" style="margin-top:3%">
                                 <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
