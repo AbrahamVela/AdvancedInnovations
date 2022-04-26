@@ -356,33 +356,40 @@ namespace DiscordStats.Controllers
                         newGame.name = presence.Name;
                         newGame.UserCount = 1;
 
-                        if (presence.Image == null)
-                            newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
-                        else
+                        if(presence.Image != null)
+                        {
                             newGame.GameImage = presence.Image;
+                        }
+                        
                         newGame.smallImageId = presence.SmallImageId;
                         if (newGame.smallImageId != null)
                             if (newGame.smallImageId.Contains("playstation"))
                                 newGame.GameImage = "https://wallpapercave.com/wp/wp2605496.jpg";
-                        if (newGame.GameImage == null)
+                        if (newGame.GameImage == null || newGame.GameImage == "")
 
                         {
                             var game = await _discord.GetJsonStringFromEndpointGames(newGame.name);
                             if (game == null)
                             {
                                 newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                                newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
                                 newGame.id = "1";
                             }
                             else
                             {
-                                if (game.icon == null)
-                                    newGame.icon = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                                if (game.icon == null || game.id == null)
+                                {
+                                    newGame.GameImage = "https://e7.pngegg.com/pngimages/672/63/png-clipart-discord-computer-icons-online-chat-cool-discord-icon-logo-smiley.png";
+                                }
                                 else
-                                    newGame.icon = game.icon;
+                                {
+                                    newGame.GameImage = "https://cdn.discordapp.com/app-icons/" + game.id + "/" + game.icon + ".png";
+                                }
+                                   
                                 newGame.id = game.id;
                             }
-
                         }
+
                         games.Add(newGame);
                     }
                 }
