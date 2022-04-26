@@ -1,54 +1,232 @@
-﻿@model IEnumerable<DiscordStats.Models.Channel>
+﻿@model DiscordStats.ViewModel.ServerChannelsVM
 
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Server Details</title>
 
-<div class="mode">
-Dark mode:	
-    <span class="change">ON</span>
-</div>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <title>@ViewData["Title"] - DiscordStat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="~/assets/css/templatemo-host-cloud.css">
+    <link rel="stylesheet" href="~/assets/css/owl.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 
-@if(@ViewBag.hasBot == "true")
+</head>
+ <body>
+          <!-- ***** Preloader Start ***** -->
+    <div id="preloader">
+        <div class="jumper">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>  
+    <!-- ***** Preloader End ***** -->
+    <!-- Page Content -->
+ <!-- Heading Starts Here -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Server Channels</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Heading Ends Here -->
+    @{var counter = 0;}
+    @if(@ViewBag.hasBot == "true")
 {
-<h1 style="text-align:center">Click on acceptable channels for webhook features.</h1>
+    <!-- Services Starts Here -->
+    <div class="services-section services-page">
+        <div class="container" id="serverChannelCon">
+            <div class="row">
 
-<table>
-    <thead>
-    <tr>
-        <th><b>Channel Name</b></th>
-        <th><b>Channel Id</b></th>
-        <th><b>Message Count</b></th>
-        <th></th>
-    </tr>
-
-    </thead>
-    <tbody>
-        @foreach (var c in Model.OrderByDescending(c => c.Count))
-        {
-                @if (!c.Type.Equals("GUILD_CATEGORY"))
-                {
+                <div class="section-heading">      
+                    <h2>Click on acceptable channels for webhook features.</h2>             
+                </div>
+            </div>
+            <div class="row">          
+                <table class="table" id="serverTable">
+                    <thead class="thead-dark">
                     <tr>
-                        @if (!c.Type.Equals("GUILD_VOICE") && !c.Name.Equals("Voice Channels"))
-                        {
-                            <td><h3><a href="@Url.Action("ChannelWebhooks", "Channel", new {Id = c.Id})"> @c.Name</a></h3></td>
-                        }
-                        else
-                        {
-                            <td>@c.Name</td>
-                        }
-                        <td>@c.Id</td>
-                        <td>@c.Count</td>
+                        <th><b>Delete Channel</b></th>
+                        <th><b>Channel Name</b></th>
+                        <th><b>Message Count</b></th>
                     </tr>
-                }
-            }
-    </tbody>
-</table>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.serverChannels.OrderByDescending(c => c.count))
+                       @* @for(int i = 0; i < Model.serverChannels.Count; ++i)*@
+                        {
+                                @if (!c.type.Equals("4"))
+                                {
+                                    <tr>                                        
+                                        <td><input type="checkbox" value="@c.id" id="editChannel-@(counter)"></td>
+                                        @{counter++;}
+                                        @if (!@c.type.Equals("2"))
+                                        {
+                                            <td><h3><a href="@Url.Action("ChannelWebhooks", "Channel", new {Id = @c.id})">@c.name</a></h3></td>
+                                        }
+                                        else
+                                        {
+                                            <td><h3>@c.name</h3></td>
+                                        }                       
+                                        <td>@c.count</td>
+                       
+                                    </tr>
+                                }
+                            }
+                    </tbody>
+                </table>         
+            </div>         
+            <div>
+               <center><button value="Submit" onclick="OpenModalOne()" class="btn btn-danger" style="margin-top: 1%" >Delete Channel</button></center> <br>
+            </div>
+
+            <form asp-action="CreateChannel">
+                <div class="row" required="required">
+                    <div class="col-md-6 col-sm-12 justify-content-center">
+                        <br>
+                        <h2 style="white-space: nowrap">Check box for text channel.</h2> 
+                        <label style="margin-left: 50%">@Html.CheckBoxFor(t => t.type_text)</label>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <br>
+                        <h2>Check box for voice channel.</h2>  
+                       <label style="margin-left: 35%"> @Html.CheckBoxFor(t => t.type_voice)</label>
+                   </div>
+                </div>
+                <div class="row">
+                    <label for="text" asp-for="name" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Channel Name:</label>
+                    <input type="text" asp-for="name" class="form-control" required="required" maxlength="32" pattern="^\S+$" ErrorMessage="No whitespace">
+                    <span asp-validation-for="name" class="text-danger"></span>
+                </div>
+                <div class="row" >
+                    <label asp-for="parent_id" class="control-label" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Which catagory would you like to add the channel to?</label>
+                    <select asp-for="parent_id" class="form-control" asp-items="ViewBag.Id"></select>
+                    <span asp-validation-for="parent_id" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    @Html.HiddenFor(i => i.guild_id, new { @readonly="readonly" })
+                </div>   
+                <button value="Submit"  class="btn btn-primary" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Create Channel</button>
+            </form>
+
+
+        </div>
+    </div>
+    <!-- Services Ends Here -->
 }
 else
 {
     <h1 style="text-align:center">We are unable to list channels. Please add the bot to see channels.</h1>
 }
 
+
+  <div class="modal fade" id="myModalOne">
+    <div class="modal-dialog">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Leave Server</h4>
+                </div>
+                <div class="modal-body" style="text-align: center; font-weight: bold">
+                    Are you sure you want to delete channel(s)?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="CloseModalOne()" style="margin-right: 59%">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" onclick="GetCheckMark(@counter)">
+                        Delete
+                    </button>
+                </div>           
+        </div>
+    </div>
+</div>
+
+
+</body>
+    </html>
+    <!-- Bootstrap core JavaScript -->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Additional Scripts -->
+    <script src="~/assets/js/custom.js"></script>
+    <script src="~/assets/js/owl.js"></script>
+    <script src="~/assets/js/accordions.js"></script>
+
 @section Scripts {
 
      <script type="text/javascript" src="~/js/site.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            //$('input:checkbox').click(function() {
+            //    $('input:checkbox').not(this).prop('checked', false);
+            //});
+
+            $("#type_text").attr('required', 'required');
+            $("#activityValue").attr('required', 'required');
+        });
+    </script>
+
+    <script>
+    function OpenModalOne() {
+    $('#myModalOne').modal('show');
+    }
+
+
+    function CloseModalOne() {
+    $('#myModalOne').modal('hide');
+    }
+
+
+    function GetCheckMark(counter){
+        for(var i = 0; i < counter; i++)
+        {
+            if(document.getElementById('editChannel-'+i).checked)
+            {
+                var channelId = document.getElementById('editChannel-'+i).getAttribute("value");
+                $.ajax({
+                type: "Delete",
+                url: `@Url.Action("DeleteChannel", "Channel")?id=${channelId}`,
+                success: function(msg) {}
+                });
+
+
+                location.reload();
+
+            }
+        }
+    }
+
+    $(function(){
+        $("#type_text").change(function(){
+            if($("#type_text").is(':checked')) {
+                $("#type_voice").removeAttr('required');
+            } else {
+                $("#type_voice").attr('required', 'required');
+            }
+        });
+
+        $("#type_voice").change(function(){
+            if($("#type_voice").is(':checked')) {
+                $("#type_text").removeAttr('required');
+            } else {
+                $("#type_text").attr('required', 'required');
+            }
+        });
+    });
+    </script>
+
 }
