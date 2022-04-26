@@ -59,7 +59,7 @@
           </div>
           <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
               @*@using (Html.BeginForm("ProfileFormSubmit", "Account", FormMethod.Post))*@
-            <form asp-action="ProfileFormSubmit"> 
+            <form asp-action="ProfileFormSubmit" id="profileForm"> 
                     <div class="row" style="padding-bottom: 3%" >
                         <div class="col-3">
                             <p style=" color: black; font-weight: 400;font-size:16px">First Name:</p>
@@ -104,7 +104,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-12 text-center" >
-                            <button value="Submit" class="btn btn-primary">Submit</button>
+                            <button id="submitProfileForm" value="Submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
 

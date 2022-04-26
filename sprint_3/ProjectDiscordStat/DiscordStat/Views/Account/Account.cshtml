@@ -91,7 +91,7 @@
     <div class="services-section services-page" style="margin-bottom: 3%">
       <div class="container">
         <div class="row" id="ServersBlock">
-              <h3>Your STAT TRACKER profile info:</h3>
+              <h3 id ="websiteProfileInfoLocation">Your STAT TRACKER profile info:</h3>
                 <div class="row">
                     <p>First name: @Model.ProfileFirstName</p>
                 </div>
@@ -106,7 +106,7 @@
                 </div>
                <div class="col">
             <div class="form-group mt-3 text-center">
-                <input type="button" value="Edit Profile Info" class="btn btn-success" onclick="location.href='@Url.Action("WebsiteProfileForm","Account", new {userId = ViewBag.id } )'" />
+                <input type="button" id="profileInfo" value="Edit Profile Info" class="btn btn-success" onclick="location.href='@Url.Action("WebsiteProfileForm","Account", new {userId = ViewBag.id } )'" />
             </div>
         </div>
        </div>

@@ -15,6 +15,7 @@ namespace AbrahamSpecFlowProject.PageObjects
         private IWebElement Title => _browserInteractions.WaitAndReturnElement(By.Id("title"));
         private IWebElement WelcomeText => _browserInteractions.WaitAndReturnElement(By.Id("loggedin-welcome"));
         private IEnumerable<IWebElement> AppleButtons => _browserInteractions.WaitAndReturnElements(By.CssSelector("#listOfApples button"));
+        private IWebElement FeaturedServerLocation => _browserInteractions.WaitAndReturnElement(By.Id("featuredServer"));
 
         public HomePage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
@@ -28,6 +29,8 @@ namespace AbrahamSpecFlowProject.PageObjects
 
         public string GetTitle => Title.Text;
         public string GetWelcomeText => WelcomeText.Text;
+
+        public bool GetFeaturedServerLocation => FeaturedServerLocation.Displayed;
 
         public string GetAppleButtonText(int index) => AppleButtons.ElementAt(index).Text;
 
