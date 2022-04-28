@@ -27,16 +27,6 @@
             <div></div>
             <div></div>
         </div>
-
-        <div class ="col-3" style="font-weight:bold">   
-            <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> @s.Name</a></h3>
-
-            @if(s.HasBot == "false")
-            {
-                <div class="row" style="width: 50%; margin-top: 2%">
-                @{
-                    var url = "https://discord.com/oauth2/authorize?client_id=938808510932746350&scope=bot&permissions=8&guild_id=" + s.Id;
-
     </div>  
     <!-- ***** Preloader End ***** -->
     <!-- Page Content -->
@@ -71,9 +61,7 @@
                     <th><b>Privacy Level/Add bot</b></th>
                     <th><b>Server channels</b></th>
                     <th><b>Drawing for server on home page</b></th>
-
                 </tr>
-
              </thead>
              <tbody>
               @foreach (var s in Model)
@@ -101,9 +89,7 @@
                             @{
                                 var url = "https://discord.com/oauth2/authorize?client_id=938808510932746350&scope=bot&permissions=8&guild_id=" + s.Id;
                             }
-
                             <a id="anchorID" onclick="Refresh()" href="@url" target="_blank" style="margin-left: 12%" class="btn btn-primary">Add Bot</a>
-
                             </div>
                         }
                         @if(s.HasBot == "true")
@@ -121,8 +107,7 @@
 
                             </div>
                             <div class="row" style="width: 50%; margin-top: 2%;white-space: nowrap; display: inline-block; color: green; font-size:18px">
-
-                   
+                  
                                 <span>Bot added </span> <span class="fa fa-check" style="margin-left: -15%"></span>
                             </div>
                         }
@@ -145,69 +130,19 @@
                                 <h3>Remove: <a href="@Url.Action("RemoveServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
                             }
                         </td> 
-
                     }
                                 
 
                 
                     </tr>
-
                 }
-                <a id="anchorID" href="@url" target="_blank" class="btn btn-primary">Add Bot</a>
-                </div>
-            }
-            @if(s.HasBot == "true")
-            {
-                <div class="row form-inline" style="width:50%;">
-                    <form method="post" action="ChangePrivacy">
-                        <select class="form-select" aria-label="Default select example" itemid="privacy @s" name="privacyString" id="privacyChangeForm">
-                            <option value="private @s.Id">Private</option>
-                            <option value="public @s.Id">Public</option>
-                        </select>
-                        <input type="submit" value="Submit" style="float:left;">
-                    </form>
-                    <br/>
-
-
-                </div>
-                <div class="row" style="width: 50%; margin-top: 2%;white-space: nowrap; display: inline-block; color: green; font-size:18px">
-
-                   
-                                <span>Bot added </span> <span class="fa fa-check" style="margin-left: -15%"></span>
-                            </div>
-                        }
-                    </td>
-                    @if (s.HasBot == "true")
-                    {
-                        <td style="padding-bottom: 2%" id ="serverChannels">
-                        
-                        
-                        <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> Channels</a></h3>
-                        
-                        </td>
-                        <td style="padding-bottom: 2%" id="drawingSpot">
-                            @if (s.InLottery == "false" || s.InLottery == null)
-                            {
-                                <h3>Add: <a href="@Url.Action("AddServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
-                            }
-                            @if (s.InLottery == "true")
-                            {
-                                <h3>Remove: <a href="@Url.Action("RemoveServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
-                            }
-                        </td> 
-                    }
-                               
-
-                
-                    </tr>
-                }
+               
             </tbody>
         </table>
           
           
 
-         
-         
+                
         </div>
       </div>
     </div>
@@ -245,21 +180,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script>
-
     function AddBot(val) {
         alert(val);
     }
      
-
     function Refresh()
     {
         setTimeout(() => {
  window.location.href = window.location.href
 }, 8000)
       
-
     }
-
 </script>
 
 @section Scripts {

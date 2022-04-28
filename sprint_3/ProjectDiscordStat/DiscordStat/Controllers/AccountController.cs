@@ -38,9 +38,6 @@ namespace DiscordStats.Controllers
             _messageIngoChannelRepository = messageInfoRepository;
             _userRepository = userRepository;
             _serverMemberRepository = serverMemberRepository;
-            _messageIngoChannelRepository = messageInfoRepository;
-            _userRepository = userRepository;    
-
 
         }
 
