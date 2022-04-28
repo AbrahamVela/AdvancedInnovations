@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-<meta Http-Equiv="Cache-Control" Content="no-cache">
-<meta Http-Equiv="Pragma" Content="no-cache">
-<meta Http-Equiv="Expires" Content="0"> 
+
+
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
@@ -12,15 +11,7 @@
 
 
 
-    <a class="btn btn-primary" href="@Url.Action("Account", "Account")" role="button">Login
-        <i class="fab fa-discord"></i>
-    </a>
-}
-</ul>
 
-
-
-          
             @if (User.Identity.IsAuthenticated)
             { 
             <ul class="navbar-nav ml-auto">
@@ -31,7 +22,6 @@
             <div class="functional-buttons">
                 <ul class="navbar-nav ml-auto">            
                     <li>            
-
 
                         <a id="logoutButton" onclick="RefreshHeader()" href="@Url.Action("Logout", "Account")">Logout</a>
 
@@ -52,8 +42,7 @@
 
 
             <script>
-            function RefreshHeader(){
-
+         function RefreshHeader(){
         function preventBack() { window.history.forward(); }
         setTimeout("preventBack()", 0);
         window.onunload = function () { null };
