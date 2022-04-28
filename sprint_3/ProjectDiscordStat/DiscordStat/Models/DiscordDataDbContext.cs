@@ -27,6 +27,7 @@ namespace DiscordStats.Models
         public virtual DbSet<ServerUserJoin> ServerUserJoins { get; set; } = null!;
         public virtual DbSet<VoiceChannel> VoiceChannels { get; set; } = null!;
         public virtual DbSet<Webhook> Webhooks { get; set; } = null!;
+        public virtual DbSet<ServerMembers> ServerMembers { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -124,6 +125,11 @@ namespace DiscordStats.Models
             {
                 entity.HasKey(e => e.VoiceChannelPk)
                     .HasName("PK__VoiceCha__004F00F911515B03");
+            });
+            modelBuilder.Entity<ServerMembers>(entity =>
+            {
+                entity.HasKey(e => e.ServerPk)
+                     .HasName("PK__Server__C56B03861C27704D");
             });
 
             modelBuilder.Entity<Webhook>(entity =>

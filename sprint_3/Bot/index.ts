@@ -6,8 +6,8 @@ dotenv.config()
 import { replies } from './replies'
 
 
-// const url = 'https://discordstats.azurewebsites.net'
-const url = 'https://localhost:7228'
+//const url = 'https://discordstats.azurewebsites.net'
+ const url = 'https://localhost:7228'
 
 
 // const express = require('express');
@@ -461,17 +461,49 @@ async function sendVoiceChannels (){
 //     })
 // }
 
+<<<<<<< Updated upstream
 function updataData() {
     sendPresence();
     sendUsers();
+=======
+function updataPresence() {
+    sendPresence();   
+}
+function updataUsers() {
+    sendUsers();   
+}
+function updataVoiceStates() {
+    sendVoiceStates(); 
+>>>>>>> Stashed changes
 }
 function UpdateVoiceChannel() {
-    sendVoiceChannels();
+    sendVoiceChannels();  
+}
+function UpdateServers() {
     sendServers();
+}
+function UpdateChannels() {
     sendChannels();
 }
+<<<<<<< Updated upstream
   
 setInterval(updataData, 12000);
 setInterval(UpdateVoiceChannel, 1800000);
+=======
+
+
+ //setInterval(updataPresence, 300000);
+ //setInterval(updataUsers, 450000);
+ //setInterval(updataVoiceStates, 300000);
+
+ //setInterval(UpdateVoiceChannel, 1800000);
+ setInterval(UpdateServers, 10000);
+ //setInterval(UpdateChannels, 1800000);
+
+//setInterval(UpdateVoiceChannel, 15000);
+//setInterval(updataData, 45000);
+
+
+>>>>>>> Stashed changes
 
 client.login(process.env.TOKEN);

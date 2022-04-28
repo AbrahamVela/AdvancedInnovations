@@ -58,7 +58,12 @@ builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
 builder.Services.AddScoped<IChannelRepository, ChannelRepository>();
 builder.Services.AddScoped<IMessageInfoRepository, MessageInfoRepository>();
 builder.Services.AddScoped<IVoiceChannelRepository, VoiceChannelRepository>();
+<<<<<<< Updated upstream
 
+=======
+builder.Services.AddScoped<IVoiceStateRepository, VoiceStateRepository>();
+builder.Services.AddScoped<IServerMemberRepository, ServerMemberRepository>();
+>>>>>>> Stashed changes
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -122,6 +127,22 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.Use(async (context, next) =>
+{
+    context.Response.GetTypedHeaders().CacheControl =
+        new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+        {
+            MaxAge = TimeSpan.FromSeconds(0),
+            NoCache = true,
+            NoStore = true,
+            MustRevalidate = true
+            
+        };
+    context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
+        new string[] { "Accept-Encoding" };
+
+    await next(context);
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

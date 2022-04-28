@@ -21,7 +21,15 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
+<<<<<<< Updated upstream
         public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository)
+=======
+        private readonly IMessageInfoRepository _messageIngoChannelRepository;
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, 
+            IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository, IServerMemberRepository serverMemberRepository)
+>>>>>>> Stashed changes
         {
             _logger = logger;
             _discord = discord;
@@ -30,6 +38,13 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
+<<<<<<< Updated upstream
+=======
+            _messageIngoChannelRepository = messageInfoRepository;
+            _userRepository = userRepository;
+            _serverMemberRepository = serverMemberRepository;
+
+>>>>>>> Stashed changes
         }
 
         [Authorize (AuthenticationSchemes = "Discord")]
@@ -65,10 +80,31 @@ namespace DiscordStats.Controllers
             ViewBag.hash = userInfo.Avatar;
 
 
+<<<<<<< Updated upstream
         // Now we can inject a mock IDiscordService that fakes this method.  That will allow us to test
         // anything __after__ getting this list of servers, i.e. any logic that we perform with this data from
         // here on.  There's nothing here now but there presumably will be.  If this method used a viewmodel
         // then we could test this action method a little more, but it doesn't.
+=======
+        [Authorize]
+        public async Task<IActionResult> WebsiteProfileForm(string userId)
+        {
+            bool authenticated = false;
+            var name = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if (userId == name)
+                authenticated = true;
+            if (authenticated)
+            {
+                var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+                vm.id = userId;
+                return View(vm);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+>>>>>>> Stashed changes
 
         // Unfortunately it doesn't allow us to test the actual code within the GetCurrentUserGuilds method.
         // For that we must take the next step in refactoring.
@@ -144,6 +180,7 @@ namespace DiscordStats.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
 
         [Authorize]
         public async Task<IActionResult> Details(string? name)
@@ -315,6 +352,35 @@ namespace DiscordStats.Controllers
             };
             return View(ps);
         }
+
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> ServerGrowth(string ServerName, string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                ViewBag.ServerName = ServerName;
+                var serverCounts = _serverMemberRepository.GetAll().Where(s => s.Id == ServerId).ToList();
+                
+                return View(serverCounts);
+            }
+            else
+            {
+                return RedirectToAction("Account", "Account");
+            }
+        }
+
         [HttpGet]
         public IActionResult GetVoiceChannelInfoFromDatabase(string ServerId)
         {
