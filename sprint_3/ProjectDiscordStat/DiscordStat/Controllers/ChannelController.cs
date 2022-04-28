@@ -37,7 +37,30 @@ namespace DiscordStats.Controllers
 
         public async Task<IActionResult> ServerChannels(string? serverId)
         {
+
             bool authenticated = false;
+            var server = await _discord.GetFullGuild(_configuration["API:BotToken"], serverId);
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], serverId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            var owner = usersInGuild.Where(m => m.user.Id == server.Owner_Id).First();
+            if(owner.user.UserName == name)
+                    authenticated = true;
+            
+            if (authenticated)
+            {
+                string botToken = _configuration["API:BotToken"];
+                var servers = _serverRepository.GetAll();
+                var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
+
+
+            IList<Channel> channels = new List<Channel>();
+            if (selectedServer != null)
+            bool authenticated = false;
+            
             var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], serverId);
             if (usersInGuild == null)
             {
