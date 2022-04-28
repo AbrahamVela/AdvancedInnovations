@@ -69,12 +69,6 @@ client.on('messageCreate', async(message) => {
     }, 5000);
 
 
-
-
-
-
-
-
     if (!message.content.startsWith(prefix)) return;
 
     // gets the ID of the server in which the message was sent from
@@ -179,8 +173,12 @@ client.on('messageCreate', async(message) => {
 
 async function sendUsers (){
     let users: any = []
+    let test = client.guilds.cache;
     client.guilds.cache.each(async (guild) => {
         let list = await client.guilds.cache.get(String(guild.id))?.members.fetch()
+       
+            let a = list;
+        
         list?.each((user) => {
             if (user.user.bot === false) {
                 if (user.user.avatar === null) {
@@ -194,26 +192,36 @@ async function sendUsers (){
                 }
                 // console.log(newUser)
                 users.push(newUser);
-                setTimeout(() => 100);
-            }
-            // console.log(users.length)
-        })
+                console.log("The users of all servers: ")
+                console.log(users)              
+                axios.post(url + '/api/postusers', users)
+                .then((result: any) => {
+                                    console.log(result);
+                                })
+                                .catch((error: any) => {
+                                    console.log(error);
+                                })
+                            }
+    
 
 
     })
-    setTimeout(() => {
-        console.log("The users of all servers: ")
-        console.log(users)
-        axios.post(url + '/api/postusers', users)
-
-            .then((result: any) => {
-                console.log(result);
-            })
-            .catch((error: any) => {
-                console.log(error);
-            });
-    }, 5000);
+    
+})
 }
+//     setTimeout(() => {
+//         console.log("The users of all servers: ")
+//         console.log(users)
+//         axios.post(url + '/api/postusers', users)
+
+//             .then((result: any) => {
+//                 console.log(result);
+//             })
+//             .catch((error: any) => {
+//                 console.log(error);
+//             });
+//     }, 5000);
+// }
 
 
 
@@ -243,9 +251,10 @@ async function sendServers (){
             Description: guild.description,
             Premiumtier: guild.premiumTier,
             ApproximatePresenceCount: presenceCount,
-            Privacy: "null",
-            OnForum: "null",
-            Message: "null"
+            Privacy: null,
+            OnForum: null,
+            Message: null,
+            InLottery: null
         }
         servers.push(server);
     })
@@ -289,14 +298,6 @@ async function sendChannels (){
                 .catch((error: any) => {
                     console.log(error);
                 });
-
-            //axios.post('https://discordstats.azurewebsites.net/channel/postchannels', channels)
-            //    .then((result: any) => {
-            //        console.log(result);
-            //    })
-            //    .catch((error: any) => {
-            //        console.log(error);
-            //    });
         }
     }, 5000);
 }
@@ -424,7 +425,7 @@ async function sendVoiceChannels (){
             console.log("All Channels: ")
             console.log(channels)
         
-            axios.post('https://localhost:7228/api/PostVoiceChannels', channels)
+            axios.post(url + '/api/PostVoiceChannels', channels)
                 .then((result: any) => {
                     console.log(result);
                 })
@@ -433,6 +434,42 @@ async function sendVoiceChannels (){
                 });
         }
     }, 100000);
+}
+
+async function sendVoiceStates (){
+    let voiceStates: any = [];
+     client.guilds.cache.each(async (guild) => {
+        guild.channels.cache.each(async (channel) => {               
+            
+            if(channel.type == 'GUILD_VOICE' && channel.members.size != 0)
+            {
+                channel.members.each(member => {
+                let newVoiceState = {
+                    ServerId: guild.id,
+                    ChannelId: channel.id,
+                    UserId: member.id,
+                    CreatedAt: new Date()
+                }
+                voiceStates.push(newVoiceState);
+                })
+            }
+        }) 
+    })
+
+    setTimeout(() => {
+        if (voiceStates.length != 0) {
+            console.log("All VoiceStates: ")
+            console.log(voiceStates)
+        
+            axios.post(url + '/api/PostVoiceStates', voiceStates)
+                .then((result: any) => {
+                    console.log(result);
+                })
+                .catch((error: any) => {
+                    console.log(error);
+                });
+        }
+    }, 5000);
 }
 
             // axios.post('https://discordstats.azurewebsites.net/api/postchannels', channels)
@@ -461,11 +498,6 @@ async function sendVoiceChannels (){
 //     })
 // }
 
-<<<<<<< Updated upstream
-function updataData() {
-    sendPresence();
-    sendUsers();
-=======
 function updataPresence() {
     sendPresence();   
 }
@@ -474,7 +506,6 @@ function updataUsers() {
 }
 function updataVoiceStates() {
     sendVoiceStates(); 
->>>>>>> Stashed changes
 }
 function UpdateVoiceChannel() {
     sendVoiceChannels();  
@@ -485,25 +516,16 @@ function UpdateServers() {
 function UpdateChannels() {
     sendChannels();
 }
-<<<<<<< Updated upstream
-  
-setInterval(updataData, 12000);
-setInterval(UpdateVoiceChannel, 1800000);
-=======
 
 
- //setInterval(updataPresence, 300000);
- //setInterval(updataUsers, 450000);
- //setInterval(updataVoiceStates, 300000);
+ setInterval(updataPresence, 300000);
+ setInterval(updataUsers, 450000);
+ setInterval(updataVoiceStates, 300000);
 
- //setInterval(UpdateVoiceChannel, 1800000);
- setInterval(UpdateServers, 10000);
- //setInterval(UpdateChannels, 1800000);
-
+ setInterval(UpdateVoiceChannel, 1800000);
+ setInterval(UpdateServers, 1800000);
+ setInterval(UpdateChannels, 1800000);
 //setInterval(UpdateVoiceChannel, 15000);
 //setInterval(updataData, 45000);
-
-
->>>>>>> Stashed changes
 
 client.login(process.env.TOKEN);

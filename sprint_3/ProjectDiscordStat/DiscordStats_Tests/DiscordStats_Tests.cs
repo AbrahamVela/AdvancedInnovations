@@ -25,17 +25,20 @@ namespace DiscordStats_Tests
         private Mock<DiscordDataDbContext> _mockContext1;
         private Mock<DiscordDataDbContext> _mockContext2;
         private Mock<DiscordDataDbContext> _mockContext3;
+        private Mock<DiscordDataDbContext> _mockMessages;
 
         private Mock<DbSet<Server>> _mockServerDbSet;
         private Mock<DbSet<Presence>> _mockPresenceDbSet;
         private Mock<DbSet<Channel>> _mockChannelDbSet;
         private Mock<DbSet<VoiceChannel>> _mockVoiceChannelDbSet;
+        private Mock<DbSet<MessageInfo>> _mockMessageInfoDbSet;
         private List<Server> _servers = FakeData.Servers;
 
         private IServerRepository _serverRepository;
         private IPresenceRepository _presenceRepository;
         private IChannelRepository _channelRepository;
         private IVoiceChannelRepository _voiceChannelRepository;
+        private IMessageInfoRepository _messageRepository;
 
         DateTime now = DateTime.Now;
 
@@ -58,6 +61,21 @@ namespace DiscordStats_Tests
         [SetUp]
         public void Setup()
         {
+            var _messages = new List<MessageInfo>
+            {
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="1", CreatedAt="2022-04-12T13:43:29.230Z" },
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="1", CreatedAt="2022-04-12T14:58:34.296Z" },
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="1", CreatedAt="2022-04-12T13:43:29.230Z" },
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="1", CreatedAt="2022-11-12T13:43:29.230Z" },
+
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="2", CreatedAt="2022-04-13T16:41:55.241Z" },
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="2", CreatedAt="2022-04-13T16:42:12.357Z" },
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="2", CreatedAt="2022-04-15T01:43:53.856Z" },
+
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="3", CreatedAt="2022-04-13T18:31:52.578Z" },
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="3", CreatedAt="2022-04-13T18:41:27.374Z" },
+                new MessageInfo{ServerId = "1", ChannelId="1", UserId="3", CreatedAt="2022-04-14T00:27:42.602Z" },
+            };
             var _VoiceChannels = new List<VoiceChannel>
             {
                 new VoiceChannel{Id = "156209528969494528", Name ="General", Count=1,GuildId="928010025958510632",Time=DateTime.Parse("2022-04-06 20:17:38.263") }
@@ -91,6 +109,7 @@ namespace DiscordStats_Tests
                 new Channel{Id = "12351251452136", Type = "Guild_Voice", Name = "Voice Channels", Count = 220, GuildId= "789317480325316641"}
             };
 
+            //<-----Servers
             _mockServerDbSet = GetMockDbSet<Server>(ser.AsQueryable<Server>());
             _mockContext = new Mock<DiscordDataDbContext>();
             _mockContext.Setup(ctx => ctx.Servers).Returns(_mockServerDbSet.Object);
@@ -101,6 +120,19 @@ namespace DiscordStats_Tests
             // do not rely on the return value from Update since it's just null
             _mockContext.Setup(ctx => ctx.SaveChanges())
                         .Returns(0);
+            ////////
+            //<-----Messages
+            _mockMessageInfoDbSet = GetMockDbSet<MessageInfo>(_messages.AsQueryable<MessageInfo>());
+            _mockMessages = new Mock<DiscordDataDbContext>();
+            _mockMessages.Setup(ctx => ctx.MessageInfos).Returns(_mockMessageInfoDbSet.Object);
+            _mockMessages.Setup(ctx => ctx.Set<MessageInfo>()).Returns(_mockMessageInfoDbSet.Object);
+            _mockMessages.Setup(ctx => ctx.Update(It.IsAny<MessageInfo>()))
+                        .Callback((MessageInfo s) => { _messages.Append(s); })
+                        .Returns((Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<MessageInfo>)null);
+            // do not rely on the return value from Update since it's just null
+            _mockMessages.Setup(ctx => ctx.SaveChanges())
+                        .Returns(0);
+            ////////
 
             _mockPresenceDbSet = GetMockDbSet<Presence>(pre.AsQueryable<Presence>());
             _mockContext1 = new Mock<DiscordDataDbContext>();
@@ -213,7 +245,7 @@ namespace DiscordStats_Tests
             var handler = new Mock<HttpMessageHandler>();
             _presenceRepository = new PresenceRepository(_mockContext1.Object);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null,null, null);
 
             var presenceGetAll = _presenceRepository.GetAll();
             int initialCount = presenceGetAll.Count();
@@ -426,7 +458,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _serverRepository = new ServerRepository(_mockContext.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null) ;
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null,null, null) ;
 
             var serverGetAll = _serverRepository.GetAll();
             int initialCount = serverGetAll.Count();
@@ -456,7 +488,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsResponse(HttpStatusCode.NotFound);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
             Task<List<Server>?> Act() => discord.GetCurrentUserGuilds("fakeBearerToken");
@@ -474,7 +506,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsResponse(HttpStatusCode.Unauthorized);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
 
             // Act
@@ -493,10 +525,10 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsResponse(HttpStatusCode.NotFound);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
-            Task<DiscordUser?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
+            Task<DiscordUserAndUserWebSiteInfo?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
             Assert.That(Act, Throws.TypeOf<HttpRequestException>());
@@ -511,11 +543,11 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsResponse(HttpStatusCode.Unauthorized);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
 
             // Act
-            Task<DiscordUser?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
+            Task<DiscordUserAndUserWebSiteInfo?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
             Assert.That(Act, Throws.TypeOf<HttpRequestException>());
@@ -530,7 +562,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsResponse(HttpStatusCode.NotFound);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
             Task<ServerOwnerViewModel?> Act() => discord.GetFullGuild("fakeBotToken", "fakeServerId");
@@ -548,7 +580,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsResponse(HttpStatusCode.Unauthorized);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null,null);
 
 
             // Act
@@ -588,7 +620,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsAsync(response);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null) ;
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null,null, null) ;
 
             // Act
             List<Server>? servers = await discord.GetCurrentUserGuilds("fakeBearerToken");
@@ -627,10 +659,10 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsAsync(response);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
-            DiscordUser? userInfo = await discord.GetCurrentUserInfo("fakeBearerToken");
+            DiscordUserAndUserWebSiteInfo? userInfo = await discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
             Assert.Multiple(() =>
@@ -665,7 +697,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsAsync(response);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
             ServerOwnerViewModel? serverInfo = await discord.GetFullGuild("fakeBotToken", "fakeServerId");
@@ -691,7 +723,7 @@ namespace DiscordStats_Tests
                 .ReturnsResponse(HttpStatusCode.OK);
 
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, null, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, null, null,null,null, null);
 
             var a = discord.CheckForBot("FakeBotToken", "FakeServerId").Result;
 
@@ -707,7 +739,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                 .ReturnsResponse(HttpStatusCode.NotFound);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             Assert.AreEqual(discord.CheckForBot("FakeBotToken", "FakeServerId").Result, "false");
         }
@@ -743,7 +775,7 @@ namespace DiscordStats_Tests
             handler.SetupAnyRequest()
                     .ReturnsAsync(response);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
             string? responseInfo = await discord.AddMemberToGuild("fakeBotToken", "fakeServerId");
@@ -759,7 +791,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _presenceRepository = new PresenceRepository(_mockContext1.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null,null, null);
 
             var presenceGetAll = _presenceRepository.GetAll().ToList();
             int initialCount = presenceGetAll.Count();
@@ -783,7 +815,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _presenceRepository = new PresenceRepository(_mockContext1.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null,null, null);
 
             var presenceGetAll = _presenceRepository.GetAll().ToList();
             int initialCount = presenceGetAll.Count();
@@ -807,7 +839,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _presenceRepository = new PresenceRepository(_mockContext1.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null,null, null);
 
             var presenceGetAll = _presenceRepository.GetAll().ToList();
             int initialCount = presenceGetAll.Count();
@@ -831,7 +863,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _presenceRepository = new PresenceRepository(_mockContext1.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, null,null, null);
 
             var presenceGetAll = _presenceRepository.GetAll().ToList();
             int initialCount = presenceGetAll.Count();
@@ -856,7 +888,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _voiceChannelRepository = new VoiceChannelRepository(_mockContext3.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository,null, null);
 
             var VoiceChannelGetAll = _voiceChannelRepository.GetAll().ToList();
             int initialCount = VoiceChannelGetAll.Count();
@@ -881,7 +913,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _voiceChannelRepository = new VoiceChannelRepository(_mockContext3.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository,null, null);
 
             var VoiceChannelGetAll = _voiceChannelRepository.GetAll().ToList();
             int initialCount = VoiceChannelGetAll.Count();
@@ -905,7 +937,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _voiceChannelRepository = new VoiceChannelRepository(_mockContext3.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository,null, null);
 
             var VoiceChannelGetAll = _voiceChannelRepository.GetAll().ToList();
             int initialCount = VoiceChannelGetAll.Count();
@@ -929,7 +961,7 @@ namespace DiscordStats_Tests
             // Arrange
             var handler = new Mock<HttpMessageHandler>();
             _voiceChannelRepository = new VoiceChannelRepository(_mockContext3.Object);
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository);
+            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null, _voiceChannelRepository,null, null);
 
             var VoiceChannelGetAll = _voiceChannelRepository.GetAll().ToList();
             int initialCount = VoiceChannelGetAll.Count();
@@ -947,5 +979,6 @@ namespace DiscordStats_Tests
             // Assert
             Assert.AreEqual(initialCount, Updatedcount);
         }
+
     }
 }
