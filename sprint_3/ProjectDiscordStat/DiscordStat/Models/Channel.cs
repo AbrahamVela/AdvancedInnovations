@@ -28,8 +28,6 @@ namespace DiscordStats.Models
         [Column("Guild_id")]
         [StringLength(256)]
         public string? GuildId { get; set; }
-        [StringLength(256)]
-        public string? Edit { get; set; }
 
         [InverseProperty(nameof(ChannelWebhookJoin.ChannelPkNavigation))]
         public virtual ICollection<ChannelWebhookJoin> ChannelWebhookJoins { get; set; }
