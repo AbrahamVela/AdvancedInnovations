@@ -27,20 +27,22 @@ namespace DiscordStats.DAL.Concrete
         private readonly IChannelRepository _channelRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IMessageInfoRepository _messageInfoRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
         private readonly IConfiguration _configuration;
 
 
         private DiscordDataDbContext _db = new DiscordDataDbContext();
 
-        public DiscordService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, IPresenceRepository presenceRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IConfiguration config)
+        public DiscordService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, IPresenceRepository presenceRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IConfiguration config, IServerMemberRepository serverMemberRepository)
         {
             _serverRepository = serverRepository;
             _httpClientFactory = httpClientFactory;
             _presenceRepository = presenceRepository;
-            _channelRepository = channelRepository; 
+            _channelRepository = channelRepository;
             _voiceChannelRepository = voiceChannelRepository;
             _messageInfoRepository = messageInfoRepository;
             _configuration = config;
+            _serverMemberRepository = serverMemberRepository;
         }
 
 
@@ -535,5 +537,59 @@ namespace DiscordStats.DAL.Concrete
             }
             return users.OrderByDescending(m => m.MessageCount ).ToList();
         }
+    
+    public async Task<List<ServerMembers>> GetServerUsersByDates(DateTime StartDate, DateTime EndDate, string serverId)
+    {
+        string botToken = _configuration["API:BotToken"];
+        var ServerMembers = _serverMemberRepository.GetAll().Where(m => m.Id == serverId).ToList();
+
+        var updatedMessages = new List<ServerMembers>();
+        if (StartDate.Date.ToString("M-d-yyyy") != "1-1-0001" && EndDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+        {
+            foreach (var message in ServerMembers)
+            {
+
+                var messageDateOnly = message.Date;
+                var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                if (messagedate >= StartDate.Date && messagedate <= EndDate.Date)
+                {
+                    updatedMessages.Add(message);
+                }
+            }
+        }
+            if (EndDate.Date.ToString("M-d-yyyy") != "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMembers)
+                {
+                    var messageDateOnly = message.Date;
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                    if (messagedate <= EndDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+            {
+                foreach (var message in ServerMembers)
+                {
+                    var messageDateOnly = message.Date;
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                    if (messagedate >= StartDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMembers)
+                {
+                    updatedMessages.Add(message);
+                }
+            }
+
+            return updatedMessages.OrderBy(d => d.Date).ToList();
     }
+}
 }

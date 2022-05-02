@@ -21,7 +21,8 @@
 
 </head>
 
- @*<body>
+ <body>
+
           <!-- ***** Preloader Start ***** -->
     <div id="preloader">
         <div class="jumper">
@@ -30,41 +31,34 @@
             <div></div>
         </div>
     </div>  
-    <!-- ***** Preloader End ***** -->
+    <!-- ***** Preloader End ***** -->  
     <!-- Page Content -->
 <!-- Heading Starts Here -->
     <div class="page-heading header-text">
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <h1>@Model.GameName's Most Popular Play Timeeee</h1>
+            <h1>@ViewBag.ServerName's Growth</h1>
           </div>
         </div>
       </div>
     </div>
     <!-- Heading Ends Here -->
+     
      <!-- Services Starts Here -->
     <div class="services-section services-page">
       <div class="container">
         <div class="row" style="margin-bottom:2%">
           <div class="col-md-12">
             <div class="section-heading">
-              <h2>Here you'll find when @Model.GameName is most played</h2>
+             @* <h2>Here you'll find when @Model.GameName is most played</h2>*@
             </div>
           </div>
+         
           @if (Model != null)
 {
-    <div id="ServerId" value="@Model.ServerId"></div>
-    <div id="GameName" value="@Model.GameName"></div>
+    <div id="ServerId" value="@Model[0].Id"></div>
 
-
-
-        
-            <div class="col-1" style="width:50px; margin-bottom:1%; left:46%;">
-                <select name="allUsersPresences" id="allUsersPresences">
-                    <option>All Users</option>
-                </select>
-            </div>
 
                 <div class="row justify-content-center">
                         <div class="col-3"  style="margin-left:29%">
@@ -83,9 +77,14 @@
 
                         </div>
                 </div>
+                <div class="row justify-content-center">
+                    <div class="col-3" style="left: 10.5%"> 
+                <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" style="margin-top: 3%;" value="Update" />
+                </div>
+                </div>
                 <br />
 
-    <br><center><canvas id="presencesHourlyAllTimeChart" style="color: white; width:100%;max-width:1000px"></canvas></center>
+    <br><center><canvas id="ServerGrowthAllTimeChart" style="color: white; width:100%;max-width:1400px"></canvas></center>
 
 
     
@@ -100,7 +99,7 @@
     </div>
     <!-- Services Ends Here -->
 
-</body>*@
+</body>
     </html>
     <!-- Bootstrap core JavaScript -->
     <script src="~/vendor/jquery/jquery.min.js"></script>
@@ -112,5 +111,5 @@
     <script src="~/assets/js/accordions.js"></script>
 @section scripts {
     <script type="text/javascript" src="~/js/site.js"></script>
-    <script type="text/javascript" src="~/js/gamestats.js"></script>
+    <script type="text/javascript" src="~/js/ServerGrowth.js"></script>
 }

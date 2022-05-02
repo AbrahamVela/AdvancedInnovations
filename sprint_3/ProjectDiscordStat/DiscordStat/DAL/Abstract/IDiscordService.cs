@@ -44,5 +44,6 @@ namespace DiscordStats.DAL.Abstract
         Task<GamesVM> GetJsonStringFromEndpointGames(string gameName);
         Task<string?> VoiceChannelEntryAndUpdateDbCheck(VoiceChannel[] voiceChannel);
         Task<List<UserMessageVM>> UpdatedMessagesByDates(DateTime StartDate, DateTime EndDate, string serverId);
+        Task<List<ServerMembers>> GetServerUsersByDates(DateTime StartDate, DateTime EndDate, string serverId);
     }
 }
