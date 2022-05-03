@@ -103,7 +103,7 @@ namespace DiscordStats.Controllers
                 startDate = "1-1-0001";
             if (endDate == null)
                 endDate = "1-1-0001";
-            var memberCount = await _discord.GetServerUsersByDates(DateTime.Parse(startDate), DateTime.Parse(endDate), ServerId);
+            var memberCount =  _discord.GetServerUsersByDates(DateTime.Parse(startDate), DateTime.Parse(endDate), ServerId);
             var newMembers = new List<ServerMembers>();
             for (int i = 0; i < memberCount.Count; i++)
             {

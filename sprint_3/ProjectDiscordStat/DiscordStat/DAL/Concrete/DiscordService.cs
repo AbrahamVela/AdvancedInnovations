@@ -538,9 +538,9 @@ namespace DiscordStats.DAL.Concrete
             return users.OrderByDescending(m => m.MessageCount ).ToList();
         }
     
-    public async Task<List<ServerMembers>> GetServerUsersByDates(DateTime StartDate, DateTime EndDate, string serverId)
+    public List<ServerMembers> GetServerUsersByDates(DateTime StartDate, DateTime EndDate, string serverId)
     {
-        string botToken = _configuration["API:BotToken"];
+
         var ServerMembers = _serverMemberRepository.GetAll().Where(m => m.Id == serverId).ToList();
 
         var updatedMessages = new List<ServerMembers>();

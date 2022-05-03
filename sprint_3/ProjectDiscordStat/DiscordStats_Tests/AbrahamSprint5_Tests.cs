@@ -174,7 +174,7 @@ namespace DiscordStats_Tests
         {
             // Arrange
 
-            AccountController controller = new AccountController(null, null, null, _serverRepository, null, null, null, null, null);
+            AccountController controller = new AccountController(null, null, null, _serverRepository, null, null, null, null, null, null);
             controller.ControllerContext = new ControllerContext();
             var userId = "697317543555235840";
             var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
@@ -203,7 +203,7 @@ namespace DiscordStats_Tests
             .AddInMemoryCollection(configForSmsApi)
             .Build();
 
-            AccountController controller = new AccountController(null, null, configuration, _serverRepository, null, null, null, null, _userRepo);
+            AccountController controller = new AccountController(null, null, configuration, _serverRepository, null, null, null, null, _userRepo, null);
             controller.ControllerContext = new ControllerContext();
             var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
             vm.id =  "697317543555235840";

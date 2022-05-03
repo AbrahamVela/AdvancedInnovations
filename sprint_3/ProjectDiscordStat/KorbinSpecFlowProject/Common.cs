@@ -16,6 +16,7 @@
             public const string ContactUsPageName = "Contact";
             public const string PrivacyPageName = "Privacy";
             public const string AllServersPageName = "AllServers";
+            public const string ServerGrowthPageName = "ServerGrowth";
 
         // File to store browser cookies in
         public const string CookieFile = "C:\\Users\\Korbin Cardoza\\Desktop\\School\\cookies.txt";
@@ -28,6 +29,7 @@
                 { ContactUsPageName, "/Home/Contact" },
                 { PrivacyPageName, "/Home/Privacy" },
                 { AllServersPageName, "/Home/AllServers" },
+                { ServerGrowthPageName, "/Account/ServerGrowth" },
             };
 
             public static string PathFor(string pathName) => Paths[pathName];
