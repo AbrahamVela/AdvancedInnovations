@@ -15,7 +15,8 @@ namespace KorbinSpecFlowProject.PageObjects
         private IWebElement GamesButton => _browserInteractions.WaitAndReturnElement(By.Id("ViewGamesButton"));
         private IWebElement Runelite_Image => _browserInteractions.WaitAndReturnElement(By.Id("RuneLite"));
         private IWebElement GameGraph => _browserInteractions.WaitAndReturnElement(By.Id("presencesHourlyAllTimeChart"));
-        
+        private IWebElement GrowthButton => _browserInteractions.WaitAndReturnElement(By.Id("ViewServerGrowthButton"));
+
         public DetailsPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
         {
@@ -30,7 +31,11 @@ namespace KorbinSpecFlowProject.PageObjects
         public string GetTitle => Title.Text;
         public string GetWelcomeText => WelcomeText.Text;
         public bool GetMessagingTable => MessagesTable.Displayed;
-
+        public bool CheckForGrowthButton => GrowthButton.Displayed;
+        public void ClickGrowthButton()
+        {
+            GrowthButton.ClickWithRetry(30);
+        }
         public void ClickOnRunelite()
         {
             Runelite_Image.ClickWithRetry(30);
