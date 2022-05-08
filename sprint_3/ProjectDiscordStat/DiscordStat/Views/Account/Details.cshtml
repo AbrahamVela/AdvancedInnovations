@@ -274,15 +274,19 @@
 
                     <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                         <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
+                        <button id="exportJson" type="button"  class="btn btn-primary" onclick="GetActiveMessageTime()" style="margin-right: 45%; margin-top: 2%; margin-bottom:2%">Upload Json data for Active Voice Channel Time</button>
                     </div>
                     <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
                         <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                        <button id="exportJson" type="button"  class="btn btn-primary" onclick="GetActiveMessageTime()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Upload Json data for Active Messaging Time</button>
                     </div>
                     <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
                         <canvas id="userPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                        <button id="exportJson" type="button"  class="btn btn-primary" onclick="GetActiveGamingTime()" style="margin-right: 45%; margin-top: 2%; margin-bottom:2%">Upload Json data for Active Gaming Time</button>
                     </div>
                     <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
                         <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                        <button id="exportJson" type="button"  class="btn btn-primary" onclick="GetHoursPerGame()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Upload Json data for Hours per Game</button>
                     </div>
         
             </div>
