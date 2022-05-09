@@ -96,7 +96,6 @@ namespace DiscordStats.Controllers
             StringBuilder dataJsonFile = new StringBuilder();
             dataJsonFile.AppendLine(data);
 
-
             var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
             var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
             CreateADirectory(downloadsDirectory);
@@ -112,7 +111,6 @@ namespace DiscordStats.Controllers
         {
             StringBuilder dataJsonFile = new StringBuilder();
             dataJsonFile.AppendLine(data);
-
 
             var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
             var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
@@ -130,7 +128,6 @@ namespace DiscordStats.Controllers
             StringBuilder dataJsonFile = new StringBuilder();
             dataJsonFile.AppendLine(data);
 
-
             var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
             var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
             CreateADirectory(downloadsDirectory);
@@ -146,7 +143,6 @@ namespace DiscordStats.Controllers
         {
             StringBuilder dataJsonFile = new StringBuilder();
             dataJsonFile.AppendLine(data);
-
 
             var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
             var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
