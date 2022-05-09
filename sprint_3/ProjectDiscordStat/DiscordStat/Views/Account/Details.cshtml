@@ -22,10 +22,8 @@
       crossorigin="anonymous"
       defer>
     </script>
-
     <head>
     <title>Server Details</title>
-
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -39,7 +37,6 @@
     <link rel="stylesheet" href="~/assets/css/templatemo-host-cloud.css">
     <link rel="stylesheet" href="~/assets/css/owl.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-
 </head>
  <body>
           <!-- ***** Preloader Start ***** -->
@@ -113,8 +110,11 @@
                                 <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
                             </div>
                             <div class="row" style="margin-top:3%">
-                                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
+                                <button type="button" class="btn btn-info" id="ViewServerGrowthButton" onclick="location.href='@Url.Action("ServerGrowth", "Account", new { ServerName = @Model.Name, ServerId = @Model.Id })'" >Server Growth</button>
                             </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
+                            </div>           
 
                         </div>
                     </div>

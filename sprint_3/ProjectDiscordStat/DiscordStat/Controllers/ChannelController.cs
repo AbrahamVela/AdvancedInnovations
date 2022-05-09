@@ -38,12 +38,16 @@ namespace DiscordStats.Controllers
         public async Task<IActionResult> ServerChannels(string? serverId)
         {
             bool authenticated = false;
+            var server = await _discord.GetFullGuild(_configuration["API:BotToken"], serverId);
             var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], serverId);
-            if (usersInGuild == null)
+            if (usersInGuild == null || server == null)
             {
                 return RedirectToAction("Index", "Home");
             }
             var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            var owner = usersInGuild.Where(m => m.user.Id == server.Owner_Id).First();
+            if (owner.user.UserName == name)
+                authenticated = true;
             foreach (var u in usersInGuild)
             {
                 if (u.user.UserName == name)
@@ -104,10 +108,10 @@ namespace DiscordStats.Controllers
         public async Task<IActionResult> CreateChannel(ServerChannelsVM create)
         {
             string botToken = _configuration["API:BotToken"];
-            if (create.type_text == true ) create.type = "0";
+            if (create.type_text == true) create.type = "0";
             if (create.type_text == false && create.type_voice == false) create.type = "0";
             if (create.type_voice == true) create.type = "2";
-            
+
             var response = await _discordServicesForChannels.CreateChannel(botToken, create.guild_id, create.name, create.type, create.parent_id);
 
             response.GuildId = create.guild_id;
@@ -127,9 +131,9 @@ namespace DiscordStats.Controllers
 
             if (webhooks != null)
             {
-                
+
                 ViewBag.channel_id = channelId;
-                
+
                 return View(webhooks);
             }
             else
@@ -178,7 +182,7 @@ namespace DiscordStats.Controllers
         {
             string botToken = _configuration["API:BotToken"];
             IEnumerable<Channel> channels = _channelRepository.GetAll();
-            Channel channel = channels.Where( i => i.Id == webhook.channel_id).FirstOrDefault();
+            Channel channel = channels.Where(i => i.Id == webhook.channel_id).FirstOrDefault();
             await _discordServicesForChannels.DeleteWebhook(botToken, webhook.Id);
             return RedirectToAction("ChannelWebhooks", channel);
         }

@@ -37,8 +37,9 @@ namespace DiscordStats.Controllers
         private readonly IChannelRepository _channelRepository;
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceStateRepository _voiceStateRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
 
-        public StatsController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
+        public StatsController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository, IServerMemberRepository serverMemberRepository)
         {
             _logger = logger;
             _userRepository = discordUserRepo;
@@ -48,6 +49,7 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _messageInfoRepository = messageInfoRepository;
             _voiceStateRepository = voiceStateRepository;
+            _serverMemberRepository = serverMemberRepository;
         }
 
         public IActionResult ServerStats(string ServerId)
@@ -69,7 +71,60 @@ namespace DiscordStats.Controllers
         {
             return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
         }
-
+        [HttpGet]
+        public IActionResult GetServerMemberFromDatabase(string ServerId)
+        {
+            var memberCount = _serverMemberRepository.GetAll().Where(s => s.Id == ServerId).OrderBy(d => d.Date).ToList();
+            var newMembers = new List<ServerMembers>();
+            for(int i = 0; i < memberCount.Count; i++)
+            {
+                if(i != 0)
+                {
+                    if( memberCount[i].Date.ToString("yyyy-MM-dd") == memberCount[i-1].Date.ToString("yyyy-MM-dd") && memberCount[i].Members != memberCount[i-1].Members)
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                    else if(memberCount[i].Date.ToString("yyyy-MM-dd") != memberCount[i - 1].Date.ToString("yyyy-MM-dd"))
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                }
+                else
+                {
+                    newMembers.Add(memberCount[i]);
+                }
+            }
+            return Json(newMembers);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetServerMemberFromDatabaseWithDate(string ServerId, string startDate, string endDate)
+        {
+            if (startDate == null)
+                startDate = "1-1-0001";
+            if (endDate == null)
+                endDate = "1-1-0001";
+            var memberCount =  _discord.GetServerUsersByDates(DateTime.Parse(startDate), DateTime.Parse(endDate), ServerId);
+            var newMembers = new List<ServerMembers>();
+            for (int i = 0; i < memberCount.Count; i++)
+            {
+                if (i != 0)
+                {
+                    if (memberCount[i].Date.ToString("yyyy-MM-dd") == memberCount[i - 1].Date.ToString("yyyy-MM-dd") && memberCount[i].Members != memberCount[i - 1].Members)
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                    else if (memberCount[i].Date.ToString("yyyy-MM-dd") != memberCount[i - 1].Date.ToString("yyyy-MM-dd"))
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                }
+                else
+                {
+                    newMembers.Add(memberCount[i]);
+                }
+            }
+            return Json(newMembers);
+        }
         [HttpGet]
         public IActionResult GetAllPresencesFromDatabase(string ServerId)
         {

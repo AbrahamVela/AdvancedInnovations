@@ -18,5 +18,6 @@
  DROP TABLE [Webhook];
  DROP TABLE [ChannelWebhookJoin];
  DROP TABLE [VoiceState];
+ DROP TABLE [ServerMembers];
 
 

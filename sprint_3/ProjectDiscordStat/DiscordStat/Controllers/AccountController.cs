@@ -23,7 +23,10 @@ namespace DiscordStats.Controllers
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IMessageInfoRepository _messageIngoChannelRepository;
         private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
-        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository)
+        private readonly IServerMemberRepository _serverMemberRepository;
+        
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, 
+            IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository, IServerMemberRepository serverMemberRepository)
         {
             _logger = logger;
             _discord = discord;
@@ -33,7 +36,8 @@ namespace DiscordStats.Controllers
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
             _messageIngoChannelRepository = messageInfoRepository;
-            _userRepository = userRepository;    
+            _userRepository = userRepository;
+            _serverMemberRepository = serverMemberRepository;
 
         }
 
@@ -95,13 +99,26 @@ namespace DiscordStats.Controllers
         }
 
 
+
         [Authorize]
         public async Task<IActionResult> WebsiteProfileForm(string userId)
         {
-            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
-            vm.id = userId;
-            return View(vm);
+            bool authenticated = false;
+            var name = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if (userId == name)
+                authenticated = true;
+            if (authenticated)
+            {
+                var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+                vm.id = userId;
+                return View(vm);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
+
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
@@ -191,6 +208,7 @@ namespace DiscordStats.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
 
         [Authorize]
         public async Task<IActionResult> Details(string? name)
@@ -431,6 +449,35 @@ namespace DiscordStats.Controllers
                 return RedirectToAction("Account", "Account");
             }
         }
+
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> ServerGrowth(string ServerName, string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                ViewBag.ServerName = ServerName;
+                var serverCounts = _serverMemberRepository.GetAll().Where(s => s.Id == ServerId).ToList();
+                
+                return View(serverCounts);
+            }
+            else
+            {
+                return RedirectToAction("Account", "Account");
+            }
+        }
+
         [HttpGet]
         public IActionResult GetVoiceChannelInfoFromDatabase(string ServerId)
         {
