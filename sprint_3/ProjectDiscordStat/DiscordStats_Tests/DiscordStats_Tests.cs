@@ -480,7 +480,7 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public async Task GetGuilds_404Response_ShouldThrowException()
+        public async Task GetGuilds_404Response_ShouldReturnAsyncValueNull()
         {
             // Arrange  (wrap this up in a method to reuse it)
             var handler = new Mock<HttpMessageHandler>();
@@ -491,14 +491,14 @@ namespace DiscordStats_Tests
             DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
-            Task<List<Server>?> Act() => discord.GetCurrentUserGuilds("fakeBearerToken");
+            Task<List<Server>?> nullValue = discord.GetCurrentUserGuilds("fakeBearerToken");
 
             // Assert
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
+            Assert.AreEqual(nullValue.AsyncState, null);
         }
 
         [Test]
-        public async Task GetGuilds_NotAuthorizedResponse_ShouldThrowException()
+        public async Task GetGuilds_NotAuthorizedResponse_ShouldReturnAsyncValueNull()
         {
             // Arrange  (wrap this up in a method to reuse it)
             var handler = new Mock<HttpMessageHandler>();
@@ -510,14 +510,14 @@ namespace DiscordStats_Tests
 
 
             // Act
-            Task<List<Server>?> Act() => discord.GetCurrentUserGuilds("fakeBearerToken");
+            Task<List<Server>?> nullValue = discord.GetCurrentUserGuilds("fakeBearerToken");
 
             // Assert
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
+            Assert.AreEqual(nullValue.AsyncState, null);
         }
 
         [Test]
-        public async Task GetUserInfo_404Response_ShouldThrowException()
+        public async Task GetUserInfo_404Response_ShouldReturnAsyncValueNull()
         {
             // Arrange  (wrap this up in a method to reuse it)
             var handler = new Mock<HttpMessageHandler>();
@@ -528,14 +528,14 @@ namespace DiscordStats_Tests
             DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
-            Task<DiscordUserAndUserWebSiteInfo?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
+            Task<DiscordUserAndUserWebSiteInfo?> nullValue = discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
+            Assert.AreEqual(nullValue.AsyncState, null);
         }
 
         [Test]
-        public async Task GetUserInfo_NotAuthorizedResponse_ShouldThrowException()
+        public async Task GetUserInfo_NotAuthorizedResponse_ShouldReturnAsyncValueNull()
         {
             // Arrange  (wrap this up in a method to reuse it)
             var handler = new Mock<HttpMessageHandler>();
@@ -547,14 +547,14 @@ namespace DiscordStats_Tests
 
 
             // Act
-            Task<DiscordUserAndUserWebSiteInfo?> Act() => discord.GetCurrentUserInfo("fakeBearerToken");
+            Task<DiscordUserAndUserWebSiteInfo?> nullValue = discord.GetCurrentUserInfo("fakeBearerToken");
 
             // Assert
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
+            Assert.AreEqual(nullValue.AsyncState, null);
         }
 
         [Test]
-        public async Task GetCurrentGuild_404Response_ShouldThrowException()
+        public async Task GetCurrentGuild_404Response_ShouldReturnAsyncValueNull()
         {
             // Arrange  (wrap this up in a method to reuse it)
             var handler = new Mock<HttpMessageHandler>();
@@ -565,14 +565,14 @@ namespace DiscordStats_Tests
             DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null);
 
             // Act
-            Task<ServerOwnerViewModel?> Act() => discord.GetFullGuild("fakeBotToken", "fakeServerId");
+            Task<ServerOwnerViewModel?> nullValue = discord.GetFullGuild("fakeBotToken", "fakeServerId");
 
             // Assert
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
+            Assert.AreEqual(nullValue.AsyncState, null);
         }
 
         [Test]
-        public async Task GetCurrentGuild_NotAuthorizedResponse_ShouldThrowException()
+        public async Task GetCurrentGuild_NotAuthorizedResponse_ShouldReturnAsyncValueNull()
         {
             // Arrange  (wrap this up in a method to reuse it)
             var handler = new Mock<HttpMessageHandler>();
@@ -584,10 +584,10 @@ namespace DiscordStats_Tests
 
 
             // Act
-            Task<ServerOwnerViewModel?> Act() => discord.GetFullGuild("fakeBotToken", "fakeServerId");
+            Task<ServerOwnerViewModel?> nullValue = discord.GetFullGuild("fakeBotToken", "fakeServerId");
 
             // Assert
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
+            Assert.AreEqual(nullValue.AsyncState, null);
         }
 
         [Test]
