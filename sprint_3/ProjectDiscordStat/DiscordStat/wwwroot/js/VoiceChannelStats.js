@@ -114,3 +114,5 @@ function barGraphHourlyVoiceActivity(data) {
 
 
 };
+
+

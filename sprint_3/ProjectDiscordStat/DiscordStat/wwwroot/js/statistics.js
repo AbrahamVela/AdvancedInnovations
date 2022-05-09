@@ -218,10 +218,6 @@ function DataForHourlyMessageActivity(data) {
         }
     }
 
-    var bothValues = xValues.map(function (e, i) {
-        return [e, yValues[i]];
-    });
-
     var obj = {};
     for (var i = 0; i < xValues.length; i++) {
         obj[xValues[i]] = yValues[i];

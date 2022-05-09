@@ -81,16 +81,31 @@ namespace DiscordStats.Controllers
         [HttpGet]
         public IActionResult GetUsersFromDatabase(string ServerId)
         {
-            var test = _userRepository.GetAll().Where(s => s.Servers == ServerId).ToList();
             return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
         }
 
-        //[HttpGet]
-        //public IActionResult GetVoiceStatesFromDatabase(string ServerId)
-        //{
+        [HttpGet]
+        public IActionResult GetVoiceStatesFromDatabase(string ServerId)
+        {
+            return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
 
-        //    return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
-        //}
+        [HttpPost]
+        public FileResult ActiveVoiceChannelTime(string data)
+        {
+            StringBuilder dataJsonFile = new StringBuilder();
+            dataJsonFile.AppendLine(data);
+
+
+            var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
+            var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
+            CreateADirectory(downloadsDirectory);
+            string fileName = downloadsDirectory + "ActiveVoiceChannelTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            CreateFile(fileName, dataJsonFile);
+
+            string textFile = "Your data info is located on your desktop.";
+            return File(Encoding.UTF8.GetBytes(textFile.ToString()), "application/json", fileName);
+        }
 
         [HttpPost]
         public FileResult ActiveMessageTime(string data)
@@ -102,7 +117,7 @@ namespace DiscordStats.Controllers
             var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
             var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
             CreateADirectory(downloadsDirectory);
-            string fileName = downloadsDirectory + "UsersActiveMessaginTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            string fileName = downloadsDirectory + "ActiveMessagingTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
             CreateFile(fileName, dataJsonFile);
 
             string textFile = "Your data info is located on your desktop.";
@@ -119,7 +134,7 @@ namespace DiscordStats.Controllers
             var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
             var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
             CreateADirectory(downloadsDirectory);
-            string fileName = downloadsDirectory + "UsersActiveGamingTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            string fileName = downloadsDirectory + "ActiveGamingTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
             CreateFile(fileName, dataJsonFile);
 
             string textFile = "Your data info is located on your desktop.";
@@ -136,7 +151,7 @@ namespace DiscordStats.Controllers
             var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
             var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
             CreateADirectory(downloadsDirectory);
-            string fileName = downloadsDirectory + "UsersHourPerGame_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            string fileName = downloadsDirectory + "HoursPerGame_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
             CreateFile(fileName, dataJsonFile);
 
             string textFile = "Your data info is located on your desktop.";
