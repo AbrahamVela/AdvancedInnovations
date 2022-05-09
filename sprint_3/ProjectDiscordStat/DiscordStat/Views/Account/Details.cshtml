@@ -244,47 +244,55 @@
         </div>
 
         <div class="row justify-content-center" style="margin-right:3%">
-                        <br />
-                        <div class="col-1" style="width:50px; margin-bottom:1%; left:1%">
-                            <select name="allUsers" id="allUsers">
-                                <option>All Users</option>
-                            </select>
-                        </div>
+            <br />
+            <div class="col-1" style="width:50px; margin-bottom:1%; left:1%">
+                <select name="allUsers" id="allUsers">
+                    <option>All Users</option>
+                </select>
+            </div>
 
-                    <div class="row justify-content-center">
-                        <div class="col-3"  style="margin-left:29%">
-                            <label for="start">Start date:</label>                 
-                        </div>
-                        <div class="col-3" style="left:-10%" >
-                            <label for="start">End date:</label>       
-                        </div>
-                    </div>
+            <div class="row justify-content-center">
+                <div class="col-3" style="margin-left:29%">
+                    <label for="start">Start date:</label>
+                </div>
+                <div class="col-3" style="left:-10%">
+                    <label for="start">End date:</label>
+                </div>
+            </div>
 
-                    <div class="row justify-content-center">
-                        <div class="col-3" style="margin-left:15%">          
-                            <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
-                        </div>
-                        <div class="col-3" style="margin-left:-9%">
-                            <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
-                        </div>
-                    </div>
+            <div class="row justify-content-center">
+                <div class="col-3" style="margin-left:15%">
+                    <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString(" yyyy-MM-dd")">
+                </div>
+                <div class="col-3" style="margin-left:-9%">
+                    <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString(" yyyy-MM-dd")">
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <center><p style="color:red; font-size:large; margin-top:2%">Downloads data is for all users and will be in your User/Desktop folder.</p></center>
+            </div>
 
 
-              <div class="row justify-content-center">
 
-                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
-                        <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
-                    </div>
-                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
-                        <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    </div>
-                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
-                        <canvas id="userPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    </div>
-                    <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
-                        <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    </div>
-        
+            <div class="row justify-content-center">
+
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
+                    <button id="exportJson" type="button" class="btn btn-primary" onclick="GetActiveVoiceChannelTime()" style="margin-right: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Voice Channel Time</button>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <button id="exportJson" type="button" class="btn btn-primary" onclick="GetActiveMessageTime()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Messaging Time</button>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="userPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <button id="exportJson" type="button" class="btn btn-primary" onclick="GetActiveGamingTime()" style="margin-right: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Gaming Time</button>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <button id="exportJson" type="button" class="btn btn-primary" onclick="GetHoursPerGame()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Hours per Game</button>
+                </div>
+
             </div>
         </div>
     </div>

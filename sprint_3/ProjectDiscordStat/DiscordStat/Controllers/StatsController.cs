@@ -22,6 +22,7 @@ using System.Web.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DiscordStats.ViewModels;
+using System.Text;
 
 namespace DiscordStats.Controllers
 {
@@ -63,9 +64,10 @@ namespace DiscordStats.Controllers
         [HttpGet]
         public IActionResult GetMessageInfoFromDatabase(string ServerId)
         {
-            return Json(_messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            var item = _messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList();
+            return Json(item);
         }
-
+        
         [HttpGet]
         public IActionResult GetPresencesFromDatabase(string ServerId, string GameName)
         {
@@ -134,15 +136,117 @@ namespace DiscordStats.Controllers
         [HttpGet]
         public IActionResult GetUsersFromDatabase(string ServerId)
         {
-            var test = _userRepository.GetAll().Where(s => s.Servers == ServerId).ToList();
             return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
         }
 
         [HttpGet]
         public IActionResult GetVoiceStatesFromDatabase(string ServerId)
         {
-            
             return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
+
+        [HttpPost]
+        public FileResult ActiveVoiceChannelTime(string data)
+        {
+            StringBuilder dataJsonFile = new StringBuilder();
+            dataJsonFile.AppendLine(data);
+
+
+            var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
+            var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
+            CreateADirectory(downloadsDirectory);
+            string fileName = downloadsDirectory + "ActiveVoiceChannelTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            CreateFile(fileName, dataJsonFile);
+
+            string textFile = "Your data info is located on your desktop.";
+            return File(Encoding.UTF8.GetBytes(textFile.ToString()), "application/json", fileName);
+        }
+
+        [HttpPost]
+        public FileResult ActiveMessageTime(string data)
+        {
+            StringBuilder dataJsonFile = new StringBuilder();
+            dataJsonFile.AppendLine(data);
+
+
+            var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
+            var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
+            CreateADirectory(downloadsDirectory);
+            string fileName = downloadsDirectory + "ActiveMessagingTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            CreateFile(fileName, dataJsonFile);
+
+            string textFile = "Your data info is located on your desktop.";
+            return File(Encoding.UTF8.GetBytes(textFile.ToString()), "application/json", fileName);
+        }
+
+        [HttpPost]
+        public FileResult ActivePresenceTime(string data)
+        {
+            StringBuilder dataJsonFile = new StringBuilder();
+            dataJsonFile.AppendLine(data);
+
+
+            var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
+            var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
+            CreateADirectory(downloadsDirectory);
+            string fileName = downloadsDirectory + "ActiveGamingTime_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            CreateFile(fileName, dataJsonFile);
+
+            string textFile = "Your data info is located on your desktop.";
+            return File(Encoding.UTF8.GetBytes(textFile.ToString()), "application/json", fileName);
+        }
+
+        [HttpPost]
+        public FileResult HoursPerGame(string data)
+        {
+            StringBuilder dataJsonFile = new StringBuilder();
+            dataJsonFile.AppendLine(data);
+
+
+            var currentWorkingDirectory = Environment.GetEnvironmentVariable("USERPROFILE");
+            var downloadsDirectory = Path.Combine(currentWorkingDirectory, "Desktop\\");
+            CreateADirectory(downloadsDirectory);
+            string fileName = downloadsDirectory + "HoursPerGame_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
+            CreateFile(fileName, dataJsonFile);
+
+            string textFile = "Your data info is located on your desktop.";
+            return File(Encoding.UTF8.GetBytes(textFile.ToString()), "application/json", fileName);
+        }
+
+        public void CreateADirectory(string startingPath)
+        {
+            //creates new directory if it isnt there
+            if (!Directory.Exists(startingPath))
+            {
+                Directory.CreateDirectory(startingPath);
+
+            }
+            else return;
+        }
+
+        public void CreateFile(string fileName, StringBuilder dataJsonFile)
+        {
+            try
+            {
+                // Check if file already exists. If yes, delete it.     
+                if (System.IO.File.Exists(fileName))
+                {
+                    System.IO.File.Delete(fileName);
+                }
+
+                // Create a new file     
+                using (FileStream fs = System.IO.File.Create(fileName))
+                {
+                    //// Add some text to file    
+                    Byte[] dataJsonFileAsByte = new UTF8Encoding(true).GetBytes(dataJsonFile.ToString());
+                    fs.Write(dataJsonFileAsByte, 0, dataJsonFileAsByte.Length);
+
+                }
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine(Ex.ToString());
+            }
         }
     }
 }
