@@ -59,6 +59,7 @@ builder.Services.AddScoped<IChannelRepository, ChannelRepository>();
 builder.Services.AddScoped<IMessageInfoRepository, MessageInfoRepository>();
 builder.Services.AddScoped<IVoiceChannelRepository, VoiceChannelRepository>();
 builder.Services.AddScoped<IVoiceStateRepository, VoiceStateRepository>();
+builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 builder.Services.AddScoped<IServerMemberRepository, ServerMemberRepository>();
 
 

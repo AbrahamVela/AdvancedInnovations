@@ -117,7 +117,6 @@ function graphingMessageActivity(data) {
             if (subtraction < 0) {
                 subtraction = yValues.length + subtraction;
             }
-            console.log(subtraction);
             yValues[subtraction] += 1;
         }
     }

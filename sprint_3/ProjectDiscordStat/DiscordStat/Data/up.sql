@@ -135,6 +135,15 @@ CREATE TABLE [VoiceChannels]
   [Time] DateTime Null
 );
 
+CREATE TABLE [Status]
+(
+  [StatusPK] int PRIMARY KEY IDENTITY(1,1),
+  [UserId] nvarchar(256) Null,
+  [Status] nvarchar(256) Null,
+  [ServerId] nvarchar(256) Null,
+  [CreatedAt] DATETIME Null
+);
+
 CREATE TABLE [dbo].[ServerMembers](	
 	[ServerPk] [int] IDENTITY(1,1) NOT NULL,
 	[ID] [nvarchar](128) NOT NULL,
