@@ -12,6 +12,8 @@ namespace AbrahamSpecFlowProject.PageObjects
     public class HomePage : Page
     {
         private IWebElement ServerNav => _browserInteractions.WaitAndReturnElement(By.Id("serversNav"));
+        private IWebElement AccountNav => _browserInteractions.WaitAndReturnElement(By.Id("accountNav"));
+
         private IWebElement Title => _browserInteractions.WaitAndReturnElement(By.Id("title"));
         private IWebElement WelcomeText => _browserInteractions.WaitAndReturnElement(By.Id("loggedin-welcome"));
         private IEnumerable<IWebElement> AppleButtons => _browserInteractions.WaitAndReturnElements(By.CssSelector("#listOfApples button"));
@@ -26,6 +28,7 @@ namespace AbrahamSpecFlowProject.PageObjects
         // that checks account pages list of servers , needs "ServerNav.Text" look into Korbins repo
         public string GetServerNav => ServerNav.Text;
 
+        public string GetAccountNav => AccountNav.Text;
 
         public string GetTitle => Title.Text;
         public string GetWelcomeText => WelcomeText.Text;
