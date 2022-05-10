@@ -25,6 +25,16 @@ namespace AbrahamSpecFlowProject.PageObjects
 
         private IWebElement SubmitProfileForm => _browserInteractions.WaitAndReturnElement(By.Id("submitProfileForm"));
 
+        private IWebElement DownloadContainer => _browserInteractions.WaitAndReturnElement(By.Id("dowwnloadContainer"));
+
+        private IWebElement ExportJsonVoiceChannel => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonVoiceChannel"));
+
+        private IWebElement ExportJsonMessaging => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonMessaging"));
+
+        private IWebElement ExportJsonActiveGaming => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonActiveGaming"));
+
+        private IWebElement ExportJsonHoursPerGame => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonHoursPerGame"));
+
         public AccountPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
         {
@@ -42,6 +52,25 @@ namespace AbrahamSpecFlowProject.PageObjects
         public bool GetProfileForm => ProfileForm.Displayed;
         public bool GetTitleBool => Title.Displayed;
 
+        public bool GetDownloadContainer => DownloadContainer.Displayed;
+
+        public void ClickExportJsonVoiceChannelButton()
+        {
+            ExportJsonVoiceChannel.ClickWithRetry(30);
+        }
+
+        public void ClickExportJsonMessagingButton()
+        {
+            ExportJsonMessaging.ClickWithRetry(30);
+        }
+        public void ClickExportJsonActiveGamingButton()
+        {
+            ExportJsonActiveGaming.ClickWithRetry(30);
+        }
+        public void ClickExportJsonHoursPerGameButton()
+        {
+            ExportJsonHoursPerGame.ClickWithRetry(30);
+        }
         public void ClickSubmitProfileFormButton()
         {
             SubmitProfileForm.ClickWithRetry(30);
