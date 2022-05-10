@@ -191,6 +191,7 @@ function DataHoursPerGame(data) {
     var xValues = [];
     var yValues = [];
 
+
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
@@ -212,6 +213,11 @@ function DataHoursPerGame(data) {
             }
         }
     }
+
+    xValues.push("Start Date");
+    yValues.push(startDate);
+    xValues.push("End Date");
+    yValues.push(endDate);
 
     var obj = {};
     for (var i = 0; i < xValues.length; i++) {
