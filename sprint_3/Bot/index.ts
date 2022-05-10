@@ -190,11 +190,11 @@ async function sendUsers (){
                     "Servers": guild.id,
                     "Avatar": user.user.avatar
                 }
-                // console.log(newUser)
-                users.push(newUser);
-                console.log("The users of all servers: ")
-                console.log(users)              
-                axios.post(url + '/api/postusers', users)
+                console.log(newUser)
+                // users.push(newUser);
+                // console.log("The users of all servers: ")
+                // console.log(users)              
+                axios.post(url + '/api/postusers', newUser)
                 .then((result: any) => {
                                     console.log(result);
                                 })
@@ -472,6 +472,48 @@ async function sendVoiceStates (){
     }, 5000);
 }
 
+async function sendStatus (){
+    let allStatus: any = []
+
+    client.guilds.cache.each(async (guild) => {
+
+        const list = client.guilds.cache.get(String(guild.id))
+        const members = await list?.members.fetch();
+    
+    
+        members?.forEach((member) => {
+            if (member.presence === undefined || member.presence === null) {
+                return;
+            };
+    
+            if (member.user.bot === false) {
+                let newStatus = {
+                    UserId: member.id,
+                    Status1: member.presence.status,
+                    ServerId: guild.id,     
+                    CreatedAt: new Date()      
+                };
+                allStatus.push(newStatus);
+            };
+        })
+    
+    });
+    setTimeout(() => {
+        if (allStatus.length != 0) {
+            console.log("allStatus: ")
+            console.log(allStatus)
+        
+            axios.post(url + '/api/PostStatuses', allStatus)
+                .then((result: any) => {
+                    console.log(result);
+                })
+                .catch((error: any) => {
+                    console.log(error);
+                });
+        }
+    }, 5000);
+}
+
             // axios.post('https://discordstats.azurewebsites.net/api/postchannels', channels)
             //     .then((result: any) => {
             //         console.log(result);
@@ -517,7 +559,8 @@ function UpdateChannels() {
     sendChannels();
 }
 
-
+ setInterval(sendStatus, 300000);
+    
  setInterval(updataPresence, 300000);
  setInterval(updataUsers, 450000);
  setInterval(updataVoiceStates, 300000);
