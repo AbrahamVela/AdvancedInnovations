@@ -135,6 +135,15 @@ CREATE TABLE [VoiceChannels]
   [Time] DateTime Null
 );
 
+CREATE TABLE [Status]
+(
+  [StatusPK] int PRIMARY KEY IDENTITY(1,1),
+  [UserId] nvarchar(256) Null,
+  [Status] nvarchar(256) Null,
+  [ServerId] nvarchar(256) Null,
+  [CreatedAt] DATETIME Null
+)
+
 
 -- *************** Add foreign key relations ********************
 ALTER TABLE [ServerUserJoin] ADD CONSTRAINT [ServerUserJoinServerPk]        FOREIGN KEY ([ServerPk])        REFERENCES [Server]        ([ServerPk]) ON DELETE NO ACTION ON UPDATE NO ACTION;

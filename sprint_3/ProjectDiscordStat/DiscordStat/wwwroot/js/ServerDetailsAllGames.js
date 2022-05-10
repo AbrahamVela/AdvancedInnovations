@@ -1,8 +1,6 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
 
-    console.log("URL: " + '../Stats/GetPresencesFromDatabase?serverid=' + detailsServerId);
-
     $.ajax({
         type: 'GET',
         url: '../Stats/GetAllPresencesFromDatabase?serverid=' + detailsServerId,
@@ -103,10 +101,6 @@ function graphingAllPresenceActivity(data) {
             }
         }
     }
-    console.log("all X: ")
-    console.log(xValues);
-    console.log("all Y: ")
-    console.log(yValues);
 
 
 

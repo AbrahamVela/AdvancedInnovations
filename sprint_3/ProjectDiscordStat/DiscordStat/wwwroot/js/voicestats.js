@@ -1,7 +1,5 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    let gameDetailsGameName = $("#GameName").attr('value');
-    console.log("URL: " + '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId);
 
     $.ajax({
         type: 'GET',
@@ -9,14 +7,6 @@
         success: barGraphHourlyVoiceStateActivity,
         error: handleError
     });
-
-    //$.ajax({
-    //    type: 'GET',
-    //    url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
-    //    success: graphVoiceDropDownBox,
-    //    error: handleError
-    //});
-
 })
 
 var voiceStateActivityData = [];
@@ -101,12 +91,9 @@ function graphingVoiceStateActivity(data) {
             if (subtraction < 0) {
                 subtraction = yValues.length + subtraction;
             }
-            console.log(subtraction);
             yValues[subtraction] += 1;
         }
     }
-    //console.log(xValues);
-    //console.log(yValues);
 
 
 
@@ -179,14 +166,3 @@ function graphingVoiceStateActivity(data) {
 
 
 };
-//        options: {
-//            legend: { display: false },
-//            title: {
-//                display: true,
-//                text: "Activity Frequency"
-//            }
-
-
-//        }
-//    })
-////};
