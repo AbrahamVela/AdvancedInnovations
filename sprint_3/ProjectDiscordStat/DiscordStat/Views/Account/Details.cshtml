@@ -287,7 +287,9 @@
                     <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
                     <button id="exportJson" type="button" class="btn btn-primary" onclick="GetHoursPerGame()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Hours per Game</button>
                 </div>
-
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
+                    <canvas id="usersStatusHourlyChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -493,5 +495,6 @@ var Serverid = document.getElementById('ServerId').getAttribute("value");
     <script type="text/javascript" src="~/js/voicestats.js"></script>
     <script type="text/javascript" src="~/js/ServerDetailsGameStats.js"></script>
     <script type="text/javascript" src="~/js/ServerDetailsAllGames.js"></script>
+    <script type="text/javascript" src="~/js/statuses.js"></script>
     @*<script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>*@
 }

@@ -2,8 +2,6 @@
     let detailsServerId = $("#ServerId").attr('value');
     let gameDetailsGameName = $("#GameName").attr('value');
 
-    console.log("URL: " + '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId);
-
     $.ajax({
         type: 'GET',
         url: '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId,
@@ -36,7 +34,6 @@ function handleError(xhr, ajaxOptions, thrownError) {
 function graphDropDownBox(data) {
     var allUsersPresences = document.getElementById("allUsersPresences");
     for (i = 0; i < data.length; i++) {
-        console.log(data[i].username);
         var opt = data[i];
         var elPresence = document.createElement("option");
         elPresence.textContent = opt.username;
@@ -92,24 +89,6 @@ $("#allUsersPresences").change(function () {
     }
 });
 
-//$(function () {
-//    $('input[name="daterange"]').daterangepicker({
-//        opens: 'left'
-//    }, function (start, end, label) {
-//        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-//    });
-//});
-
-//$('#sandbox-container .input-daterange').datepicker({
-//    endDate: "today"
-//});
-
-//$("#datepicker").change(function (startDate, endDate) {
-//    alert("Start Date: " + startDate)
-//    alert("End Date: " + endDate)
-
-//})
-
 
 function barGraphHourlyPresenceActivity(data) {
     presenceActivityData = data
@@ -137,13 +116,9 @@ function graphingPresenceActivity(data) {
             if (subtraction < 0) {
                 subtraction = yValues.length + subtraction;
             }
-            console.log(subtraction);
             yValues[subtraction] += 1;
         }
     }
-    console.log(xValues);
-    console.log(yValues);
-
 
 
     presencesChart = new Chart("presencesHourlyAllTimeChart", {
