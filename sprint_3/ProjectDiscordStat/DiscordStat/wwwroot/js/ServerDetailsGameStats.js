@@ -187,7 +187,6 @@ function DataForUserPresenceActivity(data) {
     var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
     var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    var dauserOrUserstes = GetUserOrUsers(data);
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
@@ -208,31 +207,20 @@ function DataForUserPresenceActivity(data) {
         obj[xValues[i]] = yValues[i];
     }
 
-    $.ajax({
-        type: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        url: '../Stats/ActivePresenceTime?data=' + JSON.stringify(obj),
-        success: function (msg) {
-        }
-    });
-
+    downloadUserPresenceActivity(obj);
 }
 
 
-function GetUserOrUsers(data) {
+function downloadUserPresenceActivity(text) {
 
-    var allUsers = document.getElementById("allUsers");
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(text)));
+    element.setAttribute('download', "ActiveGamingTime.json");
 
-    for (i = 0; i < data.length; i++) {
-        var opt = data[i];
-        var elMessage = document.createElement("option");
-        elMessage.textContent = opt.username;
-        elMessage.value = opt.id;
-        allUsers.appendChild(elMessage);
-    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
 
-    var userOrUsers = allUsers
+    element.click();
 
-    return userOrUsers
+    document.body.removeChild(element);
 }
