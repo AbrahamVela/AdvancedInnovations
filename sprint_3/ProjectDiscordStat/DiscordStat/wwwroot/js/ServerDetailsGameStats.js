@@ -197,6 +197,11 @@ function DataForUserPresenceActivity(data) {
         }
     }
 
+    xValues.push("Start Date");
+    yValues.push(startDate);
+    xValues.push("End Date");
+    yValues.push(endDate);
+
     var obj = {};
     for (var i = 0; i < xValues.length; i++) {
         obj[xValues[i]] = yValues[i];
