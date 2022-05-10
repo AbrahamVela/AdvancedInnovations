@@ -165,7 +165,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetMessageInfoFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -181,7 +181,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetPresencesFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -197,7 +197,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetAllPresencesFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -213,7 +213,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetUsersFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -229,7 +229,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetVoiceStatesFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -247,7 +247,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetMessageInfoFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -265,7 +265,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetPresencesFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null,null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -282,7 +282,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetAllPresencesFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -299,7 +299,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetUsersFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -316,7 +316,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetVoiceStatesFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null);
+            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act

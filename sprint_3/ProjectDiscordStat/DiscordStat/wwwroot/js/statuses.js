@@ -163,6 +163,7 @@ function graphingStatusActivity(data) {
             },
             scales: {
                 y: {
+                    stacked: true,
                     title: {
                         display: true,
                         text: 'Number of Users',
