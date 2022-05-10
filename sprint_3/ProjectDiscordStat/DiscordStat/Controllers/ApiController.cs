@@ -22,9 +22,9 @@ namespace DiscordStats.Controllers
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IVoiceStateRepository _voiceStateRepository;
         private readonly IStatusRepository _statusRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
 
-        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository, IStatusRepository statusRepository)
-
+        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository, IServerMemberRepository serverMemberRepository, IStatusRepository statusRepository)
         {
             _logger = logger;
             _userRepository = discordUserRepo;
@@ -37,7 +37,7 @@ namespace DiscordStats.Controllers
             _voiceChannelRepository = voiceChannelRepository;
             _voiceStateRepository = voiceStateRepository;
             _statusRepository = statusRepository;
-
+            _serverMemberRepository = serverMemberRepository;
         }
 
 
@@ -128,8 +128,28 @@ namespace DiscordStats.Controllers
         [HttpPost]
         public async Task<IActionResult> PostServers(Server[] servers)
         {
-            foreach (var server in servers)
+           
+
+
+                foreach (var server in servers)
             {
+
+                bool duplicateCount = false;
+                var currentServerMembers = _serverMemberRepository.GetAll().Where(s => s.Id == server.Id).ToList();
+                foreach (var s in currentServerMembers)
+                {
+                    if (s.Date.Date == DateTime.Now.Date && s.Date.Hour == DateTime.Now.Hour)
+                        duplicateCount = true;
+                }
+                if (!duplicateCount)
+                {
+                    ServerMembers newServerCount = new();
+                    newServerCount.Date = DateTime.Now;
+                    newServerCount.Members = server.ApproximateMemberCount;
+                    newServerCount.Id = server.Id;
+                    _serverMemberRepository.AddOrUpdate(newServerCount);
+                }
+
                 var duplicate = false;
 
                 Task.Delay(300).Wait();

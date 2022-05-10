@@ -1,5 +1,4 @@
-﻿
-$(document).ready(function () {
+﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     $.ajax({
         type: 'GET',
@@ -14,6 +13,7 @@ $(document).ready(function () {
         success: graphMessageDropDownBox,
         error: handleError
     });
+
 })
 
 var messageActivityData = [];
@@ -177,14 +177,76 @@ function graphingMessageActivity(data) {
                         }
                     }
                 }
-            },
+            }
 
-        }
-
-        
-
-            
+        },
+             
     })
 
-
 };
+
+
+
+function GetActiveMessageTime() {
+    let detailsServerId = $("#ServerId").attr('value');
+    $.ajax({
+        type: "GET",
+        url: '../Stats/GetMessageInfoFromDatabase?serverid=' + detailsServerId,
+        success: DataForHourlyMessageActivity,
+        error: handleError
+    });
+}
+
+function DataForHourlyMessageActivity(data) {
+    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
+    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    var dauserOrUserstes = GetUserOrUsers(data);
+    for (var i = 0; i < data.length; i++) {
+        var dateUTC = new Date(data[i].createdAt)
+        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+
+        if (date > startDate && date < endDate) {
+            let hour = date.getHours()
+            subtraction = hour - 4;
+            if (subtraction < 0) {
+                subtraction = yValues.length + subtraction;
+            }
+            console.log(subtraction);
+            yValues[subtraction] += 1;
+        }
+    }
+
+    var obj = {};
+    for (var i = 0; i < xValues.length; i++) {
+        obj[xValues[i]] = yValues[i];
+    }
+ 
+    $.ajax({
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        url: '../Stats/ActiveMessageTime?data=' + JSON.stringify(obj),
+        success: function (msg) {
+        }
+    });
+
+}
+
+
+function GetUserOrUsers(data) {
+
+    var allUsers = document.getElementById("allUsers");
+
+    for (i = 0; i < data.length; i++) {
+        var opt = data[i];
+        var elMessage = document.createElement("option");
+        elMessage.textContent = opt.username;
+        elMessage.value = opt.id;
+        allUsers.appendChild(elMessage);
+    }
+
+    var userOrUsers = allUsers
+
+    return userOrUsers
+}

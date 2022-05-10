@@ -173,14 +173,76 @@ function graphingAllPresenceActivity(data) {
 
 
 };
-//        options: {
-//            legend: { display: false },
-//            title: {
-//                display: true,
-//                text: "Activity Frequency"
-//            }
 
 
-//        }
-//    })
-////};
+
+function GetHoursPerGame() {
+    let detailsServerId = $("#ServerId").attr('value');
+    $.ajax({
+        type: "GET",
+        url: '../Stats/GetAllPresencesFromDatabase?serverid=' + detailsServerId,
+        success: DataHoursPerGame,
+        error: handleError
+    });
+}
+
+
+function DataHoursPerGame(data) {
+    var xValues = [];
+    var yValues = [];
+
+    var dauserOrUserstes = GetUserOrUsers(data);
+    for (var i = 0; i < data.length; i++) {
+        var dateUTC = new Date(data[i].createdAt)
+        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+
+        if (date > startDate && date < endDate) {
+            if (xValues.includes(data[i].name) == false) {
+                xValues.push(data[i].name)
+                yValues.push(1)
+                var index;
+            }
+            else if (xValues.includes(data[i].name)) {
+                xValues.some(function (entry, i) {
+                    if (entry == data[i].name) {
+                        index = i;
+                        return true;
+                    }
+                });
+                yValues[index] += 1
+            }
+        }
+    }
+    var obj = {};
+    for (var i = 0; i < xValues.length; i++) {
+        obj[xValues[i]] = yValues[i];
+    }
+
+    $.ajax({
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        url: '../Stats/HoursPerGame?data=' + JSON.stringify(obj),
+        success: function (msg) {
+        }
+    });
+
+}
+
+
+function GetUserOrUsers(data) {
+
+    var allUsers = document.getElementById("allUsers");
+
+    for (i = 0; i < data.length; i++) {
+        var opt = data[i];
+        var elMessage = document.createElement("option");
+        elMessage.textContent = opt.username;
+        elMessage.value = opt.id;
+        allUsers.appendChild(elMessage);
+    }
+
+    var userOrUsers = allUsers
+
+    return userOrUsers
+}
