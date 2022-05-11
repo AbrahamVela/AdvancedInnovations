@@ -26,18 +26,23 @@ namespace DiscordStats.DAL.Concrete
         private readonly IPresenceRepository _presenceRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
+        private readonly IMessageInfoRepository _messageInfoRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
+        private readonly IConfiguration _configuration;
 
 
         private DiscordDataDbContext _db = new DiscordDataDbContext();
 
-        public DiscordService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, IPresenceRepository presenceRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository)
+        public DiscordService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, IPresenceRepository presenceRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IConfiguration config, IServerMemberRepository serverMemberRepository)
         {
             _serverRepository = serverRepository;
             _httpClientFactory = httpClientFactory;
             _presenceRepository = presenceRepository;
-            _channelRepository = channelRepository; 
+            _channelRepository = channelRepository;
             _voiceChannelRepository = voiceChannelRepository;
-
+            _messageInfoRepository = messageInfoRepository;
+            _configuration = config;
+            _serverMemberRepository = serverMemberRepository;
         }
 
 
@@ -65,7 +70,7 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
             }
         }
         public async Task<string> GetJsonStringFromEndpointWithUserParam(string botToken, string uri)
@@ -92,7 +97,8 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
+            
             }
         }
 
@@ -120,7 +126,7 @@ namespace DiscordStats.DAL.Concrete
             else
             {
                 // What to do if failure? Should throw specific exceptions that explain what happened
-                throw new HttpRequestException();
+                return null;
             }
         }
         public async Task<string> PostToDiscordEndPoint(string botToken, string uri)
@@ -237,35 +243,42 @@ namespace DiscordStats.DAL.Concrete
             // Remember to handle errors here
             string response = await GetJsonStringFromEndpoint(bearerToken, $"https://discord.com/api/users/@me/guilds");
             // And here
-            List<Server>? servers = JsonConvert.DeserializeObject<List<Server>>(response);
-            return servers;
+            if (response != null)
+            {
+                List<Server>? servers = JsonConvert.DeserializeObject<List<Server>>(response);
+                return servers;
+            }
+            else return null;
         }
 
-        public async Task<DiscordUser?> GetCurrentUserInfo(string bearerToken)
+        public async Task<DiscordUserAndUserWebSiteInfo?> GetCurrentUserInfo(string bearerToken)
         {
             // Remember to handle errors here
             string response = await GetJsonStringFromEndpoint(bearerToken, "https://discord.com/api/users/@me");
             // And here
-            DiscordUser? userInfo = JsonConvert.DeserializeObject<DiscordUser>(response);
+            DiscordUserAndUserWebSiteInfo? userInfo = JsonConvert.DeserializeObject<DiscordUserAndUserWebSiteInfo>(response);
             return userInfo;
         }
         public async Task<List<GuildUsers>?> GetCurrentGuildUsers(string botToken, string serverId)
         {
             string uri = "https://discord.com/api/guilds/" + serverId + "/members?limit=1000";
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
+            if( response == null)
+                return null;
+
             List<GuildUsers>? userInfo = JsonConvert.DeserializeObject<List<GuildUsers>?>(response);
             return userInfo;
         }
 
-        public async Task<DiscordUser?> GetUserInfoById(string botToken, string UserId)
+        public async Task<DiscordUserAndUserWebSiteInfo?> GetUserInfoById(string botToken, string UserId)
         {
             string uri = "https://discord.com/api/users/" + UserId;
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
-            DiscordUser? userInfo = JsonConvert.DeserializeObject<DiscordUser>(response);
+            DiscordUserAndUserWebSiteInfo? userInfo = JsonConvert.DeserializeObject<DiscordUserAndUserWebSiteInfo>(response);
             return userInfo;
         }
 
-        public async Task<ServerOwnerViewModel?> GetFullGuild(string botToken, string serverId)
+        public async Task<ServerOwnerViewModel?> GetFullGuild(string botToken, string serverId) 
         {
             string uri = "https://discord.com/api/guilds/" + serverId + "?with_counts=true";
             string response = await GetJsonStringFromEndpointWithUserParam(botToken, uri);
@@ -315,7 +328,7 @@ namespace DiscordStats.DAL.Concrete
             if (dbServers.Count() == 0)
             {
                 var servMemberCount = server.Approximate_Member_Count;
-                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null" });
+                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null" , InLottery=null});
                 duplicate = true;
 
             }
@@ -331,7 +344,7 @@ namespace DiscordStats.DAL.Concrete
             if (!duplicate)
             {
                 var servMemberCount = server.Approximate_Member_Count;
-                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null" });
+                _serverRepository.AddOrUpdate(new() { Id = server.Id, Name = server.Name, Owner = serverOwner, Icon = server.Icon, HasBot = hasBot, ApproximateMemberCount = servMemberCount, OwnerId = server.Owner_Id, VerificationLevel = server.Verification_Level, Description = server.Description, PremiumTier = server.Premium_Tier, ApproximatePresenceCount = server.Approximate_Presence_Count, Privacy="private", OnForum="false", Message="null", InLottery= null });
 
             }
             if (duplicate)
@@ -347,7 +360,6 @@ namespace DiscordStats.DAL.Concrete
             foreach (var presence in presences)
             {
                 Debug.Write(presence.Name);
-                presence.CreatedAt = presence.CreatedAt?.ToLocalTime();
 
                 Task.Delay(300).Wait();
                 await Task.Run(() =>
@@ -360,6 +372,8 @@ namespace DiscordStats.DAL.Concrete
 
                     foreach (var p in allPresences)
                     {
+                        if(presence.CreatedAt?.Hour != DateTime.UtcNow.Hour && presence.CreatedAt?.Date == DateTime.UtcNow.Date)
+                            presence.CreatedAt = DateTime.Now;
                         if (presence.ServerId == p.ServerId && presence.Name == p.Name && presence.UserId == p.UserId && presence.CreatedAt?.Hour == p.CreatedAt?.Hour && presence.CreatedAt?.Date == p.CreatedAt?.Date)
                         {
                             duplicate = true;
@@ -459,5 +473,123 @@ namespace DiscordStats.DAL.Concrete
                 throw new HttpRequestException();
             }
         }
+        public async Task<List<UserMessageVM>> UpdatedMessagesByDates(DateTime StartDate, DateTime EndDate, string serverId)
+        {
+            string botToken = _configuration["API:BotToken"];
+            var ServerMessages = _messageInfoRepository.GetAll().Where(m => m.ServerId == serverId).ToList();
+
+            var updatedMessages = new List<MessageInfo>();
+            if (StartDate.Date.ToString("M-d-yyyy") != "1-1-0001" && EndDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {
+                    
+                    var messageDateOnly = message.CreatedAt.Substring(0, 10);
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                    if (messagedate >= StartDate.Date && messagedate <= EndDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") != "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {
+                    var messageDateOnly = message.CreatedAt.Substring(0, 10);
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                    if (messagedate <= EndDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {
+                    var messageDateOnly = message.CreatedAt.Substring(0, 10);
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                    if (messagedate >= StartDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMessages)
+                {                    
+                        updatedMessages.Add(message);                   
+                }
+            }
+            var UsersMessagesFiltered = updatedMessages.GroupBy(x => x.UserId).Select(x => x.ToList()).Take(3).ToList();
+            var users = new List<UserMessageVM>();
+            foreach (var u in UsersMessagesFiltered)
+            {
+                var user = await GetUserInfoById(botToken, u[0].UserId);
+                UserMessageVM MessageUser = new();
+                MessageUser.Id = user.Id;
+                MessageUser.Username = user.Username;
+                MessageUser.Avatar = user.Avatar;
+                MessageUser.MessageCount = u.Count();
+                users.Add(MessageUser);
+            }
+            return users.OrderByDescending(m => m.MessageCount ).ToList();
+        }
+    
+    public List<ServerMembers> GetServerUsersByDates(DateTime StartDate, DateTime EndDate, string serverId)
+    {
+
+        var ServerMembers = _serverMemberRepository.GetAll().Where(m => m.Id == serverId).ToList();
+
+        var updatedMessages = new List<ServerMembers>();
+        if (StartDate.Date.ToString("M-d-yyyy") != "1-1-0001" && EndDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+        {
+            foreach (var message in ServerMembers)
+            {
+
+                var messageDateOnly = message.Date;
+                var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                if (messagedate >= StartDate.Date && messagedate <= EndDate.Date)
+                {
+                    updatedMessages.Add(message);
+                }
+            }
+        }
+            if (EndDate.Date.ToString("M-d-yyyy") != "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMembers)
+                {
+                    var messageDateOnly = message.Date;
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                    if (messagedate <= EndDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") != "1-1-0001")
+            {
+                foreach (var message in ServerMembers)
+                {
+                    var messageDateOnly = message.Date;
+                    var messagedate = Convert.ToDateTime(messageDateOnly).Date;
+                    if (messagedate >= StartDate.Date)
+                    {
+                        updatedMessages.Add(message);
+                    }
+                }
+            }
+            if (EndDate.Date.ToString("M-d-yyyy") == "1-1-0001" && StartDate.Date.ToString("M-d-yyyy") == "1-1-0001")
+            {
+                foreach (var message in ServerMembers)
+                {
+                    updatedMessages.Add(message);
+                }
+            }
+
+            return updatedMessages.OrderBy(d => d.Date).ToList();
     }
+}
 }

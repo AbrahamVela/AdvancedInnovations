@@ -21,7 +21,8 @@ CREATE TABLE [Server]
   [approximate_presence_count] int Null,
   [Privacy] nvarchar(256) Null,
   [OnForum] nvarchar(256) Null,
-  [Message] nvarchar(256) Null
+  [Message] nvarchar(256) Null,
+  [InLottery] nvarchar(256) Null
 );
 
 CREATE TABLE [ServerUserJoin] 
@@ -31,13 +32,17 @@ CREATE TABLE [ServerUserJoin]
   [DiscordUserPk]   int
 );
 
-CREATE TABLE [DiscordUser] 
+CREATE TABLE [DiscordUserAndUserWebSiteInfo] 
 (
-  [ID]      nvarchar(128) Not Null, 
+  [ID]      nvarchar(256) Not Null, 
   [DiscordUserPk] int           PRIMARY KEY IDENTITY(1, 1),
-  [Username]    nvarchar(128)  NOT NULL,
-  [Servers] nvarchar(256) NOT NULL,
-  [Avatar] nvarchar(256)     NULL
+  [Username]    nvarchar(128)  NULL,
+  [Servers] nvarchar(256)   NULL,
+  [Avatar] nvarchar(256)     NULL,
+  [FirstName] nvarchar(128) NULL,
+  [LastName] nvarchar(128) NULL,
+  [BirthDate] nvarchar(256) NULL,
+  [Email] nvarchar(256) NUll
 );
 
 CREATE TABLE [MessageInfo] 
@@ -50,9 +55,18 @@ CREATE TABLE [MessageInfo]
 
 );
 
+CREATE TABLE [VoiceState] 
+(
+  [VoiceStatePk] int           PRIMARY KEY IDENTITY(1, 1),
+  [ServerId] nvarchar(256) NULL,
+  [ChannelId] nvarchar(256) NULL,
+  [UserId] nvarchar(256) NULL,
+  [CreatedAt] DATETIME NULL,
+);
+
 CREATE TABLE [Presence]
 (
-  [PresencePk] int PRIMARY KEY IDENTITY(1, 1),
+  [PresencePk] int			PRIMARY KEY IDENTITY(1, 1),
   [ID] nvarchar(256) NULL,
   [applicationID] nvarchar(256) Null,
   [Name]    nvarchar(256)  NULL,
@@ -79,15 +93,15 @@ CREATE TABLE [Channel]
   [Type] nvarchar(256) Null,
   [Name] nvarchar(256) Null,
   [Count] int Null,
-  [Guild_id] nvarchar(256) Null,
-)
+  [Guild_id] nvarchar(256) Null
+);
 
 CREATE TABLE [ServerChannelJoin]
 (
   [ID] int PRIMARY KEY IDENTITY(1,1),
   [ServerPk] int,
   [ChannelPk]   int
-)
+);
 
 
 CREATE TABLE [Webhook]
@@ -101,14 +115,14 @@ CREATE TABLE [Webhook]
   [Guild_id] nvarchar(256) Null,
   [Application_id] nvarchar(256) Null,
   [Token] nvarchar(256) Null,
-)
+);
 
 CREATE TABLE [ChannelWebhookJoin]
 (
   [ID] int PRIMARY KEY IDENTITY(1,1),
   [ChannelPk] int,
   [WebhookPk]   int
-)
+);
 
 
 CREATE TABLE [VoiceChannels]
@@ -119,12 +133,28 @@ CREATE TABLE [VoiceChannels]
   [Count] int Null,
   [Guild_id] nvarchar(256) Null,
   [Time] DateTime Null
-)
+);
+
+CREATE TABLE [Status]
+(
+  [StatusPK] int PRIMARY KEY IDENTITY(1,1),
+  [UserId] nvarchar(256) Null,
+  [Status] nvarchar(256) Null,
+  [ServerId] nvarchar(256) Null,
+  [CreatedAt] DATETIME Null
+);
+
+CREATE TABLE [dbo].[ServerMembers](	
+	[ServerPk] [int] IDENTITY(1,1) NOT NULL,
+	[ID] [nvarchar](128) NOT NULL,
+	[Members] [int] NULL,
+	[Date] [datetime] NOT NULL
+);
 
 
 -- *************** Add foreign key relations ********************
 ALTER TABLE [ServerUserJoin] ADD CONSTRAINT [ServerUserJoinServerPk]        FOREIGN KEY ([ServerPk])        REFERENCES [Server]        ([ServerPk]) ON DELETE NO ACTION ON UPDATE NO ACTION;
-ALTER TABLE [ServerUserJoin] ADD CONSTRAINT [ServerUserJoinDiscordUserPk]   FOREIGN KEY ([DiscordUserPk])   REFERENCES [DiscordUser]   ([DiscordUserPk]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE [ServerUserJoin] ADD CONSTRAINT [ServerUserJoinDiscordUserPk]   FOREIGN KEY ([DiscordUserPk])   REFERENCES [DiscordUserAndUserWebSiteInfo]   ([DiscordUserPk]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [ServerPresenceJoin] ADD CONSTRAINT [ServerPresenceJoinServerPk]        FOREIGN KEY ([ServerPk])        REFERENCES [Server]        ([ServerPk]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [ServerPresenceJoin] ADD CONSTRAINT [ServerPresenceJoinPresencePk]   FOREIGN KEY ([PresencePk])   REFERENCES [Presence]   ([PresencePk]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [ServerChannelJoin] ADD CONSTRAINT [ServerChannelJoinServerPk]        FOREIGN KEY ([ServerPk])        REFERENCES [Server]        ([ServerPk]) ON DELETE NO ACTION ON UPDATE NO ACTION;

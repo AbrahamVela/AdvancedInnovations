@@ -1,0 +1,34 @@
+﻿@model DiscordStats.ViewModels.ServerOwnerViewModel
+
+
+
+                  <table class="table" id="serverTable">
+                     <thead class="thead-dark">
+                    <tr>
+                        <th><b></b></th>
+                        <th><b>Names</b></th>
+                        <th><b>Messages Sent</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var u in @Model.userMessageVMs)
+                    {
+                        <tr>
+                            @if (u.Avatar == null)
+                            {
+                                var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
+                               <td style="padding-bottom: 2%"><img src="@i" style="height: 80px;"/></td>
+                            }
+                            else
+                            {
+                                var i = "https://cdn.discordapp.com/avatars/" + u.Id + "//" + u.Avatar + ".png";
+                                <td><img src="@i" style="height: 80px;"/></td>
+                            }
+
+                            <td style="padding-top: 4%">@u.Username</td>
+                            <td style="padding-top: 4%">@u.MessageCount Messages</td>
+
+                        </tr>
+                    }
+                    </tbody>
+                </table>

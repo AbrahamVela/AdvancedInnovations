@@ -1,108 +1,321 @@
 @model DiscordStats.ViewModels.ServerOwnerViewModel
 @using System.Security.Claims
-<div class="mode">
-Dark mode:	
-    <span class="change">ON</span>
-</div>
-<head>
-    <meta name="viewport" content="width=device-width" />
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-</head>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="row">
-    <div class="col-2">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
+      integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script
+    type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"
+      integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
+      crossorigin="anonymous"
+      defer>
+    </script>
+    <head>
+    <title>Server Details</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>@ViewData["Title"] - DiscordStat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="~/assets/css/templatemo-host-cloud.css">
+    <link rel="stylesheet" href="~/assets/css/owl.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+</head>
+ <body>
+          <!-- ***** Preloader Start ***** -->
+    <div id="preloader">
+        <div class="jumper">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>  
+    <!-- ***** Preloader End ***** -->
+    <!-- Page Content -->
+    <!-- Heading Starts Here -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col">
         @if (@Model.Icon == null)
         {
             var link = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
-            <img src="@link" style="height:100px"/>
+            <img class="discordImage"  src="@link" style="width:175px"/>
         }
         else
         {
             var link = "https://cdn.discordapp.com/icons/" + @Model.Id + "//" + @Model.Icon + ".png";
-            <img src="@link"/>
+            <img class="discordImage"  src="@link" style="width:175px"/>
         }
-       
     </div>
-    <div class="col-6" style="text-align:left">
+    <div class="col" style="text-align:center">
         <h1>@Model.Name</h1>
-        <p>Id: @Model.Id</p>
     </div>
-</div>
-<div id="ServerId" value="@Model.Id"></div>
-
-<div class="row">
-
-    @{
-        if (@Model.HasBot == "false")
-        {
-            <h1 style="text-align: center">This is all the information we could gather about this server. Please add the bot to see more.</h1>
-        }
-        else
-        {
-            <div class="col-4">
-                <p>Owner: @Model.Owner</p>
-                <P>Total members: @Model.Approximate_Member_Count</P>
-                <P>Online members: @Model.Approximate_Presence_Count</P>
-                <P>Verification Level: @Model.Verification_Level</P>
-                <P>Boost Level: @Model.Premium_Tier</P>
-                <p>Description: @Model.Description</p>
-                <div class="row" style="max-width:45%">
-                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
-                </div>
-                <div class="row" style="margin-top:2%; max-width:45%">
-                <button type="button" class="btn btn-info" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
-                </div>
+          </div>
+        </div>
+      </div>
+    <!-- Heading Ends Here -->
+    <!-- Services Starts Here -->
+    <div class="services-section services-page">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+                @if (@Model.HasBot == "false")
+                    {
+            <h2 style="text-align: center" id="noBotMessage">This is all the information we could gather about this server. Please add the bot to see more.</h2>
+                    }
+                    @if (@Model.HasBot == "true")
+                    {
+                        <h2>Server Information</h2>
+                    }              
             </div>
+          </div>
+          @if (@Model.HasBot == "true")
+                {
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="service-item">
+                            <i class="fa fa-cloud"></i>
+                            <h4 id="DetailsContainer">Details</h4>             
+                            <p>Owner: @Model.Owner</p>
+                            <P>Total members: @Model.Approximate_Member_Count</P>
+                            <P>Online members: @Model.Approximate_Presence_Count</P>
+                            <P>Verification Level: @Model.Verification_Level</P>
+                            <P>Boost Level: @Model.Premium_Tier</P>
 
-            <div class="col-8">
-                            <h3>Users</h3>
-                <table id="filterTable" class="display">
-                    <thead>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" onclick="document.getElementById('TopUsersContainer').scrollIntoView();" >View Top Users</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" onclick="document.getElementById('StatsContainer').scrollIntoView();" >View Stats</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" id="ViewGamesButton" onclick="location.href='@Url.Action("Games", "Account", new { ServerId = @Model.Id })'" >View Games</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-info" id="ViewServerGrowthButton" onclick="location.href='@Url.Action("ServerGrowth", "Account", new { ServerName = @Model.Name, ServerId = @Model.Id })'" >Server Growth</button>
+                            </div>
+                            <div class="row" style="margin-top:3%">
+                                <button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModal()" data-target="#exampleModal">Leave Server</button>
+                            </div>           
+
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <div class="service-item">
+                            <i class="fa fa-users"></i>
+                            <h4>Users</h4>
+
+                            <table class="table" id="serverTable">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th><b>Avatar</b></th>
+                                            <th><b>Name</b></th>                                          
+                                            <th><b>Kick User</b></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var u in @Model.users)
+                                        {
+                                            <tr style ="background-color: #f7f7f7">
+                                                @if (u.user.Avatar == null)
+                                                {
+                                                    var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
+                                                    <td style="padding-bottom: 2%"><img src="@i" style="height: 80px;"/></td>
+                                                }
+                                                else
+                                                {
+                                                    var i = "https://cdn.discordapp.com/avatars/" + u.user.Id + "//" + u.user.Avatar + ".png";
+                                                    <td><img src="@i" style="height: 80px;"/></td>
+                                                }
+
+                                                <td style="padding-bottom: 2%">@u.user.UserName</td>
+                                                 @if (Model.Owner == User.Claims.First(c => c.Type == ClaimTypes.Name).Value)
+                                                {
+                                                    @if (User.Claims.First(c => c.Type == ClaimTypes.Name).Value != u.user.UserName && u.user.UserName != "Stat Tracker")
+                                                    {
+                                                        <td style="padding-bottom: 2%"><button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModalKick(this)" id="@u.user.UserName" data-target="#exampleModal">Kick</button></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td></td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+           
+            </div>
+          </div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="service-item" id="TopUsersContainer">
+              <i class="fa fa-trophy"></i>
+              <h4>Top Users</h4>        
+              <label for="start">Start date:</label>
+                <input type="date" id="start" name="tripstart"                
+                 min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+
+                <label for="start">End date:</label>
+                <input type="date" id="end" name="tripend"               
+                 min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                        
+               <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" value="Update" />
+               <div id="viewPlaceHolder">
+                <table class="table" id="serverTable2">
+                     <thead class="thead-dark">
                     <tr>
-                        <th><b>Avatar</b></th>
+                        <th><b></b></th>
                         <th><b>Name</b></th>
-                        <th></th>
+                        <th><b>Messages Sent</b></th>
                     </tr>
                     </thead>
                     <tbody>
-
-                    @foreach (var u in @Model.users)
+                    @foreach (var u in @Model.userMessageVMs)
                     {
                         <tr>
-                            @if (u.user.Avatar == null)
+                            @if (u.Avatar == null)
                             {
                                 var i = "https://w7.pngwing.com/pngs/609/846/png-transparent-discord-logo-discord-computer-icons-logo-computer-software-avatar-miscellaneous-blue-angle.png";
-                               <td><img src="@i" style="height: 80px;"/></td>
+                               <td style="padding-bottom: 2%"><img src="@i" style="height: 80px;"/></td>
                             }
                             else
                             {
-                                var i = "https://cdn.discordapp.com/avatars/" + u.user.Id + "//" + u.user.Avatar + ".png";
+                                var i = "https://cdn.discordapp.com/avatars/" + u.Id + "//" + u.Avatar + ".png";
                                 <td><img src="@i" style="height: 80px;"/></td>
                             }
 
-                            <td>@u.user.UserName</td>
-                    @if (Model.Owner == User.Claims.First(c => c.Type == ClaimTypes.Name).Value){
-                    @if (User.Claims.First(c => c.Type == ClaimTypes.Name).Value != u.user.UserName && u.user.UserName != "Stat Tracker")
-                    {
-                        <td><button type="button" class="btn btn-danger" data-toggle="modal" onclick="OpenModalKick(this)" id="@u.user.UserName" data-target="#exampleModal">Kick</button></td>
-                    }
-                            }
+                            <td style="padding-top: 4%">@u.Username</td>
+                            <td style="padding-top: 4%">@u.MessageCount Messages</td>
+
                         </tr>
                     }
                     </tbody>
                 </table>
-                
-  
-            </div>
-             <div class="col-12 justify-content-center">
-                <div class="row justify-content-center">
-                    <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:1000px"></canvas>
-                </div>
-                <div class="row justify-content-center">
-                    <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:1000px"></canvas>
                 </div>
             </div>
-        }
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    <!-- Services Ends Here -->
+        <!-- Testimonials Starts Here -->
+                        @if (@Model.HasBot == "true")
+    {
+        <div class="testimonials-section" id="StatsContainer" >
+
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+
+                    <h2>Stats</h2>
+              
+              <div class="testimonial-item" >
+               <div class="icon">
+                  <i class="fa fa-bar-chart"></i>
+                </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row justify-content-center" style="margin-right:3%">
+            <br />
+            <div class="col-1" style="width:50px; margin-bottom:1%; left:1%">
+                <select name="allUsers" id="allUsers">
+                    <option>All Users</option>
+                </select>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-3" style="margin-left:29%">
+                    <label for="start">Start date:</label>
+                </div>
+                <div class="col-3" style="left:-10%">
+                    <label for="start">End date:</label>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-3" style="margin-left:15%">
+                    <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString(" yyyy-MM-dd")">
+                </div>
+                <div class="col-3" style="margin-left:-9%">
+                    <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString(" yyyy-MM-dd")">
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="dowwnloadContainer">
+
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
+                    <button id="exportJsonVoiceChannel" type="button" class="btn btn-primary" onclick="GetActiveVoiceChannelTime()" style="margin-right: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Voice Channel Time</button>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <button id="exportJsonMessaging" type="button" class="btn btn-primary" onclick="GetActiveMessageTime()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Messaging Time</button>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="userPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <button id="exportJsonActiveGaming" type="button" class="btn btn-primary" onclick="GetActiveGamingTime()" style="margin-right: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Gaming Time</button>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <button id="exportJsonHoursPerGame" type="button" class="btn btn-primary" onclick="GetHoursPerGame()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Hours per Game</button>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
+                    <canvas id="usersStatusHourlyChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    }
+    
+        <!-- Testimonials Ends Here -->
+        <!-- Graphs Starts Here -->
+    <div class="pricing-section">
+
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <!-- Graphs Ends Here -->
+     
+
+
+
+                    
+
+
 
 
 
@@ -186,10 +399,54 @@ Dark mode:
 
 
 
-                }
-            </div>
+
+</body>
+    </html>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#serverTable').DataTable();
+        });
+    </script>
+
+<div id="ServerId" value="@Model.Id"></div>
+
+<!-- Bootstrap core JavaScript -->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Additional Scripts -->
+    <script src="~/assets/js/custom.js"></script>
+    <script src="~/assets/js/owl.js"></script>
+    <script src="~/assets/js/accordions.js"></script>
 <script>
-    
+
+    function UpdateMessages(){
+var startDate = document.getElementById('start').value;
+var endDate = document.getElementById('end').value;
+var id = document.getElementById('ServerId').getAttribute("value");
+
+         $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("UpdateMessagesByDate", "Account")?StartDate=${startDate}&EndDate=${endDate}&serverId=${id}`,
+                    success: function(msg) {
+                        $('#viewPlaceHolder').html(msg);                    
+                    }
+});
+    }
+
+function GoToGamesPage(){
+var Serverid = document.getElementById('ServerId').getAttribute("value");
+
+         $.ajax({
+                    type: "GET",
+                    url: `@Url.Action("Games", "Account")?ServerId=${Serverid}`,
+                    success: function() {
+                                          
+                    }
+});
+    }
+
     function OpenModal() {
         $('#myModal').modal('show');
     }
@@ -233,7 +490,11 @@ Dark mode:
         }
     </script>
     
-     <script type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript" src="~/js/site.js"></script>
     <script type="text/javascript" src="~/js/statistics.js"></script>
-    <script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>
+    <script type="text/javascript" src="~/js/voicestats.js"></script>
+    <script type="text/javascript" src="~/js/ServerDetailsGameStats.js"></script>
+    <script type="text/javascript" src="~/js/ServerDetailsAllGames.js"></script>
+    <script type="text/javascript" src="~/js/statuses.js"></script>
+    @*<script type="text/javascript" src="~/js/VoiceChannelStats.js"></script>*@
 }

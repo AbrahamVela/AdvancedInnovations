@@ -20,9 +20,9 @@ namespace DiscordStats.DAL.Abstract
         /// <returns></returns>
         Task<List<Server>?> GetCurrentUserGuilds(string bearerToken);
 
-        Task<DiscordUser?> GetCurrentUserInfo(string bearerToken);
+        Task<DiscordUserAndUserWebSiteInfo?> GetCurrentUserInfo(string bearerToken);
 
-        Task<DiscordUser?> GetUserInfoById(string bearerToken, string UserId);
+        Task<DiscordUserAndUserWebSiteInfo?> GetUserInfoById(string bearerToken, string UserId);
 
         Task<string?> CheckForBot(string botToken, string serverId);
 
@@ -43,5 +43,7 @@ namespace DiscordStats.DAL.Abstract
         Task<List<Presence>?> GetPresencesForServer(string serverId);
         Task<GamesVM> GetJsonStringFromEndpointGames(string gameName);
         Task<string?> VoiceChannelEntryAndUpdateDbCheck(VoiceChannel[] voiceChannel);
+        Task<List<UserMessageVM>> UpdatedMessagesByDates(DateTime StartDate, DateTime EndDate, string serverId);
+        List<ServerMembers> GetServerUsersByDates(DateTime StartDate, DateTime EndDate, string serverId);
     }
 }

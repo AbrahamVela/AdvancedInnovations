@@ -12,6 +12,9 @@ namespace DiscordStats.DAL.Abstract
         bool UpdatePrivacy(string serverId, string Privacy);
 
         void UpdateOnServerWithForumInfo(string serverId, string onForum, string message);
+        void AddingServerToLottery(string serverId);
+
+        void RemoveServerFromLottery(string serverId);
 
     }
 }

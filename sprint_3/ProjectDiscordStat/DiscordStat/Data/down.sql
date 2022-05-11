@@ -9,13 +9,16 @@
 
  DROP TABLE [Server];
  DROP TABLE [ServerUserJoin];
- DROP TABLE [DiscordUser];
- DROP TABLE [MessageInfo]
+ DROP TABLE [DiscordUserAndUserWebSiteInfo];
+ DROP TABLE [MessageInfo];
+ DROP TABLE [Status];
  DROP TABLE [Presence];
  DROP TABLE [ServerPresenceJoin];
  DROP TABLE [Channel];
  DROP TABLE [ServerChannelJoin];
  DROP TABLE [Webhook];
  DROP TABLE [ChannelWebhookJoin];
+ DROP TABLE [VoiceState];
+ DROP TABLE [ServerMembers];
 
 

@@ -22,6 +22,7 @@ using System.Web.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DiscordStats.ViewModels;
+using System.Text;
 
 namespace DiscordStats.Controllers
 {
@@ -29,24 +30,30 @@ namespace DiscordStats.Controllers
     public class StatsController : Controller
     {
 
-        private readonly IDiscordUserRepository _discordUserRepository;
+        private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly ILogger<ApiController> _logger;
         private readonly IDiscordService _discord;
         private readonly IServerRepository _serverRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IMessageInfoRepository _messageInfoRepository;
+        private readonly IVoiceStateRepository _voiceStateRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
+        private readonly IStatusRepository _statusRepository;
 
 
-        public StatsController(ILogger<ApiController> logger, IDiscordUserRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository)
+        public StatsController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository, IServerMemberRepository serverMemberRepository, IStatusRepository statusRepository)
         {
             _logger = logger;
-            _discordUserRepository = discordUserRepo;
+            _userRepository = discordUserRepo;
             _presenceRepository = presenceRepository;
             _discord = discord;
             _serverRepository = serverRepository;
             _channelRepository = channelRepository;
             _messageInfoRepository = messageInfoRepository;
+            _voiceStateRepository = voiceStateRepository;
+            _statusRepository = statusRepository;
+            _serverMemberRepository = serverMemberRepository;
         }
 
         public IActionResult ServerStats(string ServerId)
@@ -60,13 +67,90 @@ namespace DiscordStats.Controllers
         [HttpGet]
         public IActionResult GetMessageInfoFromDatabase(string ServerId)
         {
-            return Json(_messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId));
+            var item = _messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList();
+            return Json(item);
         }
-
+        
         [HttpGet]
         public IActionResult GetPresencesFromDatabase(string ServerId, string GameName)
         {
-            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName));
+            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+        }
+        [HttpGet]
+        public IActionResult GetServerMemberFromDatabase(string ServerId)
+        {
+            var memberCount = _serverMemberRepository.GetAll().Where(s => s.Id == ServerId).OrderBy(d => d.Date).ToList();
+            var newMembers = new List<ServerMembers>();
+            for(int i = 0; i < memberCount.Count; i++)
+            {
+                if(i != 0)
+                {
+                    if( memberCount[i].Date.ToString("yyyy-MM-dd") == memberCount[i-1].Date.ToString("yyyy-MM-dd") && memberCount[i].Members != memberCount[i-1].Members)
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                    else if(memberCount[i].Date.ToString("yyyy-MM-dd") != memberCount[i - 1].Date.ToString("yyyy-MM-dd"))
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                }
+                else
+                {
+                    newMembers.Add(memberCount[i]);
+                }
+            }
+            return Json(newMembers);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetServerMemberFromDatabaseWithDate(string ServerId, string startDate, string endDate)
+        {
+            if (startDate == null)
+                startDate = "1-1-0001";
+            if (endDate == null)
+                endDate = "1-1-0001";
+            var memberCount =  _discord.GetServerUsersByDates(DateTime.Parse(startDate), DateTime.Parse(endDate), ServerId);
+            var newMembers = new List<ServerMembers>();
+            for (int i = 0; i < memberCount.Count; i++)
+            {
+                if (i != 0)
+                {
+                    if (memberCount[i].Date.ToString("yyyy-MM-dd") == memberCount[i - 1].Date.ToString("yyyy-MM-dd") && memberCount[i].Members != memberCount[i - 1].Members)
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                    else if (memberCount[i].Date.ToString("yyyy-MM-dd") != memberCount[i - 1].Date.ToString("yyyy-MM-dd"))
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                }
+                else
+                {
+                    newMembers.Add(memberCount[i]);
+                }
+            }
+            return Json(newMembers);
+        }
+        [HttpGet]
+        public IActionResult GetAllPresencesFromDatabase(string ServerId)
+        {
+            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
+
+        [HttpGet]
+        public IActionResult GetUsersFromDatabase(string ServerId)
+        {
+            return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
+        }
+
+        [HttpGet]
+        public IActionResult GetVoiceStatesFromDatabase(string ServerId)
+        {
+            return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
+        [HttpGet]
+        public IActionResult GetStatusesFromDatabase(string ServerId)
+        {
+            return Json(_statusRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
         }
     }
 }
