@@ -21,7 +21,7 @@ import { replies } from './replies'
 const https = require('https')
 const axios = require('axios')
 
-axios.defaults.headers.common['ApiKey'] = process.env.TOKEN;
+axios.defaults.headers.common['ApiKey'] = process.env.KEY;
 
 // const ServerID = 928010025958510632
 
@@ -560,19 +560,24 @@ function UpdateChannels() {
     sendChannels();
 }
 
-//  setInterval(sendStatus, 300000);
+setInterval(updataPresence, 300000);
+setInterval(updataUsers, 450000);
+setInterval(updataVoiceStates, 300000);
+setInterval(UpdateVoiceChannel, 1800000);
+setInterval(UpdateServers, 1800000);
+setInterval(UpdateChannels, 1800000);
+ setInterval(sendStatus, 300000);
     
-//  setInterval(updataPresence, 300000);
-//  setInterval(updataUsers, 450000);
-//  setInterval(updataVoiceStates, 300000);
 
-//  setInterval(UpdateVoiceChannel, 1800000);
-//  setInterval(UpdateServers, 1800000);
- //setInterval(UpdateChannels, 1800000);
 
- setInterval(UpdateServers, 30000);
 
-//setInterval(UpdateVoiceChannel, 15000);
+
+
+
+
+ 
+
+
 //setInterval(updataData, 45000);
 
 client.login(process.env.TOKEN);

@@ -22,9 +22,10 @@ namespace DiscordStats.Attributes
                 return;
             }
 
-            var appSettings = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+            var config = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+           
 
-            var apiKey = appSettings.GetValue<string>(APIKEYNAME);
+            var apiKey = config["API:ApiKey"];
 
             if (!apiKey.Equals(extractedApiKey))
             {

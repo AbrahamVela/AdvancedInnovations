@@ -42,7 +42,7 @@ namespace DiscordStats.Controllers
             _serverMemberRepository = serverMemberRepository;
         }
 
-
+        
         [HttpPost]
         public IActionResult PostUsers(DiscordUserAndUserWebSiteInfo user)
         {
