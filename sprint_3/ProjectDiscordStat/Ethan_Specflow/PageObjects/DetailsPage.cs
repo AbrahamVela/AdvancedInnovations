@@ -20,6 +20,7 @@ namespace Ethan_Specflow.PageObjects
         private IWebElement GameGraph => _browserInteractions.WaitAndReturnElement(By.Id("presencesHourlyAllTimeChart"));
         private IWebElement AllGameGraph => _browserInteractions.WaitAndReturnElement(By.Id("allPresenceHourlyAllTimeChart"));
         private IWebElement GameActivityGraph => _browserInteractions.WaitAndReturnElement(By.Id("userPresenceHourlyAllTimeChart"));
+        private IWebElement StatusGraph => _browserInteractions.WaitAndReturnElement(By.Id("usersStatusHourlyChart"));
 
         public DetailsPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
@@ -29,6 +30,7 @@ namespace Ethan_Specflow.PageObjects
 
         public bool GetGameGraph => GameGraph.Displayed;
         public bool GetAllGameGraph => AllGameGraph.Displayed;
+        public bool GetStatusGraph => StatusGraph.Displayed;
         public bool GetGameActivityGraph => GameActivityGraph.Displayed;
         public bool GetUsersGameDropdownBox => UsersGameDropdownBox.Displayed;
         public bool GetUsersDropdownBox => UsersDropdownBox.Displayed;
