@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using DiscordStats.DAL.Concrete;
 
 namespace DiscordStats.Controllers
 {
@@ -19,8 +20,10 @@ namespace DiscordStats.Controllers
         private readonly IDiscordServicesForChannels _discordServicesForChannels;
         private readonly IServerRepository _serverRepository;
         private readonly IDiscordService _discord;
+        private readonly CaptchaService _CaptchaService;
 
-        public ChannelController(ILogger<ChannelController> logger, IConfiguration configuration, IChannelRepository channelRepository, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IDiscordService discord)
+        public ChannelController(ILogger<ChannelController> logger, IConfiguration configuration, IChannelRepository channelRepository, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IDiscordService discord, CaptchaService captchaService)
+
         {
             _logger = logger;
             _configuration = configuration;
@@ -28,6 +31,7 @@ namespace DiscordStats.Controllers
             _serverRepository = serverRepository;
             _discordServicesForChannels = discordServicesForChannels;
             _discord = discord;
+            _CaptchaService = captchaService;
         }
 
         public IActionResult Index()
@@ -59,19 +63,21 @@ namespace DiscordStats.Controllers
                 var servers = _serverRepository.GetAll();
                 var selectedServer = servers.Where(m => m.Id == serverId).FirstOrDefault();
 
-                ServerChannelsVM serverChannels = new();
+                CreateChannelVM vm = new();
+                vm.channelsVM = new();
+               
                 ChannelsFromDatabase channelsWithCount = new(_channelRepository);
                 if (selectedServer != null)
                 {
                     if (selectedServer.HasBot == "true")
                     {
-                        serverChannels.serverChannels = await _discordServicesForChannels.GetServerChannels(botToken, selectedServer.Id);
-                        serverChannels.serverChannels = channelsWithCount.ServersWithCount(serverChannels.serverChannels);
+                        vm.channelsVM.serverChannels = await _discordServicesForChannels.GetServerChannels(botToken, selectedServer.Id);
+                        vm.channelsVM.serverChannels = channelsWithCount.ServersWithCount(vm.channelsVM.serverChannels);
                         var selectList = new SelectList(
-                         serverChannels.serverChannels.Where(m => m.type == "4").ToList().Select(s => new { Text = $"{s.name}", Value = s.id }),
+                         vm.channelsVM.serverChannels.Where(m => m.type == "4").ToList().Select(s => new { Text = $"{s.name}", Value = s.id }),
                         "Value", "Text");
                         ViewData["Id"] = selectList;
-                        serverChannels.guild_id = serverId;
+                        vm.channelsVM.guild_id = serverId;
                         ViewBag.hasBot = "true";
 
                     }
@@ -86,7 +92,7 @@ namespace DiscordStats.Controllers
                 }
 
                 //return View(channels);
-                return View(serverChannels);
+                return View(vm);
             }
             else
             {
@@ -105,21 +111,26 @@ namespace DiscordStats.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateChannel(ServerChannelsVM create)
+        public async Task<IActionResult> CreateChannel(CreateChannelVM create)
         {
-           var t = JsonSerializer.Serialize(create);
+            var captchaResult = await _CaptchaService.VerifyToken(create.Token);
+            if (!captchaResult)
+            {
+                return RedirectToAction("Index");
+
+            }
 
             string botToken = _configuration["API:BotToken"];
-            if (create.type_text == true) create.type = "0";
-            if (create.type_text == false && create.type_voice == false) create.type = "0";
-            if (create.type_voice == true) create.type = "2";
+            if (create.channelsVM.type_text == true) create.channelsVM.type = "0";
+            if (create.channelsVM.type_text == false && create.channelsVM.type_voice == false) create.channelsVM.type = "0";
+            if (create.channelsVM.type_voice == true) create.channelsVM.type = "2";
 
-            var response = await _discordServicesForChannels.CreateChannel(botToken, create.guild_id, create.name, create.type, create.parent_id);
+            var response = await _discordServicesForChannels.CreateChannel(botToken, create.channelsVM.guild_id, create.channelsVM.name, create.channelsVM.type, create.channelsVM.parent_id);
 
-            response.GuildId = create.guild_id;
+            response.GuildId = create.channelsVM.guild_id;
             _channelRepository.AddOrUpdate(response);
 
-            return RedirectToAction("ServerChannels", new { serverId = create.guild_id });
+            return RedirectToAction("ServerChannels", new { serverId = create.channelsVM.guild_id });
         }
 
 
@@ -153,6 +164,19 @@ namespace DiscordStats.Controllers
         [HttpPost]
         public async Task<IActionResult> WebhookForm(WebhookUsageVM vm)
         {
+            if (_CaptchaService != null)
+            {
+                if (vm.CapToken == null)
+                {
+                    vm.CapToken = "";
+                }
+                var captchaResult = await _CaptchaService.VerifyToken(vm.CapToken);
+                if (!captchaResult)
+                {
+                    return RedirectToAction("Index", "Home");
+
+                }
+            }
             string botToken = _configuration["API:BotToken"];
             var webhook = await _discordServicesForChannels.CreateWebhook(botToken, vm.channelId, vm.name);
             WebhookUsageVM webhookObject = JsonConvert.DeserializeObject<WebhookUsageVM>(webhook);
