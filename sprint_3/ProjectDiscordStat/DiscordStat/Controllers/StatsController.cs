@@ -152,5 +152,13 @@ namespace DiscordStats.Controllers
         {
             return Json(_statusRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
         }
+        [HttpGet]
+        public IActionResult GetStatusesFromDatabaseToDownload(string formatWithDetailsServerId)
+        {
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            var data = _statusRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1]).ToList();
+            var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+            return Json(result);
+        }
     }
 }

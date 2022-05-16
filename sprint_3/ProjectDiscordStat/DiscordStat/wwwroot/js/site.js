@@ -173,3 +173,18 @@ function pieGraphTopUsersPerGam(data) {
         }
     });
 };
+
+
+
+#downLoadLineRow {
+    width: 100 %;
+    height: 90px;
+    white - space: nowrap;
+    overflow - x: auto;
+}
+.item {
+    display: inline - block;
+    width: 50 %;
+    height: 100 %;
+    background - color: red;
+}
