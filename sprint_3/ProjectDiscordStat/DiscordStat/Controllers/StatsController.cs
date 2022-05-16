@@ -160,5 +160,39 @@ namespace DiscordStats.Controllers
             var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
             return Json(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetServerMemberFromDatabaseWithDateToDownload(string formatWithDetailsServerId, string startDate, string endDate)
+        {
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            if (startDate == null)
+                startDate = "1-1-0001";
+            if (endDate == null)
+                endDate = "1-1-0001";
+            var memberCount = _discord.GetServerUsersByDates(DateTime.Parse(startDate), DateTime.Parse(endDate), formatWithDetailsServerIdSplitted[1]);
+            var newMembers = new List<ServerMembers>();
+            for (int i = 0; i < memberCount.Count; i++)
+            {
+                if (i != 0)
+                {
+                    if (memberCount[i].Date.ToString("yyyy-MM-dd") == memberCount[i - 1].Date.ToString("yyyy-MM-dd") && memberCount[i].Members != memberCount[i - 1].Members)
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                    else if (memberCount[i].Date.ToString("yyyy-MM-dd") != memberCount[i - 1].Date.ToString("yyyy-MM-dd"))
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                }
+                else
+                {
+                    newMembers.Add(memberCount[i]);
+                }
+            }
+
+            var data = newMembers;
+            var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0], startDate = startDate, endDate = endDate };
+            return Json(result);
+        }
     }
 }

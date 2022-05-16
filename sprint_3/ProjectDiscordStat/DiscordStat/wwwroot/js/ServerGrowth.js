@@ -133,3 +133,116 @@ function graphingPresenceActivity(data) {
         }
     })
 };
+
+function GetActiveMemberInServer(data) {
+    var startDate = document.getElementById('start').value;
+    var endDate = document.getElementById('end').value;
+    let detailsServerId = $("#ServerId").attr('value');
+    let formatWithDetailsServerId = data + ":" + detailsServerId
+
+    $.ajax({
+        type: "GET",
+        url: '../Stats/GetServerMemberFromDatabaseWithDateToDownload?formatWithDetailsServerId=' + formatWithDetailsServerId + '&' + 'startDate=' + startDate + '&' + 'endDate=' + endDate,
+        success: DataForActiveMemberInServer,
+        error: handleError
+    });
+}
+
+
+function DataForActiveMemberInServer(data) {
+    var xValues = [];
+    var yValues = [];
+
+
+    for (var i = 0; i < data.dataFromDB.length; i++) {
+
+        var datecheck = new Date(data.dataFromDB[i].date).toLocaleDateString()
+        xValues[i] = datecheck;
+        yValues[i] = data.dataFromDB[i].members;
+    }
+
+    if (data.startDate != "1-1-0001" && data.endDate != "1-1-0001") {
+        xValues.push("Start Date");
+        yValues.push(data.startDate);
+        xValues.push("End Date");
+        yValues.push(data.endDate);
+    }
+
+    var obj = {};
+    for (var i = 0; i < xValues.length; i++) {
+        obj[xValues[i]] = yValues[i];
+    };
+
+
+    downloadStatuses(obj,data.format);
+
+}
+
+function downloadStatuses(obj,  format) {
+    var zero = JSON.stringify(obj);
+
+    var element = document.createElement('a');
+    if (format == 0) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(zero));
+
+        element.setAttribute('download', "Status.json");
+    }
+    else {
+        var something = JSONToCSVConvertor(zero);
+
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "Status.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+
+function JSONToCSVConvertor(JSONData) {
+
+    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+    var CSV = '';
+    //This condition will generate the Label/Header
+    csvRows = [];
+
+    // Headers is basically a keys of an
+    // object which is id, name, and
+    // profession
+    const headers = Object.keys(arrData);
+
+    // As for making csv format, headers
+    // must be separated by comma and
+    // pushing it into array
+    csvRows.push(headers.join(','));
+
+    // Pushing Object values into array
+    // with comma separation
+    const values = Object.values(arrData).join(',');
+    csvRows.push(values)
+
+    // Returning the array joining with new line
+    return csvRows.join('\n')
+}
+
+function JSONToCSVConvertorWithOutKeys(JSONData) {
+
+    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+    var CSV = '';
+    //This condition will generate the Label/Header
+    csvRows = [];
+
+
+    // Pushing Object values into array
+    // with comma separation
+    const values = Object.values(arrData).join(',');
+    csvRows.push(values)
+
+    // Returning the array joining with new line
+    return csvRows.join('\n')
+}
