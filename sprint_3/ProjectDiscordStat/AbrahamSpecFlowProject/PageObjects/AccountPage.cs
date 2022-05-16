@@ -1,6 +1,12 @@
 ﻿using OpenQA.Selenium;
 using SpecFlow.Actions.Selenium;
 using System.Collections.ObjectModel;
+using System;
+using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.Chrome;
+using System.IO;
+using System.Threading;
+using OpenQA.Selenium.Support.UI;
 
 namespace AbrahamSpecFlowProject.PageObjects
 {
@@ -123,6 +129,55 @@ namespace AbrahamSpecFlowProject.PageObjects
         {
             _browserInteractions.DeleteAllCookies();
         }
+
+        public void VerifyFileActiveVoiceChannelTimeExists()
+        {
+            string expectedFilePath = @"C:\Users\Abraham\Downloads\ActiveVoicChannelTime.json";
+            bool fileExists = false;
+
+            ClickExportJsonVoiceChannelButton();
+            var something = File.Exists(expectedFilePath);
+
+            //Until<bool>(c => fileExists = File.Exists(expectedFilePath));
+
+        }
+
+        //public void VerifyFileActiveVoiceChannelTimeExists()
+        //{
+        //    IWebDriver driver;
+        //    ChromeOptions capability = new ChromeOptions();
+        //    capability.AddAdditionalCapability("browser", "Chrome", true);
+        //    capability.AddAdditionalCapability("browser_version", "latest", true);
+        //    capability.AddAdditionalCapability("os", "Windows", true);
+        //    capability.AddAdditionalCapability("os_version", "10", true);
+        //    capability.AddAdditionalCapability("browserstack.user", "YOUR_USERNAME", true);
+        //    capability.AddAdditionalCapability("browserstack.key", "YOUR_ACCESS_KEY", true);
+        //    capability.AddAdditionalCapability("name", "Bstack-[C_sharp] Sample file download", true);
+
+        //    driver = new RemoteWebDriver(
+        //        new Uri("http://hub-cloud.browserstack.com/wd/hub/"), capability
+        //    );
+        //    IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
+
+        //    driver.Navigate().GoToUrl("https://www.browserstack.com/test-on-the-right-mobile-devices");
+        //    Thread.Sleep(2000);
+
+        //    driver.FindElement(By.Id("accept-cookie-notification")).Click();
+
+        //    // Find element by link text and store in variable "Element"             
+        //    IWebElement Element = driver.FindElement(By.ClassName("exportJsonVoiceChannel"));
+
+        //    // This will scroll the page till the element is found       
+        //    jse.ExecuteScript("arguments[0].scrollIntoView();", Element);
+        //    jse.ExecuteScript("window.scrollBy(0,-100)");
+        //    Thread.Sleep(2000);
+
+        //    Element.Click();
+        //    Thread.Sleep(2000);
+
+        //    driver.Quit();
+
+        //}
 
     }
 }
