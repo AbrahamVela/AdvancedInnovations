@@ -194,5 +194,14 @@ namespace DiscordStats.Controllers
             var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0], startDate = startDate, endDate = endDate };
             return Json(result);
         }
+
+        [HttpGet]
+        public IActionResult GetPresencesFromDatabaseToDownload(string GameName, string formatWithDetailsServerId)
+        {
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            var data = _presenceRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1] && s.Name == GameName).ToList();
+            var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+            return Json(result);
+        }
     }
 }

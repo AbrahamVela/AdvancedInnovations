@@ -229,20 +229,3 @@ function JSONToCSVConvertor(JSONData) {
     return csvRows.join('\n')
 }
 
-function JSONToCSVConvertorWithOutKeys(JSONData) {
-
-    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
-    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
-    var CSV = '';
-    //This condition will generate the Label/Header
-    csvRows = [];
-
-
-    // Pushing Object values into array
-    // with comma separation
-    const values = Object.values(arrData).join(',');
-    csvRows.push(values)
-
-    // Returning the array joining with new line
-    return csvRows.join('\n')
-}
