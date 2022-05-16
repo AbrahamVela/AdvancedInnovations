@@ -174,7 +174,7 @@ namespace DiscordStats_Tests
         {
             // Arrange
 
-            AccountController controller = new AccountController(null, null, null, _serverRepository, null, null, null, null, null, null);
+            AccountController controller = new AccountController(null, null, null, _serverRepository, null, null, null, null, null, null, null);
             controller.ControllerContext = new ControllerContext();
             var userId = "697317543555235840";
             var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
@@ -203,7 +203,7 @@ namespace DiscordStats_Tests
             .AddInMemoryCollection(configForSmsApi)
             .Build();
 
-            AccountController controller = new AccountController(null, null, configuration, _serverRepository, null, null, null, null, _userRepo, null);
+            AccountController controller = new AccountController(null, null, configuration, _serverRepository, null, null, null, null, _userRepo, null, null);
             controller.ControllerContext = new ControllerContext();
             var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
             vm.id =  "697317543555235840";
@@ -211,9 +211,10 @@ namespace DiscordStats_Tests
             vm.ProfileLastName = "B2";
             vm.ProfileBirthDate= "1999-01-19";
             vm.ProfileEmail = "A@B3.com";
-
+            UpdateUserInfoVM vm2 = new UpdateUserInfoVM();
+            vm2.ProfileVM = vm;
             // Act
-            RedirectToActionResult result = (RedirectToActionResult)await controller.ProfileFormSubmit(vm);
+            RedirectToActionResult result = (RedirectToActionResult)await controller.ProfileFormSubmit(vm2);
 
             var expectedJson = System.Text.Json.JsonSerializer.Serialize(result.ActionName);
             var actualJson = System.Text.Json.JsonSerializer.Serialize("Account");
@@ -280,15 +281,16 @@ namespace DiscordStats_Tests
             .Build();
             DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
 
-            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null);
+            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null, null);
             controller.ControllerContext = new ControllerContext();
 
             // Act
 
             ServerChannelsVM serverChannelsVM = new ServerChannelsVM();
 
-
-            RedirectToActionResult result = (RedirectToActionResult)await controller.CreateChannel(serverChannelsVM);
+            CreateChannelVM createChannelVM = new CreateChannelVM();
+            createChannelVM.channelsVM = serverChannelsVM;
+            RedirectToActionResult result = (RedirectToActionResult)await controller.CreateChannel(createChannelVM);
             var expectedJson = System.Text.Json.JsonSerializer.Serialize(result.ActionName);
             var actualJson = System.Text.Json.JsonSerializer.Serialize("ServerChannels");
 

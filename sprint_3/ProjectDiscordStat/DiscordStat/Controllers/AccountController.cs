@@ -1,4 +1,5 @@
 ﻿using DiscordStats.DAL.Abstract;
+using DiscordStats.DAL.Concrete;
 using DiscordStats.Models;
 using DiscordStats.ViewModel;
 using DiscordStats.ViewModels;
@@ -24,9 +25,10 @@ namespace DiscordStats.Controllers
         private readonly IMessageInfoRepository _messageIngoChannelRepository;
         private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
         private readonly IServerMemberRepository _serverMemberRepository;
-        
+        private readonly CaptchaService _CaptchaService;
+
         public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, 
-            IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository, IServerMemberRepository serverMemberRepository)
+            IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository, IServerMemberRepository serverMemberRepository, CaptchaService captchaService)
         {
             _logger = logger;
             _discord = discord;
@@ -38,6 +40,7 @@ namespace DiscordStats.Controllers
             _messageIngoChannelRepository = messageInfoRepository;
             _userRepository = userRepository;
             _serverMemberRepository = serverMemberRepository;
+            _CaptchaService = captchaService;
 
         }
 
@@ -109,8 +112,9 @@ namespace DiscordStats.Controllers
                 authenticated = true;
             if (authenticated)
             {
-                var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
-                vm.id = userId;
+                var vm = new UpdateUserInfoVM();
+                vm.ProfileVM = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+                vm.ProfileVM.id = userId;
                 return View(vm);
             }
             else
@@ -122,10 +126,16 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
-        public async Task<IActionResult> ProfileFormSubmit([Bind("id, ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
+        public async Task<IActionResult> ProfileFormSubmit(UpdateUserInfoVM websiteProfileInfo)
         {
+            var captchaResult = await _CaptchaService.VerifyToken(websiteProfileInfo.Token);
+            if (!captchaResult)
+            {
+                return RedirectToAction("Index");
+
+            }
             ModelState.Remove("Servers");
-            _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo);
+            _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo.ProfileVM);
             return RedirectToAction("Account");
         }
 
