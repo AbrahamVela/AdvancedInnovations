@@ -39,6 +39,7 @@ CREATE TABLE [DiscordUserAndUserWebSiteInfo]
   [Username]    nvarchar(128)  NULL,
   [Servers] nvarchar(256)   NULL,
   [Avatar] nvarchar(256)     NULL,
+  [Role] nvarchar(256) NULL,
   [FirstName] nvarchar(128) NULL,
   [LastName] nvarchar(128) NULL,
   [BirthDate] nvarchar(256) NULL,

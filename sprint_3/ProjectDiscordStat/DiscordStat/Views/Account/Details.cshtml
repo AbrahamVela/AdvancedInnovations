@@ -127,7 +127,8 @@
                                     <thead class="thead-dark">
                                         <tr>
                                             <th><b>Avatar</b></th>
-                                            <th><b>Name</b></th>                                          
+                                            <th><b>Name</b></th>    
+                                            <th><b>Role</b></th>
                                             <th><b>Kick User</b></th>
                                         </tr>
                                     </thead>
@@ -145,9 +146,17 @@
                                                     var i = "https://cdn.discordapp.com/avatars/" + u.user.Id + "//" + u.user.Avatar + ".png";
                                                     <td><img src="@i" style="height: 80px;"/></td>
                                                 }
-
                                                 <td style="padding-bottom: 2%">@u.user.UserName</td>
-                                                 @if (Model.Owner == User.Claims.First(c => c.Type == ClaimTypes.Name).Value)
+                                                @if (u.user.Role == null)
+                                                {
+                                                    <td style="padding-bottom: 2%">N/A</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="padding-bottom: 2%">@u.user.Role</td>
+                                                }
+
+                                                @if (Model.Owner == User.Claims.First(c => c.Type == ClaimTypes.Name).Value)
                                                 {
                                                     @if (User.Claims.First(c => c.Type == ClaimTypes.Name).Value != u.user.UserName && u.user.UserName != "Stat Tracker")
                                                     {

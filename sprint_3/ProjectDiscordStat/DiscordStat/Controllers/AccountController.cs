@@ -237,6 +237,16 @@ namespace DiscordStats.Controllers
                 vm.Owner = ServerOwner.Username;
 
                 vm.users = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], vm.Id);
+                foreach (var user in vm.users)
+                {
+                    foreach (var u2 in _userRepository.GetAll())
+                    {
+                        if (u2.Servers == SelectedServer.Id && u2.Username == user.user.UserName)
+                        {
+                            user.user.Role = u2.Role;
+                        }
+                    }
+                }
 
             }
             else

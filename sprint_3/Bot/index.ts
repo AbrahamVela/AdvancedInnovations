@@ -184,16 +184,18 @@ async function sendUsers (){
                 if (user.user.avatar === null) {
                     user.user.avatar = "null";
                 }
+                let role = user.roles.highest.name
+                if (role == "@everyone"){
+                    role = "N/A"
+                }
                 let newUser = {
                     "Id": user.user.id.toString(),
                     "Username": user.user.username,
                     "Servers": guild.id,
-                    "Avatar": user.user.avatar
+                    "Avatar": user.user.avatar,
+                    "Role" : role
                 }
-                console.log(newUser)
-                // users.push(newUser);
-                // console.log("The users of all servers: ")
-                // console.log(users)              
+
                 axios.post(url + '/api/postusers', newUser)
                 .then((result: any) => {
                                     console.log(result);
@@ -373,7 +375,7 @@ function guildIdAndAllUsersId(){
                 let newUser = {
                     "Id": user.user.id.toString(),
                     "Username": user.user.username,
-                    "Servers": guild.id,
+                    "Servers": guild.id, 
                     "Avatar": user.user.avatar
                 }
                 // console.log(newUser)
@@ -559,16 +561,20 @@ function UpdateChannels() {
     sendChannels();
 }
 
- setInterval(sendStatus, 300000);
+//  setInterval(sendStatus, 300000);
     
- setInterval(updataPresence, 300000);
- setInterval(updataUsers, 450000);
- setInterval(updataVoiceStates, 300000);
+//  setInterval(updataPresence, 300000);
+//  setInterval(updataUsers, 450000);
+//  setInterval(updataVoiceStates, 300000);
 
- setInterval(UpdateVoiceChannel, 1800000);
- setInterval(UpdateServers, 1800000);
- setInterval(UpdateChannels, 1800000);
-//setInterval(UpdateVoiceChannel, 15000);
-//setInterval(updataData, 45000);
+//  setInterval(UpdateVoiceChannel, 1800000);
+//  setInterval(UpdateServers, 1800000);
+//  setInterval(UpdateChannels, 1800000);
+
+
+setInterval(updataUsers, 30000);
+
+// //setInterval(UpdateVoiceChannel, 15000);
+// //setInterval(updataData, 45000);
 
 client.login(process.env.TOKEN);
