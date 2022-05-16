@@ -72,8 +72,15 @@ namespace DiscordStats.DAL.Concrete
             }
             else
             {
-                _dbSet.Remove(entity);
+                try
+                { 
+                _dbSet.Remove(entity);               
                 _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
             }
             return;
         }

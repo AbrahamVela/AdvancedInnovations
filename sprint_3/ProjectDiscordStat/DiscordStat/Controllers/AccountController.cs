@@ -187,7 +187,7 @@ namespace DiscordStats.Controllers
 
             return RedirectToAction("Servers");
         }
-
+        [Authorize(AuthenticationSchemes = "Discord")]
         [HttpPost]
         public IActionResult ChangePrivacy(string privacyString)
         {
@@ -269,7 +269,7 @@ namespace DiscordStats.Controllers
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             _discord.RemoveUserServer(_configuration["API:BotToken"], ServerId, userid);
         }
-        
+        [Authorize(AuthenticationSchemes = "Discord")]
         public async void KickUser(string ServerId,string user)
         {
             var users = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
@@ -317,6 +317,7 @@ namespace DiscordStats.Controllers
             var updatedOwner = await _discord.UpdateOwner(_configuration["API:BotToken"], ServerId, userId);
         }
 
+        [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<string> addUsertoGuild(string serverId)
         {
             var getResponse = await _discord.FindChannels(_configuration["API:BotToken"], serverId);
@@ -479,6 +480,7 @@ namespace DiscordStats.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = "Discord")]
         public IActionResult GetVoiceChannelInfoFromDatabase(string ServerId)
         {
             var voiceChannels = _voiceChannelRepository.GetAll().Where(v => v.GuildId == ServerId).ToList();

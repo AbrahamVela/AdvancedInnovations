@@ -107,6 +107,8 @@ namespace DiscordStats.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateChannel(ServerChannelsVM create)
         {
+           var t = JsonSerializer.Serialize(create);
+
             string botToken = _configuration["API:BotToken"];
             if (create.type_text == true) create.type = "0";
             if (create.type_text == false && create.type_voice == false) create.type = "0";
@@ -171,6 +173,7 @@ namespace DiscordStats.Controllers
         [HttpPost]
         public async Task<IActionResult> WebhookMessage(WebhookUsageVM webhook, string whatever)
         {
+            
             string botToken = _configuration["API:BotToken"];
             WebhookDataVm vm = new WebhookDataVm(_serverRepository, _channelRepository);
             string messageData = vm.DataBeingSentBackForWebhook(webhook);
