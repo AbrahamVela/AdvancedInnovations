@@ -1,6 +1,12 @@
 ﻿using OpenQA.Selenium;
 using SpecFlow.Actions.Selenium;
 using System.Collections.ObjectModel;
+using System;
+using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.Chrome;
+using System.IO;
+using System.Threading;
+using OpenQA.Selenium.Support.UI;
 
 namespace AbrahamSpecFlowProject.PageObjects
 {
@@ -122,6 +128,21 @@ namespace AbrahamSpecFlowProject.PageObjects
         public void DeleteCookies()
         {
             _browserInteractions.DeleteAllCookies();
+        }
+
+        public void VerifyFileActiveVoiceChannelTimeExists()
+        {
+            string expectedFilePath = @"C:\Users\Abraham\Downloads\ActiveVoiceChannelTime.json";
+
+            if(File.Exists(expectedFilePath) == true)
+            {
+                return;
+            }
+            else
+            {
+                NUnit.Framework.Assert.Fail("File path does not exist");
+            }
+
         }
 
     }

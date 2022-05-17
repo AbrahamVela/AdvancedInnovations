@@ -318,11 +318,87 @@ namespace DiscordStats.Controllers
         public IActionResult GetPresenceDataFromDb()
         {
             _logger.LogInformation("GetPresenceDataFromDb");
-            List<Presence> presences = _presenceRepository.GetAll().ToList(); // .Where(a => a. Privacy == "public").OrderByDescending(m => m.ApproximateMemberCount).Take(5);
+            List<Presence> presences = _presenceRepository.GetAll().ToList(); 
             PresenceChartDataVM presenceChartDataVM = new();
             var presencesNameAndCount = presenceChartDataVM.AllPresenceNameListAndCount(presences);
 
             return Json(new { userPerGame = presencesNameAndCount });
+        }
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetVoiceStatesFromDatabase(string ServerId)
+        //{
+        //    bool authenticated = false;
+        //    var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+        //    if (usersInGuild == null)
+        //    {
+        //        return RedirectToAction("Account", "Account");
+        //    }
+        //    var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+        //    foreach (var u in usersInGuild)
+        //    {
+        //        if (u.user.UserName == name)
+        //            authenticated = true;
+        //    }
+        //    if (authenticated)
+        //    {
+        //        return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        //    }
+        //    else
+        //        return RedirectToAction("Account", "Account");
+        //}
+
+        [HttpGet]
+        public IActionResult GetStatusesFromDatabaseToDownload(string formatWithDetailsServerId)
+        {
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            var data = _statusRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1]).ToList();
+            var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+            return Json(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetServerMemberFromDatabaseWithDateToDownload(string formatWithDetailsServerId, string startDate, string endDate)
+        {
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            if (startDate == null)
+                startDate = "1-1-0001";
+            if (endDate == null)
+                endDate = "1-1-0001";
+            var memberCount = _discord.GetServerUsersByDates(DateTime.Parse(startDate), DateTime.Parse(endDate), formatWithDetailsServerIdSplitted[1]);
+            var newMembers = new List<ServerMembers>();
+            for (int i = 0; i < memberCount.Count; i++)
+            {
+                if (i != 0)
+                {
+                    if (memberCount[i].Date.ToString("yyyy-MM-dd") == memberCount[i - 1].Date.ToString("yyyy-MM-dd") && memberCount[i].Members != memberCount[i - 1].Members)
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                    else if (memberCount[i].Date.ToString("yyyy-MM-dd") != memberCount[i - 1].Date.ToString("yyyy-MM-dd"))
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                }
+                else
+                {
+                    newMembers.Add(memberCount[i]);
+                }
+            }
+
+            var data = newMembers;
+            var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0], startDate = startDate, endDate = endDate };
+            return Json(result);
+        }
+
+        [HttpGet]
+        public IActionResult GetPresencesFromDatabaseToDownload(string GameName, string formatWithDetailsServerId)
+        {
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            var data = _presenceRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1] && s.Name == GameName).ToList();
+            var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+            return Json(result);
         }
     }
 }
