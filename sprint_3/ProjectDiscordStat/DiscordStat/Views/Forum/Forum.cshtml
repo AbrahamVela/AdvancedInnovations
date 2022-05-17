@@ -1,6 +1,9 @@
 ﻿@*@model DiscordStats.ViewModel.RetrieveItemFromDbForForumVM*@
-@model DiscordStats.Models.Server
-
+@model DiscordStats.ViewModel.ForumViewModel
+@using DiscordStats.DAL.Concrete
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Options
+@inject IOptions<CaptchaConfig> CaptchaConfig
 
 @{
 	ViewData["Title"] = "Add/Un-Add to/from Forum";
@@ -60,21 +63,22 @@
           </div>
           <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
               <form asp-controller="Forum" asp-action="ServerOnForum" method="post">
-
+                 
+            <input type="hidden" id="PostForumToken" asp-for="Token"/>
             <div class="row" >
-            <label asp-for="Id" class="control-label" style="text-align: left; font-weight:bold;margin-left:-1% ;">Which Server would you like to add to forum?</label>
-            <select asp-for="Id" class="form-control" asp-items="ViewBag.Id"></select>
-            <span asp-validation-for="Id" class="text-danger"></span>
+            <label asp-for="server.Id" class="control-label" style="text-align: left; font-weight:bold;margin-left:-1% ;">Which Server would you like to add to forum?</label>
+            <select asp-for="server.Id" class="form-control" asp-items="ViewBag.Id"></select>
+            <span asp-validation-for="server.Id" class="text-danger"></span>
             </div>
 
          <div class="row">
-                <label for="text" asp-for="Message" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Leave a message:</label>
-                <input type="text" asp-for="Message" class="form-control" maxlength="32">
-                <span asp-validation-for="Message" class="text-danger"></span>
+                <label for="text" asp-for="server.Message" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Leave a message:</label>
+                <input type="text" asp-for="server.Message" id="MessageBox" class="form-control" maxlength="32">
+                <span asp-validation-for="server.Message" class="text-danger"></span>
         </div>
         <div class="col">
             <div class="form-group mt-3 text-center">
-                <input type="submit" value="Add to Forum"  class="btn btn-primary"/>
+                <input type="submit" value="Add to Forum"  id="addToForum" class="btn btn-primary"/>
             </div>
         </div>
 
@@ -82,9 +86,9 @@
 <form asp-controller="Forum" asp-action="ServerOffForum" method="post">
         <div class="align-content-lg-center">
             <div class="row">
-            <label asp-for="Id" class="control-label" style="font-weight:bold; margin-left:-1% ;">Which Server would you like to remove from the forum?</label>
-            <select asp-for="Id" class="form-control" asp-items="ViewBag.Id"></select>
-            <span asp-validation-for="Id" class="text-danger"></span>
+            <label asp-for="server.Id" class="control-label" style="font-weight:bold; margin-left:-1% ;">Which Server would you like to remove from the forum?</label>
+            <select asp-for="server.Id" class="form-control" asp-items="ViewBag.Id"></select>
+            <span asp-validation-for="server.Id" class="text-danger"></span>
             </div>
         </div>
 
@@ -169,6 +173,21 @@
     <script src="~/assets/js/custom.js"></script>
     <script src="~/assets/js/owl.js"></script>
     <script src="~/assets/js/accordions.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=@CaptchaConfig.Value.SiteKey"></script>
+    <script>
+        function getToken()
+        {
+             grecaptcha.ready(function() {
+          grecaptcha.execute('@CaptchaConfig.Value.SiteKey', {action: 'submit'}).then(function(token) {
+             document.getElementById("PostForumToken").value = token;
+          });
+        });
+        }
+        setInterval(getToken, 115000);
+        $(function(){
+         getToken();
+        });
+    </script>
 @section Scripts {
 
      <script type="text/javascript" src="~/js/site.js"></script>

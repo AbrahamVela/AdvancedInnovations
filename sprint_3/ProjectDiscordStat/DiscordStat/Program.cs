@@ -61,6 +61,9 @@ builder.Services.AddScoped<IVoiceChannelRepository, VoiceChannelRepository>();
 builder.Services.AddScoped<IVoiceStateRepository, VoiceStateRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 builder.Services.AddScoped<IServerMemberRepository, ServerMemberRepository>();
+builder.Services.Configure<CaptchaConfig>(builder.Configuration.GetSection("ReCaptcha"));
+builder.Services.AddTransient(typeof(CaptchaService));
+
 
 
 // Add services to the container.
