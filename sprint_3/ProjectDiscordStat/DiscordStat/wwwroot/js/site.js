@@ -24,7 +24,7 @@ $.ajax({
 
 $.ajax({
     type: 'GET',
-    url: 'Api/GetPresenceDataFromDb',
+    url: 'Stats/GetPresenceDataFromDb',
     success: retrieveDataForPieChart,
     error: handleError
 });

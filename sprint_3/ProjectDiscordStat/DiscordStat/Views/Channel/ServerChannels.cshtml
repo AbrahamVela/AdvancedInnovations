@@ -1,5 +1,8 @@
-﻿@model DiscordStats.ViewModel.ServerChannelsVM
-
+﻿@model DiscordStats.ViewModel.CreateChannelVM
+@using DiscordStats.DAL.Concrete
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Options
+@inject IOptions<CaptchaConfig> CaptchaConfig
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -64,7 +67,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                        @foreach (var c in Model.serverChannels.OrderByDescending(c => c.count))
+                        @foreach (var c in Model.channelsVM.serverChannels.OrderByDescending(c => c.count))
                        @* @for(int i = 0; i < Model.serverChannels.Count; ++i)*@
                         {
                                 @if (!c.type.Equals("4"))
@@ -93,30 +96,33 @@
             </div>
 
             <form asp-action="CreateChannel">
+             <input type="hidden" id="PostForumToken" asp-for="Token"/>
                 <div class="row" required="required">
                     <div class="col-md-6 col-sm-12 justify-content-center">
                         <br>
                         <h2 style="white-space: nowrap">Check box for text channel.</h2> 
-                        <label style="margin-left: 50%">@Html.CheckBoxFor(t => t.type_text)</label>
+                        <label style="margin-left: 50%">@Html.CheckBoxFor(t => t.channelsVM.type_text)</label>
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <br>
                         <h2>Check box for voice channel.</h2>  
-                       <label style="margin-left: 35%"> @Html.CheckBoxFor(t => t.type_voice)</label>
+                       <label style="margin-left: 35%"> @Html.CheckBoxFor(t => t.channelsVM.type_voice)</label>
                    </div>
                 </div>
                 <div class="row">
+
                     <label for="text" asp-for="name" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Channel Name:</label>
-                    <input type="text" asp-for="name" class="form-control" required="required" maxlength="32" pattern="^\S+$" ErrorMessage="No whitespace">
+                    <input type="text" asp-for="name" class="form-control" required="required" maxlength="32" pattern="^[a-zA-Z]" ErrorMessage="No whitespace">
                     <span asp-validation-for="name" class="text-danger"></span>
+
                 </div>
                 <div class="row" >
-                    <label asp-for="parent_id" class="control-label" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Which catagory would you like to add the channel to?</label>
-                    <select asp-for="parent_id" class="form-control" asp-items="ViewBag.Id"></select>
-                    <span asp-validation-for="parent_id" class="text-danger"></span>
+                    <label asp-for="channelsVM.parent_id" class="control-label" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Which catagory would you like to add the channel to?</label>
+                    <select asp-for="channelsVM.parent_id" class="form-control" asp-items="ViewBag.Id"></select>
+                    <span asp-validation-for="channelsVM.parent_id" class="text-danger"></span>
                 </div>
                 <div class="row">
-                    @Html.HiddenFor(i => i.guild_id, new { @readonly="readonly" })
+                    @Html.HiddenFor(i => i.channelsVM.guild_id, new { @readonly="readonly" })
                 </div>   
                 <button value="Submit"  class="btn btn-primary" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Create Channel</button>
             </form>
@@ -164,7 +170,21 @@ else
     <script src="~/assets/js/custom.js"></script>
     <script src="~/assets/js/owl.js"></script>
     <script src="~/assets/js/accordions.js"></script>
-
+<script src="https://www.google.com/recaptcha/api.js?render=@CaptchaConfig.Value.SiteKey"></script>
+    <script>
+        function getToken()
+        {
+             grecaptcha.ready(function() {
+          grecaptcha.execute('@CaptchaConfig.Value.SiteKey', {action: 'submit'}).then(function(token) {
+             document.getElementById("PostForumToken").value = token;
+          });
+        });
+        }
+        setInterval(getToken, 115000);
+        $(function(){
+         getToken();
+        });
+    </script>
 @section Scripts {
 
      <script type="text/javascript" src="~/js/site.js"></script>

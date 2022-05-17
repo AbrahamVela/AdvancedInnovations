@@ -65,7 +65,7 @@ namespace DiscordStats.DAL.Concrete
 
             }
 
-            if (userNotIn == true)
+            if (userNotIn == true || _dbSet.ToList().Count() == 0)
             {
                 user.Id = profileInfo.id;
                 user.FirstName = profileInfo.ProfileFirstName;
