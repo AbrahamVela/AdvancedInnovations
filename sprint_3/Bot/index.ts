@@ -629,7 +629,7 @@ function UpdateChannels() {
 // setInterval(updataUsers, 30000);
 // setInterval(sendAllEmojis, 5000)
 
-// //setInterval(UpdateVoiceChannel, 15000);
-// //setInterval(updataData, 45000);
+//setInterval(UpdateVoiceChannel, 15000);
+//setInterval(updataData, 45000);
 
 client.login(process.env.TOKEN);

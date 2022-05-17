@@ -133,7 +133,7 @@ function graphingEmojiActivity(data) {
                 },
                 title: {
                     display: true,
-                    text: "Active Messaging Time",
+                    text: "Most Popular Emoji",
                     padding: 10,
                     color: 'black',
                     font: {
