@@ -164,8 +164,9 @@ function graphingVoiceStateActivity(data) {
 
 };
 
-function GetActiveVoiceChannelTime() {
+function GetActiveVoiceChannelTime(data) {
     let detailsServerId = $("#ServerId").attr('value');
+    let formatWithDetailsServerId = data + ":" + detailsServerId
     $.ajax({
         type: "GET",
         url: '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId,

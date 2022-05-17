@@ -318,12 +318,37 @@ namespace DiscordStats.Controllers
         public IActionResult GetPresenceDataFromDb()
         {
             _logger.LogInformation("GetPresenceDataFromDb");
-            List<Presence> presences = _presenceRepository.GetAll().ToList(); // .Where(a => a. Privacy == "public").OrderByDescending(m => m.ApproximateMemberCount).Take(5);
+            List<Presence> presences = _presenceRepository.GetAll().ToList(); 
             PresenceChartDataVM presenceChartDataVM = new();
             var presencesNameAndCount = presenceChartDataVM.AllPresenceNameListAndCount(presences);
 
             return Json(new { userPerGame = presencesNameAndCount });
         }
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetVoiceStatesFromDatabase(string ServerId)
+        //{
+        //    bool authenticated = false;
+        //    var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+        //    if (usersInGuild == null)
+        //    {
+        //        return RedirectToAction("Account", "Account");
+        //    }
+        //    var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+        //    foreach (var u in usersInGuild)
+        //    {
+        //        if (u.user.UserName == name)
+        //            authenticated = true;
+        //    }
+        //    if (authenticated)
+        //    {
+        //        return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        //    }
+        //    else
+        //        return RedirectToAction("Account", "Account");
+        //}
+
         [HttpGet]
         public IActionResult GetStatusesFromDatabaseToDownload(string formatWithDetailsServerId)
         {
