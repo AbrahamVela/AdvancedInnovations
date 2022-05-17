@@ -1,5 +1,5 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
-import  DiscordJS, { Guild, Intents, Presence } from 'discord.js'
+import  DiscordJS, { Emoji, Guild, Intents, Presence } from 'discord.js'
 import { MembershipStates } from 'discord.js/typings/enums';
 import dotenv from 'dotenv'
 dotenv.config()
@@ -20,6 +20,8 @@ import { replies } from './replies'
 
 const https = require('https')
 const axios = require('axios')
+const emojiRegex = require('emoji-regex');
+const regex = emojiRegex();
 
 
 // const ServerID = 928010025958510632
@@ -52,13 +54,22 @@ client.on('messageCreate', async(message) => {
 
     if (message.author.bot) return;
 
+    let emojiString: string = "";
+
+    for (const match of message.content.matchAll(regex)) {
+        const emoji = match[0];
+        emojiString += emoji.codePointAt(0)?.toString(16) + ",";
+      }
+
     let MessageInfo = {
         serverId : serverID,
         channelId : channelID,
         userId : message.author.id,
-        createdAt : message.createdAt
+        createdAt : message.createdAt,
+        emojis : emojiString
     }
     setTimeout(() => {
+        // console.log(emojis);
         axios.post(url + '/api/PostMessageData', MessageInfo)
             .then((result: any) => {
                 console.log(result);
@@ -516,6 +527,49 @@ async function sendStatus (){
     }, 5000);
 }
 
+
+
+
+async function sendAllEmojis (){
+     client.guilds.cache.each(async (guild) => {
+        let emojis: any = [];
+        let allContent: string = "";
+
+        guild.channels.cache.each(async (channel) => {               
+            
+            if(channel.type == 'GUILD_TEXT')
+            {
+                (await channel.messages.fetch()).each((message) => {
+                    console.log(message.content);
+                    // for (const match of message.content.matchAll(regex)) {
+                    //     const emoji = match[0];
+                    //     emojis.push(emoji)
+                    //     // console.log("Emoji: " + emoji);
+                    //   }
+                })
+            }
+        })
+
+        setTimeout(() => {
+            // console.log(emojis)
+            // console.log("\n\n\n")
+    
+            // if (voiceStates.length != 0) {
+            //     console.log("All VoiceStates: ")
+            //     console.log(voiceStates)
+            
+            //     axios.post(url + '/api/PostVoiceStates', voiceStates)
+            //         .then((result: any) => {
+            //             console.log(result);
+            //         })
+            //         .catch((error: any) => {
+            //             console.log(error);
+            //         });
+            // }
+        }, 5000);
+    })
+}
+
             // axios.post('https://discordstats.azurewebsites.net/api/postchannels', channels)
             //     .then((result: any) => {
             //         console.log(result);
@@ -572,7 +626,8 @@ function UpdateChannels() {
 //  setInterval(UpdateChannels, 1800000);
 
 
-setInterval(updataUsers, 30000);
+// setInterval(updataUsers, 30000);
+// setInterval(sendAllEmojis, 5000)
 
 // //setInterval(UpdateVoiceChannel, 15000);
 // //setInterval(updataData, 45000);

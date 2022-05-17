@@ -19,5 +19,7 @@ namespace DiscordStats.Models
         public string? UserId { get; set; }
         [StringLength(256)]
         public string? CreatedAt { get; set; }
+        [StringLength(256)]
+        public string? Emojis { get; set; }
     }
 }

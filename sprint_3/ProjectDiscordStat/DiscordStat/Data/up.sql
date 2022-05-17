@@ -53,6 +53,7 @@ CREATE TABLE [MessageInfo]
   [ChannelId] nvarchar(256) NULL,
   [UserId] nvarchar(256) NULL,
   [CreatedAt] nvarchar(256) NULL,
+  [Emojis] nvarchar(1000) NULL
 
 );
 

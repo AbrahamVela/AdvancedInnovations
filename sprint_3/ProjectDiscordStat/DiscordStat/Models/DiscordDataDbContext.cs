@@ -49,13 +49,13 @@ namespace DiscordStats.Models
             modelBuilder.Entity<DiscordUserAndUserWebSiteInfo>(entity =>
             {
                 entity.HasKey(e => e.DiscordUserPk)
-                    .HasName("PK__DiscordU__1F12BE9565A0AEE7");
+                    .HasName("PK__DiscordU__1F12BE9588163016");
             });
 
             modelBuilder.Entity<MessageInfo>(entity =>
             {
                 entity.HasKey(e => e.MessageDataPk)
-                    .HasName("PK__MessageI__2389D5B584277EA6");
+                    .HasName("PK__MessageI__2389D5B504737B55");
             });
 
             modelBuilder.Entity<Presence>(entity =>
