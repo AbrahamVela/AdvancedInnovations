@@ -110,9 +110,11 @@
                    </div>
                 </div>
                 <div class="row">
-                    <label for="text" asp-for="channelsVM.name" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Channel Name:</label>
-                    <input type="text" asp-for="channelsVM.name" class="form-control" required="required" maxlength="32" pattern="^\S+$" ErrorMessage="No whitespace">
-                    <span asp-validation-for="channelsVM.name" class="text-danger"></span>
+
+                    <label for="text" asp-for="name" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Channel Name:</label>
+                    <input type="text" asp-for="name" class="form-control" required="required" maxlength="32" pattern="^[a-zA-Z]" ErrorMessage="No whitespace">
+                    <span asp-validation-for="name" class="text-danger"></span>
+
                 </div>
                 <div class="row" >
                     <label asp-for="channelsVM.parent_id" class="control-label" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Which catagory would you like to add the channel to?</label>
