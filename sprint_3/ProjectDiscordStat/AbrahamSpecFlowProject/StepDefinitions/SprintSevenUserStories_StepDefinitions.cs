@@ -12,13 +12,15 @@ namespace AbrahamSpecFlowProject.StepDefinitions
         private readonly DetailsPage _detailPage;
         private readonly GamesPage _gamesPage;
         private readonly GameDetailsPage _gameDetailsPage;
+        private readonly ServerGrowthPage _serverGrowthPage;
 
-        public SprintSevenUserStories_StepDefinitions(AccountPage accountPage, DetailsPage detailsPage, GamesPage gamesPage, GameDetailsPage gameDetailsPage)
+        public SprintSevenUserStories_StepDefinitions(AccountPage accountPage, DetailsPage detailsPage, GamesPage gamesPage, GameDetailsPage gameDetailsPage, ServerGrowthPage serverGrowthPage)
         {
             _accountPage = accountPage;
             _detailPage = detailsPage;  
             _gamesPage = gamesPage;
             _gameDetailsPage = gameDetailsPage;
+            _serverGrowthPage = serverGrowthPage;
         }
 
         [When(@"I click on View Games button")]
@@ -51,7 +53,23 @@ namespace AbrahamSpecFlowProject.StepDefinitions
             _gameDetailsPage.VerifyFileCsvMostPopularPlayTimeExists();
         }
 
+        [When(@"I click on Server Growth button")]
+        public void WhenIClickOnServerGrowthButton()
+        {
+            _detailPage.ClickViewServerGrowthButton();
+        }
 
+        [Then(@"I will click Active Members in Server json file type and I'll know it has been downloaded with right file type by filepath")]
+        public void ThenIWillClickActiveMembersInServerJsonFileTypeAndIllKnowItHasBeenDownloadedWithRightFileTypeByFilepath()
+        {
+            _serverGrowthPage.VerifyFileJsonActiveMembersInServerExists();
+        }
+
+        [Then(@"I will click Active Members in Server csv file type and I'll know it has been downloaded with right file type by filepath")]
+        public void ThenIWillClickActiveMembersInServerCsvFileTypeAndIllKnowItHasBeenDownloadedWithRightFileTypeByFilepath()
+        {
+            _serverGrowthPage.VerifyFileCsvActiveMembersInServerExists();
+        }
 
 
         [Then(@"I will know file has been downloaded")]

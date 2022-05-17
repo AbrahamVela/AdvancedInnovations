@@ -185,13 +185,13 @@ function downloadStatuses(obj,  format) {
     if (format == 0) {
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(zero));
 
-        element.setAttribute('download', "Status.json");
+        element.setAttribute('download', "ActiveMembersInServer.json");
     }
     else {
         var something = JSONToCSVConvertor(zero);
 
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
-        element.setAttribute('download', "Status.csv");
+        element.setAttribute('download', "ActiveMembersInServer.csv");
     }
     element.style.display = 'none';
     document.body.appendChild(element);
