@@ -273,41 +273,61 @@
 
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="usersVoiceHourlyAllTimeChart" style="width:100%;max-width:700px; max-height: 330px; margin-bottom:3%;  margin: 0 auto; "></canvas>
-                     <div class="row">
-                        <h5>Download Active Voice Channel Time Data:</h5>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-3">
-                        <button id="exportJsonVoiceChannel" type="button" class="btn btn-primary" onclick="GetActiveVoiceChannelTime(0)" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">JSON</button>
-                         </div>
-                        <div class="col-xs-6 col-sm-3">
-                        <button id="exporCsvVoiceChannel" type="button" class="btn btn-primary" onclick="GetActiveVoiceChannelTime(1)" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">CSV</button>                   
+                    <div class="row" style="margin-top:2%; text-align:right">
+                        <div class="col">
+                            <h5>Download Active Voice Channel Time Data:</h5>
+
+                            <button id="exportJsonVoiceChannel" type="button" class="btn btn-primary" onclick="GetActiveVoiceChannelTime(1)">JSON</button>
+    
+                            <button id="exporCsvVoiceChannel" type="button" class="btn btn-primary" onclick="GetActiveVoiceChannelTime(2)">CSV</button>                   
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="usersHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    <button id="exportJsonMessaging" type="button" class="btn btn-primary" onclick="GetActiveMessageTime()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Messaging Time</button>
+                     <div class="row" style="margin-top:2%; text-align:right">
+                        <div class="col">
+                        <h5>Download Active Messaging Time Data:</h5>
+  
+                        <button id="exportJsonMessaging" type="button" class="btn btn-primary" onclick="GetActiveMessageTime(1)">JSON</button>
+
+                        <button id="exportCsvMessaging" type="button" class="btn btn-primary" onclick="GetActiveMessageTime(2)">CSV</button>                   
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="userPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    <button id="exportJsonActiveGaming" type="button" class="btn btn-primary" onclick="GetActiveGamingTime()" style="margin-right: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Active Gaming Time</button>
-                </div>
+                    <div class="row" style="margin-top:2%; text-align:right">
+                            <div class="col">
+                            <h5>Download Active Gaming Time Data:</h5>
+  
+                            <button id="exportJsonActiveGaming" type="button" class="btn btn-primary" onclick="GetActiveGamingTime(1)">JSON</button>
+
+                            <button id="exportCsvActiveGaming" type="button" class="btn btn-primary" onclick="GetActiveGamingTime(2)">CSV</button>                   
+                            </div>
+                        </div>
+                    </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="allPresenceHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    <button id="exportJsonHoursPerGame" type="button" class="btn btn-primary" onclick="GetHoursPerGame()" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">Download Json data for Hours per Game</button>
+                    <div class="row" style="margin-top:2%; text-align:right">
+                        <div class="col">
+                            <h5>Download Hours per Game Data:</h5>
+  
+                            <button id="exportJsonHoursPerGame" type="button" class="btn btn-primary" onclick="GetHoursPerGame(1)">JSON</button>
+
+                            <button id="exportCsvHoursPerGame" type="button" class="btn btn-primary" onclick="GetHoursPerGame(2)">CSV</button>                   
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">   
                     <canvas id="usersStatusHourlyChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    <div class="row">
-                        <h5>Download Statuses Data:</h5>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-3">
-                        <button id="exportJsonStatuses" type="button" class="btn btn-primary" onclick="GetStatuses(0)" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">JSON</button>
-                         </div>
-                        <div class="col-xs-6 col-sm-3">
-                        <button id="exportCSVStatuses" type="button" class="btn btn-primary" onclick="GetStatuses(1)" style="margin-left: 45%; margin-top: 2%; margin-bottom:2%">CSV</button>                   
+                    <div class="row" style="margin-top:2%; text-align:right">
+                        <div class="col">
+                            <h5>Download Statuses Data:</h5>
+
+                            <button id="exportJsonStatuses" type="button" class="btn btn-primary" onclick="GetStatuses(1)">JSON</button>
+
+                            <button id="exportCSVStatuses" type="button" class="btn btn-primary" onclick="GetStatuses(2)">CSV</button>                   
                         </div>
                     </div>
                 </div>

@@ -1,13 +1,7 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    let gameDetailsGameName = $("#GameName").attr('value');
-
-    $.ajax({
-        type: 'GET',
-        url: '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId,
-        success: barGraphHourlyPresenceActivity,
-        error: handleError
-    });
+    var data = 0;
+    ajaxPresenceForMostPopularPlayTime(data);
 
     $.ajax({
         type: 'GET',
@@ -17,6 +11,24 @@
     });
 
 })
+
+function GetMostPopularPlayTime(data) {
+    ajaxPresenceForMostPopularPlayTime(data);
+};
+
+function ajaxPresenceForMostPopularPlayTime(data) {
+    let detailsServerId = $("#ServerId").attr('value');
+    let gameDetailsGameName = $("#GameName").attr('value');
+    let formatWithDetailsServerId = data + ":" + detailsServerId
+
+    $.ajax({
+        type: 'GET',
+        url: '../Stats/GetPresencesFromDatabaseForGraphAndDownload?gamename=' + gameDetailsGameName + '&' + 'formatWithDetailsServerId=' + formatWithDetailsServerId,
+        success: barGraphHourlyPresenceActivity,
+        error: handleError
+    });
+
+}
 
 const timezone = -3
 var presenceActivityData = [];
@@ -49,7 +61,8 @@ $("#start").change(function () {
     if (presencesChart != null) {
         presencesChart.destroy();
     }
-    graphingPresenceActivity(tempPresenceActivityData);
+    tempPresenceActivityData.format = 0;
+    graphingPresenceActivity(tempPresenceActivityData.dataFromDB, tempPresenceActivityData.format);
 
 });
 
@@ -59,7 +72,8 @@ $("#end").change(function () {
         presencesChart.destroy();
     }
 
-    graphingPresenceActivity(tempPresenceActivityData);
+    tempPresenceActivityData.format = 0;
+    graphingPresenceActivity(tempPresenceActivityData.dataFromDB, tempPresenceActivityData.format);
 });
 
 $("#allUsersPresences").change(function () {
@@ -72,12 +86,12 @@ $("#allUsersPresences").change(function () {
             presencesChart.destroy();
         }
 
-        graphingPresenceActivity(presenceActivityData)
+        graphingPresenceActivity(presenceActivityData.dataFromDB)
     }
     else {
-        for (var i = 0; i < presenceActivityData.length; i++) {
-            if (presenceActivityData[i].userId == $(this).val()) {
-                newList.push(presenceActivityData[i]);
+        for (var i = 0; i < presenceActivityData.dataFromDB.length; i++) {
+            if (presenceActivityData.dataFromDB[i].userId == $(this).val()) {
+                newList.push(presenceActivityData.dataFromDB[i]);
             }
         }
         if (presencesChart != null) {
@@ -85,7 +99,7 @@ $("#allUsersPresences").change(function () {
         }
 
         tempPresenceActivityData = newList;
-        graphingPresenceActivity(tempPresenceActivityData);
+        graphingPresenceActivity(tempPresenceActivityData, tempPresenceActivityData.format);
     }
 });
 
@@ -93,11 +107,11 @@ $("#allUsersPresences").change(function () {
 function barGraphHourlyPresenceActivity(data) {
     presenceActivityData = data
     tempPresenceActivityData = data
-    graphingPresenceActivity(tempPresenceActivityData)
+    graphingPresenceActivity(tempPresenceActivityData.dataFromDB, data.format)
 }
 
 
-function graphingPresenceActivity(data) {
+function graphingPresenceActivity(data, format) {
 
 
     $("#presencesHourlyAllTimeChart").empty();
@@ -120,112 +134,13 @@ function graphingPresenceActivity(data) {
         }
     }
 
-
-    presencesChart = new Chart("presencesHourlyAllTimeChart", {
-        type: "bar",
-        data: {
-            labels: xValues,
-            datasets: [{
-                backgroundColor: "green",
-                data: yValues,
-                ticks: {
-                    beginAtZero: false
-                }
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true,
-                    text: "Most Popular Play Time",
-                    padding: 10,
-                    color: 'black',
-                    font: {
-                        size: 25
-                    }
-                },
-            },
-            scales: {
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Active Gamers',
-                        padding: 10,
-                        color: 'black',
-                        font: {
-                            size: 25
-                        }
-                    },
-                    ticks: {
-                        beginAtZero: false,
-                        precision: 0,
-                        color: 'black',
-                        font: {
-                            size: 20
-                        }
-                    }
-
-                },
-                x: {
-                    ticks: {
-                        precision: 0,
-                        color: 'Black',
-                        font: {
-                            size: 16,
-                            family: 'Helvetica'
-                        }
-                    }
-                }
-            },
-
-        }
-    })
-};
-
-function GetMostPopularPlayTime(data) {
-    let detailsServerId = $("#ServerId").attr('value');
-    let gameDetailsGameName = $("#GameName").attr('value');
-    let formatWithDetailsServerId = data + ":" + detailsServerId
-
-    $.ajax({
-        type: 'GET',
-        url: '../Stats/GetPresencesFromDatabaseToDownload?gamename=' + gameDetailsGameName + '&' + 'formatWithDetailsServerId=' + formatWithDetailsServerId,
-        success: DataForMostPopularPlayTime,
-        error: handleError
-    });
-
-}
-
-
-function DataForMostPopularPlayTime(data) {
-
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-
-    for (var i = 0; i < data.dataFromDB.length; i++) {
-        var dateUTC = new Date(data.dataFromDB[i].createdAt)
-        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
-
-        if (date > startDate && date < endDate) {
-            let hour = date.getHours()
-            subtraction = hour - 1 + timezone;
-            if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
-            }
-            yValues[subtraction] += 1;
-        }
+    if (format != 0) {
+    if (data.startDate != "1-1-0001" && data.endDate != "1-1-0001") {
+        xValues.push("Start Date");
+        yValues.push(data.startDate);
+        xValues.push("End Date");
+        yValues.push(data.endDate);
     }
-
-
-    xValues.push("Start Date");
-    yValues.push(startDate);
-    xValues.push("End Date");
-    yValues.push(endDate);
-
 
     var obj = {};
     for (var i = 0; i < xValues.length; i++) {
@@ -233,20 +148,86 @@ function DataForMostPopularPlayTime(data) {
     };
 
 
-    downloadStatuses(obj, data.format);
+    downloadMostPopularPlayTime(obj,format);
+    }
 
-}
+    else {
+        presencesChart = new Chart("presencesHourlyAllTimeChart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: "green",
+                    data: yValues,
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: "Most Popular Play Time",
+                        padding: 10,
+                        color: 'black',
+                        font: {
+                            size: 25
+                        }
+                    },
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Active Gamers',
+                            padding: 10,
+                            color: 'black',
+                            font: {
+                                size: 25
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            precision: 0,
+                            color: 'black',
+                            font: {
+                                size: 20
+                            }
+                        }
 
-function downloadStatuses(obj, format) {
+                    },
+                    x: {
+                        ticks: {
+                            precision: 0,
+                            color: 'Black',
+                            font: {
+                                size: 16,
+                                family: 'Helvetica'
+                            }
+                        }
+                    }
+                },
+
+            }
+        })
+    }
+};
+
+
+function downloadMostPopularPlayTime(obj, format) {
     var zero = JSON.stringify(obj);
 
     var element = document.createElement('a');
-    if (format == 0) {
+    if (format == 1) {
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(zero));
 
         element.setAttribute('download', "MostPopularPlayTime.json");
     }
-    else {
+    if (format == 2) {
         var something = JSONToCSVConvertor(zero);
 
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
@@ -260,31 +241,4 @@ function downloadStatuses(obj, format) {
     document.body.removeChild(element);
 }
 
-
-function JSONToCSVConvertor(JSONData) {
-
-    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
-    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
-    var CSV = '';
-    //This condition will generate the Label/Header
-    csvRows = [];
-
-    // Headers is basically a keys of an
-    // object which is id, name, and
-    // profession
-    const headers = Object.keys(arrData);
-
-    // As for making csv format, headers
-    // must be separated by comma and
-    // pushing it into array
-    csvRows.push(headers.join(','));
-
-    // Pushing Object values into array
-    // with comma separation
-    const values = Object.values(arrData).join(',');
-    csvRows.push(values)
-
-    // Returning the array joining with new line
-    return csvRows.join('\n')
-}
 
