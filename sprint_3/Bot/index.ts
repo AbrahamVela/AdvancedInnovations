@@ -254,31 +254,31 @@ async function sendServers (){
                 presenceCount += 1
             };
         });
-        var icon = guild.icon
-        if (guild.icon == null) {
-            icon = "null"
-        }
-        var description = guild.description
+        // var icon = guild.icon
+        // if (guild.icon == null) {
+        //     icon = "null"
+        // }
+        // var description = guild.description
 
-        if (guild.description == null) {
-            description = "null"
-        }
+        // if (guild.description == null) {
+        //     description = "null"
+        // }
         let server = {
             ID: guild.id,
             Name: guild.name,
             Owner: "false",
-            Icon: icon,
+            Icon: guild.icon,
             HasBot: "true",
             ApproximateMemberCount: members?.size,
             OwnerId: guild.ownerId,
             VerificationLevel: guild.verificationLevel,
-            Description: description,
+            Description: guild.description,
             Premiumtier: guild.premiumTier,
             ApproximatePresenceCount: presenceCount,
-            Privacy: "null",
-            OnForum: "null",
-            Message: "null",
-            InLottery: "null"
+            Privacy: null,
+            OnForum: null,
+            Message: null,
+            InLottery: null
         }
         servers.push(server);
     })
@@ -359,8 +359,10 @@ async function sendPresence (){
                     "SmallImageId": member.presence?.activities[0].assets?.smallImage,
                     "Image": member.presence?.activities[0].assets?.largeImageURL(),
                     "ServerId": guild.id,
-                    "UserId": member.id
+                    "UserId": member.id,
+                    "ActivityType": member.presence?.activities[0].type
                 };
+                console.log(member.presence?.activities[0].type)
                 presences.push(newPresence);
             };
             
@@ -369,18 +371,18 @@ async function sendPresence (){
     });
 
     setTimeout(() => {
-        if (presences.length > 0) {
-            console.log("The presence of all users: ")
-            console.log(presences)
-            axios.post(url + '/api/postpresence', presences)
+        // if (presences.length > 0) {
+        //     console.log("The presence of all users: ")
+        //     console.log(presences)
+        //     axios.post(url + '/api/postpresence', presences)
 
-            .then((result: any) => {
-                console.log(result);
-            })
-            .catch((error: any) => {
-                console.log(error.response.data);
-            });
-        }
+        //     .then((result: any) => {
+        //         console.log(result);
+        //     })
+        //     .catch((error: any) => {
+        //         console.log(error.response.data);
+        //     });
+        // }
     }, 5000);
 };
 
@@ -658,6 +660,7 @@ function UpdateChannels() {
     sendChannels();
 }
 
+setInterval(sendPresence, 10000)
 //  setInterval(sendStatus, 300000);
     
 //  setInterval(updataPresence, 300000);
@@ -668,7 +671,7 @@ function UpdateChannels() {
 //  setInterval(UpdateServers, 1800000);
 //  setInterval(UpdateChannels, 1800000);
 
-setInterval(UpdateServers, 10000);
+// setInterval(UpdateServers, 10000);
 // setInterval(updataUsers, 30000);
 // setInterval(sendAllReactions, 10000);
 

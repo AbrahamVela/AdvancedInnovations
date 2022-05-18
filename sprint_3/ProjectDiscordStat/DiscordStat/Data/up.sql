@@ -80,7 +80,8 @@ CREATE TABLE [Presence]
   [SmallImageId] nvarchar(256) NULL,
   [ServerId] nvarchar(256) NULL,
   [UserId] NVARCHAR(256) NULL,
-  [Image] NVARCHAR(256) NULL
+  [Image] NVARCHAR(256) NULL,
+  [ActivityType] NVARCHAR(256) NULL
 );
 
 CREATE TABLE [ServerPresenceJoin] 

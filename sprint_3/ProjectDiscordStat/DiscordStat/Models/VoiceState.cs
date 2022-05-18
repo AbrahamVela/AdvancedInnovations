@@ -12,11 +12,11 @@ namespace DiscordStats.Models
         [Key]
         public int VoiceStatePk { get; set; }
         [StringLength(256)]
-        public string ServerId { get; set; }
+        public string? ServerId { get; set; }
         [StringLength(256)]
-        public string ChannelId { get; set; }
+        public string? ChannelId { get; set; }
         [StringLength(256)]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
     }
