@@ -9,26 +9,35 @@ namespace DiscordStats.Models
     [Table("DiscordUserAndUserWebSiteInfo")]
     public partial class DiscordUserAndUserWebSiteInfo
     {
+        public DiscordUserAndUserWebSiteInfo()
+        {
+            ServerUserJoins = new HashSet<ServerUserJoin>();
+        }
+
+        [Required]
         [Column("ID")]
         [StringLength(256)]
-        public string Id { get; set; } = null!;
+        public string Id { get; set; }
         [Key]
         public int DiscordUserPk { get; set; }
         [StringLength(128)]
-        public string? Username { get; set; }
+        public string Username { get; set; }
         [StringLength(256)]
-        public string? Servers { get; set; }
+        public string Servers { get; set; }
         [StringLength(256)]
-        public string? Avatar { get; set; }
+        public string Avatar { get; set; }
         [StringLength(256)]
-        public string? Role { get; set; }
+        public string Role { get; set; }
         [StringLength(128)]
-        public string? FirstName { get; set; }
+        public string FirstName { get; set; }
         [StringLength(128)]
-        public string? LastName { get; set; }
+        public string LastName { get; set; }
         [StringLength(256)]
-        public string? BirthDate { get; set; }
+        public string BirthDate { get; set; }
         [StringLength(256)]
-        public string? Email { get; set; }
+        public string Email { get; set; }
+
+        [InverseProperty(nameof(ServerUserJoin.DiscordUserPkNavigation))]
+        public virtual ICollection<ServerUserJoin> ServerUserJoins { get; set; }
     }
 }

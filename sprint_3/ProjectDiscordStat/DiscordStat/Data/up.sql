@@ -48,13 +48,15 @@ CREATE TABLE [DiscordUserAndUserWebSiteInfo]
 
 CREATE TABLE [MessageInfo] 
 (
+  [ID] nvarchar(256) Not Null,
   [MessageDataPk] int           PRIMARY KEY IDENTITY(1, 1),
   [ServerId] nvarchar(256) NULL,
   [ChannelId] nvarchar(256) NULL,
   [UserId] nvarchar(256) NULL,
   [CreatedAt] nvarchar(256) NULL,
-  [Emojis] nvarchar(1000) NULL
-
+  [Emojis] nvarchar(1000) NULL,
+  [Reactions] nvarchar(1000) NULL,
+  [ReactionURL] nvarchar(4000) NULL
 );
 
 CREATE TABLE [VoiceState] 

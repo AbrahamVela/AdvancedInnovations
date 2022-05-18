@@ -13,12 +13,12 @@ namespace DiscordStats.Models
         [Column("StatusPK")]
         public int StatusPk { get; set; }
         [StringLength(256)]
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
         [Column("Status")]
         [StringLength(256)]
-        public string? Status1 { get; set; }
+        public string Status1 { get; set; }
         [StringLength(256)]
-        public string? ServerId { get; set; }
+        public string ServerId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
     }

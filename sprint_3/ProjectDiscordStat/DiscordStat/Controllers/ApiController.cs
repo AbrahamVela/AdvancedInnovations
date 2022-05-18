@@ -206,6 +206,27 @@ namespace DiscordStats.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> PostMessageDataArray(MessageInfo[] messages)
+        {
+            foreach(var botMessage in messages)
+            {
+                var duplicate = false;
+                foreach(var dbMessage in _messageInfoRepository.GetAll().ToList())
+                {
+                    if (botMessage.Id == dbMessage.Id)
+                    {
+                        dbMessage.Reactions = botMessage.Reactions;
+                        dbMessage.ReactionUrl = botMessage.ReactionUrl;
+                        _messageInfoRepository.AddOrUpdate(dbMessage);
+                    }
+                }
+            }
+            //_messageInfoRepository.AddOrUpdate(message);
+            //await _channelRepository.UpdateMessageCount(message);
+            return Json("It worked");
+        }
+
+        [HttpPost]
         public IActionResult PostVoiceStates(VoiceState[] voiceStates)
         {
             var duplicate = false;

@@ -14,5 +14,12 @@ namespace DiscordStats.Models
         public int Id { get; set; }
         public int? ChannelPk { get; set; }
         public int? WebhookPk { get; set; }
+
+        [ForeignKey(nameof(ChannelPk))]
+        [InverseProperty(nameof(Channel.ChannelWebhookJoins))]
+        public virtual Channel ChannelPkNavigation { get; set; }
+        [ForeignKey(nameof(WebhookPk))]
+        [InverseProperty(nameof(Webhook.ChannelWebhookJoins))]
+        public virtual Webhook WebhookPkNavigation { get; set; }
     }
 }

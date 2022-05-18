@@ -1,5 +1,5 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
-import  DiscordJS, { Emoji, Guild, Intents, Presence } from 'discord.js'
+import  DiscordJS, { Emoji, Guild, Intents, MessageReaction, Presence } from 'discord.js'
 import { MembershipStates } from 'discord.js/typings/enums';
 import dotenv from 'dotenv'
 dotenv.config()
@@ -62,11 +62,14 @@ client.on('messageCreate', async(message) => {
       }
 
     let MessageInfo = {
+        id : message.id,
         serverId : serverID,
         channelId : channelID,
         userId : message.author.id,
         createdAt : message.createdAt,
-        emojis : emojiString
+        emojis : emojiString,
+        reactions : "",
+        reactionUrl : ""
     }
     setTimeout(() => {
         // console.log(emojis);
@@ -75,7 +78,7 @@ client.on('messageCreate', async(message) => {
                 console.log(result);
             })
             .catch((error: any) => {
-                console.log(error);
+                console.log(error.response.data);
             });
     }, 5000);
 
@@ -120,7 +123,7 @@ client.on('messageCreate', async(message) => {
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
-                // console.log(error);
+                // console.log(error.response.data);
             });
     }
 
@@ -131,7 +134,7 @@ client.on('messageCreate', async(message) => {
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
-                console.log(error);
+                console.log(error.response.data);
             });
     }
 
@@ -157,7 +160,7 @@ client.on('messageCreate', async(message) => {
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
-                console.log(error);
+                console.log(error.response.data);
             });
     }
 
@@ -212,7 +215,7 @@ async function sendUsers (){
                                     console.log(result);
                                 })
                                 .catch((error: any) => {
-                                    console.log(error);
+                                    console.log(error.response.data);
                                 })
                             }
     
@@ -231,7 +234,7 @@ async function sendUsers (){
 //                 console.log(result);
 //             })
 //             .catch((error: any) => {
-//                 console.log(error);
+//                 console.log(error.response.data);
 //             });
 //     }, 5000);
 // }
@@ -251,23 +254,31 @@ async function sendServers (){
                 presenceCount += 1
             };
         });
+        var icon = guild.icon
+        if (guild.icon == null) {
+            icon = "null"
+        }
+        var description = guild.description
 
+        if (guild.description == null) {
+            description = "null"
+        }
         let server = {
             ID: guild.id,
             Name: guild.name,
             Owner: "false",
-            Icon: guild.icon,
+            Icon: icon,
             HasBot: "true",
             ApproximateMemberCount: members?.size,
             OwnerId: guild.ownerId,
             VerificationLevel: guild.verificationLevel,
-            Description: guild.description,
+            Description: description,
             Premiumtier: guild.premiumTier,
             ApproximatePresenceCount: presenceCount,
-            Privacy: null,
-            OnForum: null,
-            Message: null,
-            InLottery: null
+            Privacy: "null",
+            OnForum: "null",
+            Message: "null",
+            InLottery: "null"
         }
         servers.push(server);
     })
@@ -278,7 +289,7 @@ async function sendServers (){
                     console.log(result);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    console.log(error.response.data);
                 });
         }
     }, 5000);
@@ -309,7 +320,7 @@ async function sendChannels (){
                     console.log(result);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    console.log(error.response.data);
                 });
         }
     }, 5000);
@@ -367,7 +378,7 @@ async function sendPresence (){
                 console.log(result);
             })
             .catch((error: any) => {
-                console.log(error);
+                console.log(error.response.data);
             });
         }
     }, 5000);
@@ -443,7 +454,7 @@ async function sendVoiceChannels (){
                     console.log(result);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    console.log(error.response.data);
                 });
         }
     }, 100000);
@@ -479,7 +490,7 @@ async function sendVoiceStates (){
                     console.log(result);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    console.log(error.response.data);
                 });
         }
     }, 5000);
@@ -521,7 +532,7 @@ async function sendStatus (){
                     console.log(result);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    console.log(error.response.data);
                 });
         }
     }, 5000);
@@ -530,42 +541,74 @@ async function sendStatus (){
 
 
 
-async function sendAllEmojis (){
+async function sendAllReactions (){
      client.guilds.cache.each(async (guild) => {
-        let emojis: any = [];
-        let allContent: string = "";
+        let allMessageInfos: any = []
 
         guild.channels.cache.each(async (channel) => {               
             
             if(channel.type == 'GUILD_TEXT')
             {
                 (await channel.messages.fetch()).each((message) => {
-                    console.log(message.content);
-                    // for (const match of message.content.matchAll(regex)) {
-                    //     const emoji = match[0];
-                    //     emojis.push(emoji)
-                    //     // console.log("Emoji: " + emoji);
-                    //   }
+                    let reactions: string = "";
+                    let reactionsUnicode: string = "";
+                    let urls: string = "";
+
+                    message.reactions.cache.each((reaction) => {
+                        // console.log(reaction.emoji.name)
+                        // console.log(reaction.emoji.url)
+
+                        if (reaction.emoji.name) {
+                            reactions += reaction.emoji.name
+                        }
+                        if (reaction.emoji.url) {
+                            urls += reaction.emoji.url
+                        }
+
+                    })
+                    if (reactions.length > 0) {
+                        for (const match of reactions.matchAll(regex)) {
+                            const emoji = match[0];
+                            reactionsUnicode += emoji.codePointAt(0)?.toString(16) + ",";
+                          }
+                    }
+                    if (urls.length > 0) {
+                        // console.log("url")
+                        // console.log(urls)
+                    }
+
+                    if (reactionsUnicode.length > 0 || urls.length > 0) {
+                        let MessageInfo = {
+                            id : message.id,
+                            serverId : guild.id,
+                            channelId : channel.id,
+                            userId : message.author.id,
+                            createdAt : message.createdAt,
+                            emojis : "",
+                            reactions : reactionsUnicode,
+                            reactionUrl : urls
+                        }
+                        
+                        allMessageInfos.push(MessageInfo)
+                    }
+                    
                 })
+                // console.log((await channel.messages.fetch()))
             }
         })
 
         setTimeout(() => {
-            // console.log(emojis)
-            // console.log("\n\n\n")
-    
-            // if (voiceStates.length != 0) {
-            //     console.log("All VoiceStates: ")
-            //     console.log(voiceStates)
-            
-            //     axios.post(url + '/api/PostVoiceStates', voiceStates)
-            //         .then((result: any) => {
-            //             console.log(result);
-            //         })
-            //         .catch((error: any) => {
-            //             console.log(error);
-            //         });
-            // }
+            if (allMessageInfos.length > 0) {
+                // console.log(allMessageInfos)
+                axios.post(url + '/api/PostMessageDataArray', allMessageInfos)
+                .then((result: any) => {
+                    console.log(result);
+                })
+                .catch((error: any) => {
+                    console.log(error.response.data);
+                });
+            }
+
         }, 5000);
     })
 }
@@ -575,7 +618,7 @@ async function sendAllEmojis (){
             //         console.log(result);
             //     })
             //     .catch((error: any) => {
-            //         console.log(error);
+            //         console.log(error.response.data);
             //     });
 
 
@@ -625,9 +668,9 @@ function UpdateChannels() {
 //  setInterval(UpdateServers, 1800000);
 //  setInterval(UpdateChannels, 1800000);
 
-
+setInterval(UpdateServers, 10000);
 // setInterval(updataUsers, 30000);
-// setInterval(sendAllEmojis, 5000)
+// setInterval(sendAllReactions, 10000);
 
 //setInterval(UpdateVoiceChannel, 15000);
 //setInterval(updataData, 45000);
