@@ -1,11 +1,7 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    $.ajax({
-        type: 'GET',
-        url: '../Stats/GetMessageInfoFromDatabase?serverid=' + detailsServerId,
-        success: barGraphHourlyMessageActivity,
-        error: handleError
-    });
+    var data = 0;
+    ajaxMessaging(data);
 
     $.ajax({
         type: 'GET',
@@ -14,7 +10,22 @@
         error: handleError
     });
 
-})
+});
+
+function GetActiveMessageTime(data) {
+    ajaxMessaging(data);
+};
+
+function ajaxMessaging(data) {
+    let detailsServerId = $("#ServerId").attr('value');
+    let formatWithDetailsServerId = data + ":" + detailsServerId;
+    $.ajax({
+        type: "GET",
+        url: '../Stats/GetMessageInfoFromDatabaseForGraphAndDownload?formatWithServerId=' + formatWithDetailsServerId,
+        success: barGraphHourlyMessageActivity,
+        error: handleError
+    });
+}
 
 var messageActivityData = [];
 var tempMessageActivityData = [];
@@ -51,16 +62,16 @@ $("#allUsers").change(function () {
         graphingMessageActivity(messageActivityData)
     }
     else {
-        for (var i = 0; i < messageActivityData.length; i++) {
-            if (messageActivityData[i].userId == $(this).val()) {
-                newList.push(messageActivityData[i]);
+        for (var i = 0; i < messageActivityData.dataFromDB.length; i++) {
+            if (messageActivityData.dataFromDB[i].userId == $(this).val()) {
+                newList.push(messageActivityData.dataFromDB[i]);
             }
         }
         if (messagesChart != null) {
             messagesChart.destroy();
         }
         tempMessageActivityData = newList
-        graphingMessageActivity(tempMessageActivityData)
+        graphingMessageActivity(tempMessageActivityData, messageActivityData.format)
     }
 });
 
@@ -69,7 +80,8 @@ $("#startDateGraph").change(function () {
     if (messagesChart != null) {
         messagesChart.destroy();
     }
-    graphingMessageActivity(tempMessageActivityData);
+    tempMessageActivityData.format = 0;
+    graphingMessageActivity(tempMessageActivityData.dataFromDB, tempMessageActivityData.format );
 
 });
 
@@ -78,16 +90,17 @@ $("#endDateGraph").change(function () {
     if (messagesChart != null) {
         messagesChart.destroy();
     }
-    graphingMessageActivity(tempMessageActivityData);
+    tempMessageActivityData.format = 0;
+    graphingMessageActivity(tempMessageActivityData.dataFromDB, tempMessageActivityData.format );
 });
 
 function barGraphHourlyMessageActivity(data) {
-    messageActivityData = data
-    tempMessageActivityData = data
-    graphingMessageActivity(tempMessageActivityData)
+    messageActivityData = data;
+    tempMessageActivityData = data;
+    graphingMessageActivity(tempMessageActivityData.dataFromDB, data.format)
 }
 
-function graphingMessageActivity(data) {
+function graphingMessageActivity(data, format) {
     $("#usersHourlyAllTimeChart").empty();
     //Good Chart
     var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
@@ -121,125 +134,104 @@ function graphingMessageActivity(data) {
         }
     }
 
-    messagesChart = new Chart("usersHourlyAllTimeChart", {
-        type: "bar",
-        data: {
-            labels: xValues,
-            datasets: [{
-                backgroundColor: "green",
-                data: yValues,
-            }]
-        },
+    if (format != 0) {
+        xValues.push("Start Date");
+        yValues.push(startDate);
+        xValues.push("End Date");
+        yValues.push(endDate);
 
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true,
-                    text: "Active Messaging Time",
-                    padding: 10,
-                    color: 'black',
-                    font: {
-                        size: 25
-                    }
-                },
+        var obj = {};
+        for (var i = 0; i < xValues.length; i++) {
+            obj[xValues[i]] = yValues[i];
+        }
+
+        downloadForHourlyMessageActivity(obj, format);
+    }
+
+    else {
+        messagesChart = new Chart("usersHourlyAllTimeChart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: "green",
+                    data: yValues,
+                }]
             },
-                        scales: {
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Messages Sent',
-                                    padding: 10,
-                                    color: 'black',
-                                    font: {
-                                        size: 25
-                                    }
-                                },
-                    ticks: {
-                        beginAtZero: false,
-                        precision: 0,
+
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: "Active Messaging Time",
+                        padding: 10,
                         color: 'black',
                         font: {
-                            size: 20
+                            size: 25
                         }
-                    }
-
+                    },
                 },
-                x: {
-                    ticks: {
-                        precision: 0,
-                        color: 'Black',
-                        font: {
-                            size: 16,
-                            family: 'Helvetica'
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Messages Sent',
+                            padding: 10,
+                            color: 'black',
+                            font: {
+                                size: 25
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            precision: 0,
+                            color: 'black',
+                            font: {
+                                size: 20
+                            }
+                        }
+
+                    },
+                    x: {
+                        ticks: {
+                            precision: 0,
+                            color: 'Black',
+                            font: {
+                                size: 16,
+                                family: 'Helvetica'
+                            }
                         }
                     }
                 }
-            }
 
-        },
-             
-    })
+            },
+
+        })
+    }
 
 };
 
+function downloadForHourlyMessageActivity(obj, format) {
 
+    var element = document.createElement('a');
 
-function GetActiveMessageTime() {
-    let detailsServerId = $("#ServerId").attr('value');
-    $.ajax({
-        type: "GET",
-        url: '../Stats/GetMessageInfoFromDatabase?serverid=' + detailsServerId,
-        success: DataForHourlyMessageActivity,
-        error: handleError
-    });
-}
+    if (format == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
 
-function DataForHourlyMessageActivity(data) {
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    for (var i = 0; i < data.length; i++) {
-        var dateUTC = new Date(data[i].createdAt)
-        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
-
-        if (date > startDate && date < endDate) {
-            let hour = date.getHours()
-            subtraction = hour - 4;
-            if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
-            }
-            console.log(subtraction);
-            yValues[subtraction] += 1;
-        }
-    }
-
-    xValues.push("Start Date");
-    yValues.push(startDate);
-    xValues.push("End Date");
-    yValues.push(endDate);
-
-    var obj = {};
-    for (var i = 0; i < xValues.length; i++) {
-        obj[xValues[i]] = yValues[i];
-    }
-
-    downloadForHourlyMessageActivity(obj);
-}
-
-
-function downloadForHourlyMessageActivity(text) {
-
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(text)));
         element.setAttribute('download', "ActiveMessagingTime.json");
-
-        element.style.display = 'none';
-        document.body.appendChild(element);
-
-        element.click();
-
-        document.body.removeChild(element);
     }
+    if (format == 2) {
+        var something = JSONToCSVConvertor(JSON.stringify(obj));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "ActiveMessagingTime.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
