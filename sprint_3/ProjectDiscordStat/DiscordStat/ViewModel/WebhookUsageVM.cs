@@ -18,6 +18,7 @@
         public bool memberValue { get; set; }
 
         public bool activityValue { get; set; }
+        public string CapToken { get; set; }
 
     }
 }

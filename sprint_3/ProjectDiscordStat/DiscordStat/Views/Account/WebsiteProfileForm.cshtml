@@ -1,5 +1,8 @@
-﻿@model DiscordStats.ViewModel.ServerAndDiscordUserInfoAndWebsiteProfileVM
-
+﻿@model DiscordStats.ViewModel.UpdateUserInfoVM
+@using DiscordStats.DAL.Concrete
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Options
+@inject IOptions<CaptchaConfig> CaptchaConfig
 
 @{
 	ViewData["Title"] = "Create/Update Website Profile Info";
@@ -60,13 +63,14 @@
           <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
               @*@using (Html.BeginForm("ProfileFormSubmit", "Account", FormMethod.Post))*@
             <form asp-action="ProfileFormSubmit" id="profileForm"> 
+                 <input type="hidden" id="PostForumToken" asp-for="Token"/>
                     <div class="row" style="padding-bottom: 3%" >
                         <div class="col-3">
                             <p style=" color: black; font-weight: 400;font-size:16px">First Name:</p>
                         </div>
                         <div class="col-6">
-                            <input asp-for="ProfileFirstName" type="text" class="form-control" maxlength="32"/>
-                            <span asp-validation-for="ProfileFirstName" class="text-danger"></span>
+                            <input asp-for="ProfileVM.ProfileFirstName" type="text" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileVM.ProfileFirstName" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -75,8 +79,8 @@
                             <p style=" color: black; font-weight: 400;font-size:16px">Last Name:</p>
                         </div>
                         <div class="col-6">
-                            <input asp-for="ProfileLastName" type="text" class="form-control" maxlength="32"/>
-                            <span asp-validation-for="ProfileLastName" class="text-danger"></span>
+                            <input asp-for="ProfileVM.ProfileLastName" type="text" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileVM.ProfileLastName" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -85,8 +89,8 @@
                             <p style=" color: black; font-weight: 400;font-size:16px">Birth Date:</p>
                         </div>
                         <div class="col-6">
-                            <input asp-for="ProfileBirthDate" type="date" id="Date" class="form-control"  min="1850-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")"/>
-                            <span asp-validation-for="ProfileBirthDate" class="text-danger"></span>
+                            <input asp-for="ProfileVM.ProfileBirthDate" type="date" id="Date" class="form-control"  min="1850-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+                            <span asp-validation-for="ProfileVM.ProfileBirthDate" class="text-danger"></span>
                         </div>
                     </div>
                 
@@ -95,12 +99,12 @@
                             <p style=" color: black; font-weight: 400;font-size:16px">Email:</p>
                         </div>
                         <div class="col-6">
-                            <input asp-for="ProfileEmail" type="email" class="form-control" maxlength="32"/>
-                            <span asp-validation-for="ProfileEmail" class="text-danger"></span>
+                            <input asp-for="ProfileVM.ProfileEmail" type="email" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileVM.ProfileEmail" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-6">
-                        @Html.HiddenFor(m => m.id, new { @readonly="readonly" })                       
+                        @Html.HiddenFor(m => m.ProfileVM.id, new { @readonly="readonly" })                       
                     </div>
                     <div class="form-group">
                         <div class="col-md-12 text-center" >
@@ -129,7 +133,21 @@
 
      <script type="text/javascript" src="~/js/site.js"></script>
 }
-
+<script src="https://www.google.com/recaptcha/api.js?render=@CaptchaConfig.Value.SiteKey"></script>
+    <script>
+        function getToken()
+        {
+             grecaptcha.ready(function() {
+          grecaptcha.execute('@CaptchaConfig.Value.SiteKey', {action: 'submit'}).then(function(token) {
+             document.getElementById("PostForumToken").value = token;
+          });
+        });
+        }
+        setInterval(getToken, 115000);
+        $(function(){
+         getToken();
+        });
+    </script>
 <script>
      function CheckDate(date) {
             var inDate = $("#Date").val();

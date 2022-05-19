@@ -1,12 +1,22 @@
 ﻿$(document).ready(function () {
+    var data = 0;
+    ajaxStatuses(data);
+});
+
+function GetStatuses(data) {
+    ajaxStatuses(data);
+};
+
+function ajaxStatuses(data) {
     let detailsServerId = $("#ServerId").attr('value');
+    let formatWithDetailsServerId = data + ":" + detailsServerId
     $.ajax({
         type: 'GET',
-        url: '../Stats/GetStatusesFromDatabase?serverid=' + detailsServerId,
+        url: '../Stats/GetStatusesFromDatabaseForGraphAndDownload?formatWithDetailsServerId=' + formatWithDetailsServerId,
         success: barGraphHourlyStatusActivity,
         error: handleError
     });
-})
+};
 
 var statusActivityData = [];
 var tempStatusActivityData = [];
@@ -24,7 +34,8 @@ $("#startDateGraph").change(function () {
     if (statusesChart != null) {
         statusesChart.destroy();
     }
-    graphingStatusActivity(tempStatusActivityData);
+    tempStatusActivityData.format = 0;
+    graphingStatusActivity(tempStatusActivityData.dataFromDB, tempStatusActivityData.format);
 });
 
 $("#endDateGraph").change(function () {
@@ -33,7 +44,8 @@ $("#endDateGraph").change(function () {
     if (statusesChart != null) {
         statusesChart.destroy();
     }
-    graphingStatusActivity(tempStatusActivityData);
+    tempStatusActivityData.format = 0;
+    graphingStatusActivity(tempStatusActivityData.dataFromDB, tempStatusActivityData.format);
 });
 
 $("#allUsers").change(function () {
@@ -46,19 +58,19 @@ $("#allUsers").change(function () {
             statusesChart.destroy();
         }
         tempStatusActivityData = statusActivityData
-        graphingStatusActivity(tempStatusActivityData)
+        graphingStatusActivity(tempStatusActivityData.dataFromDB)
     }
     else {
-        for (var i = 0; i < statusActivityData.length; i++) {
-            if (statusActivityData[i].userId == $(this).val()) {
-                newList.push(statusActivityData[i]);
+        for (var i = 0; i < statusActivityData.dataFromDB.length; i++) {
+            if (statusActivityData.dataFromDB[i].userId == $(this).val()) {
+                newList.push(statusActivityData.dataFromDB[i]);
             }
         }
         if (statusesChart != null) {
             statusesChart.destroy();
         }
         tempStatusActivityData = newList
-        graphingStatusActivity(tempStatusActivityData)
+        graphingStatusActivity(tempStatusActivityData, tempStatusActivityData.format)
     }
 });
 
@@ -66,11 +78,11 @@ $("#allUsers").change(function () {
 function barGraphHourlyStatusActivity(data) {
     statusActivityData = data
     tempStatusActivityData = data
-    graphingStatusActivity(tempStatusActivityData)
+    graphingStatusActivity(tempStatusActivityData.dataFromDB, data.format)
 }
 
 
-function graphingStatusActivity(data) {
+function graphingStatusActivity(data, format) {
 
     $("#usersStatusHourlyChart").empty();
 
@@ -109,97 +121,159 @@ function graphingStatusActivity(data) {
         }
     }
 
-    statusesChart = new Chart("usersStatusHourlyChart", {
-        
+    if (format != 0) {
+        xValues.push("Start Date");
+        yValuesOnline.push(startDate);
+        yValuesIdle.push(startDate);
+        yValuesDnD.push(startDate);
+        xValues.push("End Date");
+        yValuesOnline.push(endDate);
+        yValuesIdle.push(endDate);
+        yValuesDnD.push(endDate);
+        xValues.push("Status Type");
+        yValuesOnline.push("online");
+        yValuesIdle.push("idle");
+        yValuesDnD.push("do not disturb");
 
-        type: "line",
-        data: {
-            labels: xValues,
-            datasets: [{
-                label: "Online",
-                backgroundColor: "green",
-                borderColor: 'green',
-                fill: true,
-                data: yValuesOnline,
-                ticks: {
-                    beginAtZero: false
-                }
-            },
-                {
-                label: "Idle",
-                backgroundColor: "orange",
-                borderColor: 'orange',
-                fill: true,
-                data: yValuesIdle,
-                ticks: {
-                    beginAtZero: false
-                }
-            },
-            {
-                label: "Do Not Disturb",
-                backgroundColor: "red",
-                borderColor: 'red',
-                fill: true,
-                data: yValuesDnD,
-                ticks: {
-                    beginAtZero: false
-                }
-            }
-        ]},
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true
-                },
-                title: {
-                    display: true,
-                    text: "Statuses",
-                    padding: 10,
-                    color: 'black',
-                    font: {
-                        size: 25
+        var obj = {};
+        for (var i = 0; i < xValues.length; i++) {
+            obj[xValues[i]] = yValuesOnline[i];
+        };
+        var obj1 = {};
+        for (var i = 0; i < xValues.length; i++) {
+            obj1[xValues[i]] = yValuesIdle[i];
+        };
+        var obj2 = {};
+        for (var i = 0; i < xValues.length; i++) {
+            obj2[xValues[i]] = yValuesDnD[i];
+        };
+
+        downloadStatuses(obj, obj1, obj2, format);
+    }
+
+    else {
+        statusesChart = new Chart("usersStatusHourlyChart", {
+
+            type: "line",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    label: "Online",
+                    backgroundColor: "green",
+                    borderColor: 'green',
+                    fill: true,
+                    data: yValuesOnline,
+                    ticks: {
+                        beginAtZero: false
                     }
                 },
+                {
+                    label: "Idle",
+                    backgroundColor: "orange",
+                    borderColor: 'orange',
+                    fill: true,
+                    data: yValuesIdle,
+                    ticks: {
+                        beginAtZero: false
+                    }
+                },
+                {
+                    label: "Do Not Disturb",
+                    backgroundColor: "red",
+                    borderColor: 'red',
+                    fill: true,
+                    data: yValuesDnD,
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }
+                ]
             },
-            scales: {
-                y: {
-                    stacked: true,
+          
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    },
                     title: {
                         display: true,
-                        text: 'Number of Users',
+                        text: "Statuses",
                         padding: 10,
                         color: 'black',
                         font: {
                             size: 25
                         }
                     },
-                    ticks: {
-                        beginAtZero: false,
-                        precision: 0,
-                        color: 'black',
-                        font: {
-                            size: 20
-                        }
-                    }
-
                 },
-                x: {
-                    ticks: {
-                        precision: 0,
-                        color: 'Black',
-                        font: {
-                            size: 16,
-                            family: 'Helvetica'
+                scales: {
+                    y: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Users',
+                            padding: 10,
+                            color: 'black',
+                            font: {
+                                size: 25
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            precision: 0,
+                            color: 'black',
+                            font: {
+                                size: 20
+                            }
+                        }
+
+                    },
+                    x: {
+                        ticks: {
+                            precision: 0,
+                            color: 'Black',
+                            font: {
+                                size: 16,
+                                family: 'Helvetica'
+                            }
                         }
                     }
-                }
-            },
+                },
 
-        }
-
+            }
 
 
 
-    })
+
+        })
+    }
 };
+
+
+function downloadStatuses(obj, obj1, obj2, format) {
+    var zero = JSON.stringify(obj);
+    var one = JSON.stringify(obj1);
+    var two = JSON.stringify(obj2);
+    var allThree = zero + "\n" + one + "\n" + two;
+
+    var element = document.createElement('a');
+    if (format == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(allThree));
+
+        element.setAttribute('download', "Status.json");
+    }
+    if (format == 2)  {
+        var something = JSONToCSVConvertor(zero);
+        var something1 = JSONToCSVConvertorWithOutKeys(one);
+        var something2 = JSONToCSVConvertorWithOutKeys(two);
+        var all = something + "\n" + something1 + "\n" + something2;
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(all));
+        element.setAttribute('download', "Status.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}

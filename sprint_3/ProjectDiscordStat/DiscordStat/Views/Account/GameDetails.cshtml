@@ -86,7 +86,15 @@
                 <br />
 
     <br><center><canvas id="presencesHourlyAllTimeChart" style="color: white; width:100%;max-width:1000px"></canvas></center>
+      <div class="row" style="margin-top:2%; text-align:right">
+        <div class="col">
+        <h5 id="gameDetialsDownloadArea">Download Most Popular Play Time Data:</h5>
 
+        <button id="exportJsonMostPopularPlayTime" type="button" class="btn btn-primary" onclick="GetMostPopularPlayTime(1)" >Json</button>
+
+        <button id="exportCsvMostPopularPlayTime" type="button" class="btn btn-primary" onclick="GetMostPopularPlayTime(2)" >CSV</button>                   
+        </div>
+    </div>
 
     
 

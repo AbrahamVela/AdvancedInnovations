@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using DiscordStats.DAL.Abstract;
 using DiscordStats.ViewModel;
+using DiscordStats.Attributes;
 
 
 namespace DiscordStats.Controllers
 {
     [Route("api/[action]")]
     [ApiController]
+    [ApiKey]
     public class ApiController : Controller
     {
         private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
@@ -40,7 +42,7 @@ namespace DiscordStats.Controllers
             _serverMemberRepository = serverMemberRepository;
         }
 
-
+        
         [HttpPost]
         public IActionResult PostUsers(DiscordUserAndUserWebSiteInfo user)
         {
@@ -113,23 +115,15 @@ namespace DiscordStats.Controllers
             return Json("fail");
         }
 
-        public IActionResult GetPresenceDataFromDb()
-        {
-            _logger.LogInformation("GetPresenceDataFromDb");            
-            List<Presence> presences = _presenceRepository.GetAll().ToList(); // .Where(a => a. Privacy == "public").OrderByDescending(m => m.ApproximateMemberCount).Take(5);
-            PresenceChartDataVM presenceChartDataVM = new();
-            var presencesNameAndCount = presenceChartDataVM.AllPresenceNameListAndCount(presences);
-
-            return Json(new { userPerGame = presencesNameAndCount });
-        }
+       
 
 
 
         [HttpPost]
         public async Task<IActionResult> PostServers(Server[] servers)
         {
-           
 
+            
 
                 foreach (var server in servers)
             {

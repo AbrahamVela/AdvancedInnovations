@@ -1,13 +1,7 @@
 ﻿$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    let gameDetailsGameName = $("#GameName").attr('value');
-
-    $.ajax({
-        type: 'GET',
-        url: '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId,
-        success: barGraphHourlyPresenceActivity,
-        error: handleError
-    });
+    var data = 0;
+    ajaxPresenceForMostPopularPlayTime(data);
 
     $.ajax({
         type: 'GET',
@@ -17,6 +11,24 @@
     });
 
 })
+
+function GetMostPopularPlayTime(data) {
+    ajaxPresenceForMostPopularPlayTime(data);
+};
+
+function ajaxPresenceForMostPopularPlayTime(data) {
+    let detailsServerId = $("#ServerId").attr('value');
+    let gameDetailsGameName = $("#GameName").attr('value');
+    let formatWithDetailsServerId = data + ":" + detailsServerId
+
+    $.ajax({
+        type: 'GET',
+        url: '../Stats/GetPresencesFromDatabaseForGraphAndDownload?gamename=' + gameDetailsGameName + '&' + 'formatWithDetailsServerId=' + formatWithDetailsServerId,
+        success: barGraphHourlyPresenceActivity,
+        error: handleError
+    });
+
+}
 
 const timezone = -3
 var presenceActivityData = [];
@@ -35,7 +47,8 @@ $("#start").change(function () {
     if (presencesChart != null) {
         presencesChart.destroy();
     }
-    graphingPresenceActivity(tempPresenceActivityData);
+    tempPresenceActivityData.format = 0;
+    graphingPresenceActivity(tempPresenceActivityData.dataFromDB, tempPresenceActivityData.format);
 
 });
 
@@ -45,7 +58,8 @@ $("#end").change(function () {
         presencesChart.destroy();
     }
 
-    graphingPresenceActivity(tempPresenceActivityData);
+    tempPresenceActivityData.format = 0;
+    graphingPresenceActivity(tempPresenceActivityData.dataFromDB, tempPresenceActivityData.format);
 });
 
 $("#allUsersPresences").change(function () {
@@ -58,12 +72,13 @@ $("#allUsersPresences").change(function () {
             presencesChart.destroy();
         }
         tempPresenceActivityData = presenceActivityData
-        graphingPresenceActivity(tempPresenceActivityData)
+        graphingPresenceActivity(tempPresenceActivityData.dataFromDB)
+
     }
     else {
-        for (var i = 0; i < presenceActivityData.length; i++) {
-            if (presenceActivityData[i].userId == $(this).val()) {
-                newList.push(presenceActivityData[i]);
+        for (var i = 0; i < presenceActivityData.dataFromDB.length; i++) {
+            if (presenceActivityData.dataFromDB[i].userId == $(this).val()) {
+                newList.push(presenceActivityData.dataFromDB[i]);
             }
         }
         if (presencesChart != null) {
@@ -71,7 +86,7 @@ $("#allUsersPresences").change(function () {
         }
 
         tempPresenceActivityData = newList;
-        graphingPresenceActivity(tempPresenceActivityData);
+        graphingPresenceActivity(tempPresenceActivityData, tempPresenceActivityData.format);
     }
 });
 
@@ -79,11 +94,11 @@ $("#allUsersPresences").change(function () {
 function barGraphHourlyPresenceActivity(data) {
     presenceActivityData = data
     tempPresenceActivityData = data
-    graphingPresenceActivity(tempPresenceActivityData)
+    graphingPresenceActivity(tempPresenceActivityData.dataFromDB, data.format)
 }
 
 
-function graphingPresenceActivity(data) {
+function graphingPresenceActivity(data, format) {
 
 
     $("#presencesHourlyAllTimeChart").empty();
@@ -106,67 +121,111 @@ function graphingPresenceActivity(data) {
         }
     }
 
+    if (format != 0) {
+    if (data.startDate != "1-1-0001" && data.endDate != "1-1-0001") {
+        xValues.push("Start Date");
+        yValues.push(data.startDate);
+        xValues.push("End Date");
+        yValues.push(data.endDate);
+    }
 
-    presencesChart = new Chart("presencesHourlyAllTimeChart", {
-        type: "bar",
-        data: {
-            labels: xValues,
-            datasets: [{
-                backgroundColor: "green",
-                data: yValues,
-                ticks: {
-                    beginAtZero: false
-                }
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true,
-                    text: "Most Popular Play Time",
-                    padding: 10,
-                    color: 'black',
-                    font: {
-                        size: 25
+    var obj = {};
+    for (var i = 0; i < xValues.length; i++) {
+        obj[xValues[i]] = yValues[i];
+    };
+
+
+    downloadMostPopularPlayTime(obj,format);
+    }
+
+    else {
+        presencesChart = new Chart("presencesHourlyAllTimeChart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: "green",
+                    data: yValues,
+                    ticks: {
+                        beginAtZero: false
                     }
-                },
+                }]
             },
-            scales: {
-                y: {
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    },
                     title: {
                         display: true,
-                        text: 'Active Gamers',
+                        text: "Most Popular Play Time",
                         padding: 10,
                         color: 'black',
                         font: {
                             size: 25
                         }
                     },
-                    ticks: {
-                        beginAtZero: false,
-                        precision: 0,
-                        color: 'black',
-                        font: {
-                            size: 20
-                        }
-                    }
-
                 },
-                x: {
-                    ticks: {
-                        precision: 0,
-                        color: 'Black',
-                        font: {
-                            size: 16,
-                            family: 'Helvetica'
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Active Gamers',
+                            padding: 10,
+                            color: 'black',
+                            font: {
+                                size: 25
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            precision: 0,
+                            color: 'black',
+                            font: {
+                                size: 20
+                            }
+                        }
+
+                    },
+                    x: {
+                        ticks: {
+                            precision: 0,
+                            color: 'Black',
+                            font: {
+                                size: 16,
+                                family: 'Helvetica'
+                            }
                         }
                     }
-                }
-            },
+                },
 
-        }
-    })
+            }
+        })
+    }
 };
+
+
+function downloadMostPopularPlayTime(obj, format) {
+    var zero = JSON.stringify(obj);
+
+    var element = document.createElement('a');
+    if (format == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(zero));
+
+        element.setAttribute('download', "MostPopularPlayTime.json");
+    }
+    if (format == 2) {
+        var something = JSONToCSVConvertor(zero);
+
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "MostPopularPlayTime.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+

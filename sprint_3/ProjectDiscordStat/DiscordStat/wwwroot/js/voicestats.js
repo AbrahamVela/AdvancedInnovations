@@ -1,13 +1,22 @@
 ﻿$(document).ready(function () {
-    let detailsServerId = $("#ServerId").attr('value');
+    var data = 0;
+    ajaxVoice(data);
+});
 
+function GetActiveVoiceChannelTime(data) {
+    ajaxVoice(data);
+};
+
+function ajaxVoice(data) {
+    let detailsServerId = $("#ServerId").attr('value');   
+    let formatWithDetailsServerId = data + ":" + detailsServerId;
     $.ajax({
-        type: 'GET',
-        url: '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId,
+        type: "GET",
+        url: '../Stats/GetVoiceStatesFromDatabaseForGraphAndDownload?formatWithServerId=' + formatWithDetailsServerId,
         success: barGraphHourlyVoiceStateActivity,
         error: handleError
     });
-})
+};
 
 var voiceStateActivityData = [];
 var tempVoiceStateActivityData = [];
@@ -17,7 +26,7 @@ var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
-}
+};
 
 
 $("#startDateGraph").change(function () {
@@ -25,7 +34,8 @@ $("#startDateGraph").change(function () {
     if (voiceStatesChart != null) {
         voiceStatesChart.destroy();
     }
-    graphingVoiceStateActivity(tempVoiceStateActivityData);
+    tempVoiceStateActivityData.format = 0;
+    graphingVoiceStateActivity(tempVoiceStateActivityData.dataFromDB, tempVoiceStateActivityData.format);
 
 });
 
@@ -35,7 +45,8 @@ $("#endDateGraph").change(function () {
     if (voiceStatesChart != null) {
         voiceStatesChart.destroy();
     }
-    graphingVoiceStateActivity(tempVoiceStateActivityData);
+    tempVoiceStateActivityData.format = 0;
+    graphingVoiceStateActivity(tempVoiceStateActivityData.dataFromDB, tempVoiceStateActivityData.format);
 });
 
 $("#allUsers").change(function () {
@@ -48,19 +59,19 @@ $("#allUsers").change(function () {
             voiceStatesChart.destroy();
         }
         tempVoiceStateActivityData = voiceStateActivityData
-        graphingVoiceStateActivity(tempVoiceStateActivityData)
+        graphingVoiceStateActivity(tempVoiceStateActivityData.dataFromDB)
     }
     else {
-        for (var i = 0; i < voiceStateActivityData.length; i++) {
-            if (voiceStateActivityData[i].userId == $(this).val()) {
-                newList.push(voiceStateActivityData[i]);
+        for (var i = 0; i < voiceStateActivityData, dataFromDB.length; i++) {
+            if (voiceStateActivityData.dataFromDB[i].userId == $(this).val()) {
+                newList.push(voiceStateActivityData.dataFromDB[i]);
             }
         }
         if (voiceStatesChart != null) {
             voiceStatesChart.destroy();
         }
         tempVoiceStateActivityData = newList
-        graphingVoiceStateActivity(tempVoiceStateActivityData)
+        graphingVoiceStateActivity(tempVoiceStateActivityData, voiceStateActivityData.format)
     }
 });
 
@@ -68,12 +79,11 @@ $("#allUsers").change(function () {
 function barGraphHourlyVoiceStateActivity(data) {
     voiceStateActivityData = data
     tempVoiceStateActivityData = data
-    graphingVoiceStateActivity(tempVoiceStateActivityData)
+    graphingVoiceStateActivity(tempVoiceStateActivityData.dataFromDB, data.format)
 }
 
 
-function graphingVoiceStateActivity(data) {
-    //broken chart
+function graphingVoiceStateActivity(data, format) {
 
     $("#usersVoiceHourlyAllTimeChart").empty();
 
@@ -96,124 +106,104 @@ function graphingVoiceStateActivity(data) {
         }
     }
 
+    if (format != 0) {
+        xValues.push("Start Date");
+        yValues.push(startDate);
+        xValues.push("End Date");
+        yValues.push(endDate);
+
+        var obj = {};
+        for (var i = 0; i < xValues.length; i++) {
+            obj[xValues[i]] = yValues[i];
+        }
+
+            downloadForVoiceChannelActivity(obj, format);
+        }
 
 
-    voiceStatesChart = new Chart("usersVoiceHourlyAllTimeChart", {
-        type: "bar",
-        data: {
-            labels: xValues,
-            datasets: [{
-                backgroundColor: "green",
-                data: yValues,
-                ticks: {
-                    beginAtZero: false
-                }
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true,
-                    text: "Active Voice Channel Time",
-                    padding: 10,
-                    color: 'black',
-                    font: {
-                        size: 25
+    else {
+        voiceStatesChart = new Chart("usersVoiceHourlyAllTimeChart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: "green",
+                    data: yValues,
+                    ticks: {
+                        beginAtZero: false
                     }
-                },
+                }]
             },
-            scales: {
-                y: {
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    },
                     title: {
                         display: true,
-                        text: 'Channel Frequency',
+                        text: "Active Voice Channel Time",
                         padding: 10,
                         color: 'black',
                         font: {
                             size: 25
                         }
                     },
-                    ticks: {
-                        beginAtZero: false,
-                        precision: 0,
-                        color: 'black',
-                        font: {
-                            size: 20
-                        }
-                    }
-
                 },
-                x: {
-                    ticks: {
-                        precision: 0,
-                        color: 'Black',
-                        font: {
-                            size: 16,
-                            family: 'Helvetica'
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Channel Frequency',
+                            padding: 10,
+                            color: 'black',
+                            font: {
+                                size: 25
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            precision: 0,
+                            color: 'black',
+                            font: {
+                                size: 20
+                            }
+                        }
+
+                    },
+                    x: {
+                        ticks: {
+                            precision: 0,
+                            color: 'Black',
+                            font: {
+                                size: 16,
+                                family: 'Helvetica'
+                            }
                         }
                     }
-                }
-            },
+                },
 
-        }
+            }
 
-    })
-
+        })
+    }
 
 };
 
-function GetActiveVoiceChannelTime() {
-    let detailsServerId = $("#ServerId").attr('value');
-    $.ajax({
-        type: "GET",
-        url: '../Stats/GetVoiceStatesFromDatabase?serverid=' + detailsServerId,
-        success: DataForVoiceChannelActivity,
-        error: handleError
-    });
-}
 
-function DataForVoiceChannelActivity(data) {
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    for (var i = 0; i < data.length; i++) {
-        var dateUTC = new Date(data[i].createdAt)
-        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
-
-        if (date > startDate && date < endDate) {
-            let hour = date.getHours()
-            subtraction = hour - 4;
-            if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
-            }
-            console.log(subtraction);
-            yValues[subtraction] += 1;
-        }
-    }
-
-    xValues.push("Start Date");
-    yValues.push(startDate);
-    xValues.push("End Date");
-    yValues.push(endDate);
-
-    var obj = {};
-    for (var i = 0; i < xValues.length; i++) {
-        obj[xValues[i]] = yValues[i];
-    }
-
-    downloadForVoiceChannelAct(obj);
-}
-
-
-function downloadForVoiceChannelAct(text) {
+function downloadForVoiceChannelActivity(obj, format) {
 
     var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(text)));
-    element.setAttribute('download', "ActiveVoiceChannelTime.json");
 
+    if (format == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
+
+        element.setAttribute('download', "ActiveVoiceChannelTime.json");
+    }
+    if (format == 2) {
+        var something = JSONToCSVConvertor(JSON.stringify(obj));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "ActiveVoiceChannelTime.csv");
+    }
     element.style.display = 'none';
     document.body.appendChild(element);
 
@@ -221,5 +211,4 @@ function downloadForVoiceChannelAct(text) {
 
     document.body.removeChild(element);
 }
-
 

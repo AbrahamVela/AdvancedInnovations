@@ -1,4 +1,4 @@
-﻿using DiscordStats.Controllers;
+using DiscordStats.Controllers;
 using DiscordStats.DAL.Abstract;
 using DiscordStats.DAL.Concrete;
 using DiscordStats.Models;
@@ -325,9 +325,25 @@ namespace DiscordStats_Tests
             String[] a = Array.Empty<string>();
             var correctSerializedResult = JsonConvert.SerializeObject(a);
 
+//            // Assert
+//            Assert.AreEqual(serializedResult, correctSerializedResult);
+//        }
 
-            // Assert
-            Assert.AreEqual(serializedResult, correctSerializedResult);
-        }
-    }
-}
+//        [Test]
+//        public void GetVoiceStatesFromDatabaseWrongServerId()
+//        {
+//            StatsController statsController = new StatsController(null, _userRepo, null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+//            statsController.ControllerContext = new ControllerContext();
+
+//            // Act
+//            JsonResult result = (JsonResult)statsController.GetVoiceStatesFromDatabase("");
+//            var serializedResult = JsonConvert.SerializeObject(result.Value);
+//            String[] a = Array.Empty<string>();
+//            var correctSerializedResult = JsonConvert.SerializeObject(a);
+
+
+//            // Assert
+//            Assert.AreEqual(serializedResult, correctSerializedResult);
+//        }
+//    }
+//}

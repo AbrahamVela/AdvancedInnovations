@@ -24,7 +24,7 @@ $.ajax({
 
 $.ajax({
     type: 'GET',
-    url: 'Api/GetPresenceDataFromDb',
+    url: 'Stats/GetPresenceDataFromDb',
     success: retrieveDataForPieChart,
     error: handleError
 });
@@ -173,3 +173,52 @@ function pieGraphTopUsersPerGam(data) {
         }
     });
 };
+
+
+
+// for all .js files that have to convert json to csv 
+// for download option
+function JSONToCSVConvertor(JSONData) {
+
+    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+    var CSV = '';
+    //This condition will generate the Label/Header
+    csvRows = [];
+
+    // Headers is basically a keys of an
+    // object which is id, name, and
+    // profession
+    const headers = Object.keys(arrData);
+
+    // As for making csv format, headers
+    // must be separated by comma and
+    // pushing it into array
+    csvRows.push(headers.join(','));
+
+    // Pushing Object values into array
+    // with comma separation
+    const values = Object.values(arrData).join(',');
+    csvRows.push(values)
+
+    // Returning the array joining with new line
+    return csvRows.join('\n')
+}
+
+function JSONToCSVConvertorWithOutKeys(JSONData) {
+
+    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+    var CSV = '';
+    //This condition will generate the Label/Header
+    csvRows = [];
+
+
+    // Pushing Object values into array
+    // with comma separation
+    const values = Object.values(arrData).join(',');
+    csvRows.push(values)
+
+    // Returning the array joining with new line
+    return csvRows.join('\n')
+}

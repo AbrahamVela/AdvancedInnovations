@@ -58,19 +58,6 @@ namespace DiscordStats_Tests
 
 
         [Test]
-        public async Task RemoveUser_User_Not_In_Server()
-        {
-            var handler = new Mock<HttpMessageHandler>();
-
-            handler.SetupAnyRequest()
-                        .ReturnsResponse(HttpStatusCode.NotFound);
-
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, null, null,null,null,null, null);
-            Task<string?> Act() => discord.RemoveUserServer("FakeBot", "11111", "thisUser");
-            Assert.That(Act, Throws.TypeOf<HttpRequestException>());
-        }
-
-        [Test]
         public async Task RemoveUser_User_Is_in_Server()
         {
             var handler = new Mock<HttpMessageHandler>();
