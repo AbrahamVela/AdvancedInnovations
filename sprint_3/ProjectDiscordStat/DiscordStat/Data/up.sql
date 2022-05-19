@@ -39,6 +39,7 @@ CREATE TABLE [DiscordUserAndUserWebSiteInfo]
   [Username]    nvarchar(128)  NULL,
   [Servers] nvarchar(256)   NULL,
   [Avatar] nvarchar(256)     NULL,
+  [Role] nvarchar(256) NULL,
   [FirstName] nvarchar(128) NULL,
   [LastName] nvarchar(128) NULL,
   [BirthDate] nvarchar(256) NULL,
@@ -47,12 +48,15 @@ CREATE TABLE [DiscordUserAndUserWebSiteInfo]
 
 CREATE TABLE [MessageInfo] 
 (
+  [ID] nvarchar(256) Not Null,
   [MessageDataPk] int           PRIMARY KEY IDENTITY(1, 1),
   [ServerId] nvarchar(256) NULL,
   [ChannelId] nvarchar(256) NULL,
   [UserId] nvarchar(256) NULL,
   [CreatedAt] nvarchar(256) NULL,
-
+  [Emojis] nvarchar(1000) NULL,
+  [Reactions] nvarchar(1000) NULL,
+  [ReactionURL] nvarchar(4000) NULL
 );
 
 CREATE TABLE [VoiceState] 
@@ -76,7 +80,8 @@ CREATE TABLE [Presence]
   [SmallImageId] nvarchar(256) NULL,
   [ServerId] nvarchar(256) NULL,
   [UserId] NVARCHAR(256) NULL,
-  [Image] NVARCHAR(256) NULL
+  [Image] NVARCHAR(256) NULL,
+  [ActivityType] NVARCHAR(256) NULL
 );
 
 CREATE TABLE [ServerPresenceJoin] 

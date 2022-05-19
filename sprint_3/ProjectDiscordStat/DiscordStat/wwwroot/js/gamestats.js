@@ -35,29 +35,15 @@ var presenceActivityData = [];
 var tempPresenceActivityData = [];
 
 var presencesChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
 }
 
-
-function graphDropDownBox(data) {
-    var allUsersPresences = document.getElementById("allUsersPresences");
-    for (i = 0; i < data.length; i++) {
-        var opt = data[i];
-        var elPresence = document.createElement("option");
-        elPresence.textContent = opt.username;
-        elPresence.value = opt.id;
-        allUsersPresences.appendChild(elPresence);
-        //graphingPresenceActivity(newList)
-
-    }
-}
-
 $("#start").change(function () {
-    startDateUTC = new Date($(this).val() + " 00:00");
+    startDateUTC = new Date($(this).val() + " 23:59");
     if (presencesChart != null) {
         presencesChart.destroy();
     }
@@ -67,7 +53,7 @@ $("#start").change(function () {
 });
 
 $("#end").change(function () {
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (presencesChart != null) {
         presencesChart.destroy();
     }
@@ -85,8 +71,9 @@ $("#allUsersPresences").change(function () {
         if (presencesChart != null) {
             presencesChart.destroy();
         }
+        tempPresenceActivityData = presenceActivityData
+        graphingPresenceActivity(tempPresenceActivityData.dataFromDB)
 
-        graphingPresenceActivity(presenceActivityData.dataFromDB)
     }
     else {
         for (var i = 0; i < presenceActivityData.dataFromDB.length; i++) {

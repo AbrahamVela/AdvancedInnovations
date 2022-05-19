@@ -21,8 +21,8 @@ function ajaxStatuses(data) {
 var statusActivityData = [];
 var tempStatusActivityData = [];
 var statusesChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -30,7 +30,7 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (statusesChart != null) {
         statusesChart.destroy();
     }
@@ -40,7 +40,7 @@ $("#startDateGraph").change(function () {
 
 $("#endDateGraph").change(function () {
 
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (statusesChart != null) {
         statusesChart.destroy();
     }
@@ -57,7 +57,8 @@ $("#allUsers").change(function () {
         if (statusesChart != null) {
             statusesChart.destroy();
         }
-        graphingStatusActivity(statusActivityData.dataFromDB)
+        tempStatusActivityData = statusActivityData
+        graphingStatusActivity(tempStatusActivityData.dataFromDB)
     }
     else {
         for (var i = 0; i < statusActivityData.dataFromDB.length; i++) {
@@ -188,6 +189,7 @@ function graphingStatusActivity(data, format) {
                 }
                 ]
             },
+          
             options: {
                 responsive: true,
                 plugins: {
@@ -206,6 +208,7 @@ function graphingStatusActivity(data, format) {
                 },
                 scales: {
                     y: {
+                        stacked: true,
                         title: {
                             display: true,
                             text: 'Number of Users',

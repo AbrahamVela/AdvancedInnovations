@@ -22,8 +22,8 @@ function ajaxPresenceForActiveGamingTime(data) {
 var userPresenceActivityData = [];
 var tempUserPresenceActivityData = [];
 var userPresencesChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -31,7 +31,7 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (userPresencesChart != null) {
         userPresencesChart.destroy();
     }
@@ -42,7 +42,7 @@ $("#startDateGraph").change(function () {
 
 $("#endDateGraph").change(function () {
 
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (userPresencesChart != null) {
         userPresencesChart.destroy();
     }
@@ -59,7 +59,9 @@ $("#allUsers").change(function () {
         if (userPresencesChart != null) {
             userPresencesChart.destroy();
         }
-        graphingUserPresenceActivity(userPresenceActivityData.dataFromDB)
+        tempUserPresenceActivityData = userPresenceActivityData
+        graphingUserPresenceActivity(tempUserPresenceActivityData.dataFromDB)
+
     }
     else {
         for (var i = 0; i < userPresenceActivityData.dataFromDB.length; i++) {
@@ -96,6 +98,8 @@ function graphingUserPresenceActivity(data, format) {
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        console.log("Presences Data Date: " + dateUTC)
+        console.log("Presences Data DateUTC: " + date)
 
         if (date > startDate && date < endDate) {
             let hour = date.getHours()

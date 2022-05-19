@@ -1,5 +1,5 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
-import  DiscordJS, { Guild, Intents, Presence } from 'discord.js'
+import  DiscordJS, { Emoji, Guild, Intents, MessageReaction, Presence } from 'discord.js'
 import { MembershipStates } from 'discord.js/typings/enums';
 import dotenv from 'dotenv'
 dotenv.config()
@@ -20,6 +20,8 @@ import { replies } from './replies'
 
 const https = require('https')
 const axios = require('axios')
+const emojiRegex = require('emoji-regex');
+const regex = emojiRegex();
 
 axios.defaults.headers.common['ApiKey'] = process.env.KEY;
 
@@ -53,19 +55,35 @@ client.on('messageCreate', async(message) => {
 
     if (message.author.bot) return;
 
+    let emojiString: string = "";
+
+    for (const match of message.content.matchAll(regex)) {
+        const emoji = match[0];
+        emojiString += emoji.codePointAt(0)?.toString(16) + ",";
+      }
+
     let MessageInfo = {
+        id : message.id,
         serverId : serverID,
         channelId : channelID,
         userId : message.author.id,
-        createdAt : message.createdAt
+        createdAt : message.createdAt,
+        emojis : emojiString,
+        reactions : "",
+        reactionUrl : ""
     }
     setTimeout(() => {
         axios.post(url + '/api/PostMessageData', MessageInfo)
             .then((result: any) => {
-                console.log(result);
+                console.log(result.data);
             })
             .catch((error: any) => {
-                console.log(error);
+                if (error.response != undefined) {
+                    console.log(error.response.data);
+                }
+                else {
+                    console.log(error);
+                }
             });
     }, 5000);
 
@@ -106,7 +124,7 @@ client.on('messageCreate', async(message) => {
 
         axios.get(url + '/api/guilds')
             .then((result: any) => {
-                console.log(result)
+                console.log(result.data)
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
@@ -117,7 +135,7 @@ client.on('messageCreate', async(message) => {
     else if (command === "senduser") {
         axios.post(url + '/api/guilds')
             .then((result: any) => {
-                console.log(result)
+                console.log(result.data)
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
@@ -143,7 +161,7 @@ client.on('messageCreate', async(message) => {
         axios.post(url + '/api/postusers', users)
 
             .then((result: any) => {
-                console.log(result)
+                console.log(result.data)
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
@@ -185,22 +203,29 @@ async function sendUsers (){
                 if (user.user.avatar === null) {
                     user.user.avatar = "null";
                 }
+                let role = user.roles.highest.name
+                if (role == "@everyone"){
+                    role = "N/A"
+                }
                 let newUser = {
                     "Id": user.user.id.toString(),
                     "Username": user.user.username,
                     "Servers": guild.id,
-                    "Avatar": user.user.avatar
+                    "Avatar": user.user.avatar,
+                    "Role" : role
                 }
-                console.log(newUser)
-                // users.push(newUser);
-                // console.log("The users of all servers: ")
-                // console.log(users)              
+
                 axios.post(url + '/api/postusers', newUser)
                 .then((result: any) => {
-                                    console.log(result);
+                                    console.log(result.data);
                                 })
                                 .catch((error: any) => {
-                                    console.log(error);
+                                    if (error.response != undefined) {
+                                        console.log(error.response.data);
+                                    }
+                                    else {
+                                        console.log(error);
+                                    }
                                 })
                             }
     
@@ -216,7 +241,7 @@ async function sendUsers (){
 //         axios.post(url + '/api/postusers', users)
 
 //             .then((result: any) => {
-//                 console.log(result);
+//                 console.log(result.data);
 //             })
 //             .catch((error: any) => {
 //                 console.log(error);
@@ -239,7 +264,15 @@ async function sendServers (){
                 presenceCount += 1
             };
         });
+        // var icon = guild.icon
+        // if (guild.icon == null) {
+        //     icon = "null"
+        // }
+        // var description = guild.description
 
+        // if (guild.description == null) {
+        //     description = "null"
+        // }
         let server = {
             ID: guild.id,
             Name: guild.name,
@@ -263,10 +296,15 @@ async function sendServers (){
         if (servers.length != 0) {
             axios.post(url + '/api/postservers', servers)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
@@ -289,15 +327,18 @@ async function sendChannels (){
     })
     setTimeout(() => {
         if (channels.length != 0) {
-            console.log("All Channels: ")
-            console.log(channels)
             axios.post(url + '/api/postchannels', channels)
 
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
@@ -336,7 +377,8 @@ async function sendPresence (){
                     "SmallImageId": member.presence?.activities[0].assets?.smallImage,
                     "Image": member.presence?.activities[0].assets?.largeImageURL(),
                     "ServerId": guild.id,
-                    "UserId": member.id
+                    "UserId": member.id,
+                    "ActivityType": member.presence?.activities[0].type
                 };
                 presences.push(newPresence);
             };
@@ -347,15 +389,18 @@ async function sendPresence (){
 
     setTimeout(() => {
         if (presences.length > 0) {
-            console.log("The presence of all users: ")
-            console.log(presences)
             axios.post(url + '/api/postpresence', presences)
 
             .then((result: any) => {
-                console.log(result);
+                console.log(result.data);
             })
             .catch((error: any) => {
-                console.log(error);
+                if (error.response != undefined) {
+                    console.log(error.response.data);
+                }
+                else {
+                    console.log(error);
+                }
             });
         }
     }, 5000);
@@ -374,10 +419,9 @@ function guildIdAndAllUsersId(){
                 let newUser = {
                     "Id": user.user.id.toString(),
                     "Username": user.user.username,
-                    "Servers": guild.id,
+                    "Servers": guild.id, 
                     "Avatar": user.user.avatar
                 }
-                // console.log(newUser)
                 users.push(newUser);
                 setTimeout(() => 100);
             }
@@ -423,15 +467,18 @@ async function sendVoiceChannels (){
 
     setTimeout(() => {
         if (channels.length != 0) {
-            console.log("All Channels: ")
-            console.log(channels)
         
             axios.post(url + '/api/PostVoiceChannels', channels)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 100000);
@@ -459,15 +506,18 @@ async function sendVoiceStates (){
 
     setTimeout(() => {
         if (voiceStates.length != 0) {
-            console.log("All VoiceStates: ")
-            console.log(voiceStates)
         
             axios.post(url + '/api/PostVoiceStates', voiceStates)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
@@ -501,23 +551,98 @@ async function sendStatus (){
     });
     setTimeout(() => {
         if (allStatus.length != 0) {
-            console.log("allStatus: ")
-            console.log(allStatus)
         
             axios.post(url + '/api/PostStatuses', allStatus)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
 }
 
+
+
+
+async function sendAllReactions (){
+     client.guilds.cache.each(async (guild) => {
+        let allMessageInfos: any = []
+
+        guild.channels.cache.each(async (channel) => {               
+            
+            if(channel.type == 'GUILD_TEXT')
+            {
+                (await channel.messages.fetch()).each((message) => {
+                    let reactions: string = "";
+                    let reactionsUnicode: string = "";
+                    let urls: string = "";
+
+                    message.reactions.cache.each((reaction) => {
+
+                        if (reaction.emoji.name) {
+                            reactions += reaction.emoji.name
+                        }
+                        if (reaction.emoji.url) {
+                            urls += reaction.emoji.url
+                        }
+
+                    })
+                    if (reactions.length > 0) {
+                        for (const match of reactions.matchAll(regex)) {
+                            const emoji = match[0];
+                            reactionsUnicode += emoji.codePointAt(0)?.toString(16) + ",";
+                          }
+                    }
+
+                    if (reactionsUnicode.length > 0 || urls.length > 0) {
+                        let MessageInfo = {
+                            id : message.id,
+                            serverId : guild.id,
+                            channelId : channel.id,
+                            userId : message.author.id,
+                            createdAt : message.createdAt,
+                            emojis : "",
+                            reactions : reactionsUnicode,
+                            reactionUrl : urls
+                        }
+                        
+                        allMessageInfos.push(MessageInfo)
+                    }
+                    
+                })
+            }
+        })
+
+        setTimeout(() => {
+            if (allMessageInfos.length > 0) {
+                axios.post(url + '/api/PostMessageDataArray', allMessageInfos)
+                .then((result: any) => {
+                    console.log(result.data);
+                })
+                .catch((error: any) => {
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
+                });
+            }
+
+        }, 5000);
+    })
+}
+
             // axios.post('https://discordstats.azurewebsites.net/api/postchannels', channels)
             //     .then((result: any) => {
-            //         console.log(result);
+            //         console.log(result.data);
             //     })
             //     .catch((error: any) => {
             //         console.log(error);
@@ -560,23 +685,15 @@ function UpdateChannels() {
     sendChannels();
 }
 
+
 setInterval(updataPresence, 300000);
 setInterval(updataUsers, 450000);
 setInterval(updataVoiceStates, 300000);
 setInterval(UpdateVoiceChannel, 1800000);
 setInterval(UpdateServers, 1800000);
 setInterval(UpdateChannels, 1800000);
- setInterval(sendStatus, 300000);
-    
-
-
-
-
-
-
-
- 
-
+setInterval(sendStatus, 300000);
+setInterval(sendAllReactions, 300000);
 
 //setInterval(updataData, 45000);
 

@@ -42,7 +42,6 @@ namespace DiscordStats.Controllers
         private readonly IServerMemberRepository _serverMemberRepository;
         private readonly IStatusRepository _statusRepository;
 
-
         public StatsController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IConfiguration config, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository, IServerMemberRepository serverMemberRepository, IStatusRepository statusRepository)
         {
             _logger = logger;

@@ -29,7 +29,6 @@ namespace DiscordStats.Models
         public virtual DbSet<VoiceChannel> VoiceChannels { get; set; } = null!;
         public virtual DbSet<VoiceState> VoiceStates { get; set; } = null!;
         public virtual DbSet<Webhook> Webhooks { get; set; } = null!;
-        public virtual DbSet<ServerMembers> ServerMembers { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -50,19 +49,19 @@ namespace DiscordStats.Models
             modelBuilder.Entity<DiscordUserAndUserWebSiteInfo>(entity =>
             {
                 entity.HasKey(e => e.DiscordUserPk)
-                    .HasName("PK__DiscordU__1F12BE950371C44D");
+                    .HasName("PK__DiscordU__1F12BE9588163016");
             });
 
             modelBuilder.Entity<MessageInfo>(entity =>
             {
                 entity.HasKey(e => e.MessageDataPk)
-                    .HasName("PK__MessageI__2389D5B584277EA6");
+                    .HasName("PK__MessageI__2389D5B53C16D937");
             });
 
             modelBuilder.Entity<Presence>(entity =>
             {
                 entity.HasKey(e => e.PresencePk)
-                    .HasName("PK__Presence__4981B3D9EF057BB6");
+                    .HasName("PK__Presence__4981B3D9C17AD04F");
             });
 
             modelBuilder.Entity<Server>(entity =>
@@ -74,7 +73,7 @@ namespace DiscordStats.Models
             modelBuilder.Entity<Status>(entity =>
             {
                 entity.HasKey(e => e.StatusPk)
-                    .HasName("PK__Status__C8EDEB6A300303B0");
+                    .HasName("PK__Status__C8EDEB6AFC03A95D");
             });
 
             modelBuilder.Entity<VoiceChannel>(entity =>
@@ -87,11 +86,6 @@ namespace DiscordStats.Models
             {
                 entity.HasKey(e => e.VoiceStatePk)
                     .HasName("PK__VoiceSta__02A65DC3B236EE8B");
-            });
-            modelBuilder.Entity<ServerMembers>(entity =>
-            {
-                entity.HasKey(e => e.ServerPk)
-                     .HasName("PK__Server__C56B03861C27704D");
             });
 
             modelBuilder.Entity<Webhook>(entity =>

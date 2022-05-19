@@ -6,7 +6,7 @@
     $.ajax({
         type: 'GET',
         url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
-        success: graphMessageDropDownBox,
+        success: graphUsersDropDownBox,
         error: handleError
     });
 
@@ -30,10 +30,10 @@ function ajaxMessaging(data) {
 var messageActivityData = [];
 var tempMessageActivityData = [];
 var messagesChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
-function graphMessageDropDownBox(data) {
+function graphUsersDropDownBox(data) {
     var allUsers = document.getElementById("allUsers");
 
     for (i = 0; i < data.length; i++) {
@@ -59,7 +59,8 @@ $("#allUsers").change(function () {
         if (messagesChart != null) {
             messagesChart.destroy();
         }
-        graphingMessageActivity(messageActivityData)
+        tempMessageActivityData = messageActivityData
+        graphingMessageActivity(tempMessageActivityData)
     }
     else {
         for (var i = 0; i < messageActivityData.dataFromDB.length; i++) {
@@ -76,7 +77,7 @@ $("#allUsers").change(function () {
 });
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (messagesChart != null) {
         messagesChart.destroy();
     }
@@ -86,7 +87,7 @@ $("#startDateGraph").change(function () {
 });
 
 $("#endDateGraph").change(function () {
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (messagesChart != null) {
         messagesChart.destroy();
     }
@@ -121,8 +122,10 @@ function graphingMessageActivity(data, format) {
     //}
 
     for (var i = 0; i < data.length; i++) {
-        var dateUTC = new Date(data[i].createdAt)
-        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        var date = new Date(data[i].createdAt)
+        //var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        //console.log("Messages Data Date: " + dateUTC)
+        //console.log("Messages Data DateUTC: " + date)
 
         if (date > startDate && date < endDate) {
             let hour = date.getHours()
