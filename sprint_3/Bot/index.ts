@@ -72,13 +72,17 @@ client.on('messageCreate', async(message) => {
         reactionUrl : ""
     }
     setTimeout(() => {
-        // console.log(emojis);
         axios.post(url + '/api/PostMessageData', MessageInfo)
             .then((result: any) => {
-                console.log(result);
+                console.log(result.data);
             })
             .catch((error: any) => {
-                console.log(error.response.data);
+                if (error.response != undefined) {
+                    console.log(error.response.data);
+                }
+                else {
+                    console.log(error);
+                }
             });
     }, 5000);
 
@@ -119,22 +123,22 @@ client.on('messageCreate', async(message) => {
 
         axios.get(url + '/api/guilds')
             .then((result: any) => {
-                console.log(result)
+                console.log(result.data)
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
-                // console.log(error.response.data);
+                // console.log(error);
             });
     }
 
     else if (command === "senduser") {
         axios.post(url + '/api/guilds')
             .then((result: any) => {
-                console.log(result)
+                console.log(result.data)
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
-                console.log(error.response.data);
+                console.log(error);
             });
     }
 
@@ -156,11 +160,11 @@ client.on('messageCreate', async(message) => {
         axios.post(url + '/api/postusers', users)
 
             .then((result: any) => {
-                console.log(result)
+                console.log(result.data)
                 message.reply(result.data.toString());
             })
             .catch((error: any) => {
-                console.log(error.response.data);
+                console.log(error);
             });
     }
 
@@ -212,10 +216,15 @@ async function sendUsers (){
 
                 axios.post(url + '/api/postusers', newUser)
                 .then((result: any) => {
-                                    console.log(result);
+                                    console.log(result.data);
                                 })
                                 .catch((error: any) => {
-                                    console.log(error.response.data);
+                                    if (error.response != undefined) {
+                                        console.log(error.response.data);
+                                    }
+                                    else {
+                                        console.log(error);
+                                    }
                                 })
                             }
     
@@ -231,10 +240,10 @@ async function sendUsers (){
 //         axios.post(url + '/api/postusers', users)
 
 //             .then((result: any) => {
-//                 console.log(result);
+//                 console.log(result.data);
 //             })
 //             .catch((error: any) => {
-//                 console.log(error.response.data);
+//                 console.log(error);
 //             });
 //     }, 5000);
 // }
@@ -286,10 +295,15 @@ async function sendServers (){
         if (servers.length != 0) {
             axios.post(url + '/api/postservers', servers)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error.response.data);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
@@ -312,15 +326,18 @@ async function sendChannels (){
     })
     setTimeout(() => {
         if (channels.length != 0) {
-            console.log("All Channels: ")
-            console.log(channels)
             axios.post(url + '/api/postchannels', channels)
 
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error.response.data);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
@@ -362,7 +379,6 @@ async function sendPresence (){
                     "UserId": member.id,
                     "ActivityType": member.presence?.activities[0].type
                 };
-                console.log(member.presence?.activities[0].type)
                 presences.push(newPresence);
             };
             
@@ -371,18 +387,21 @@ async function sendPresence (){
     });
 
     setTimeout(() => {
-        // if (presences.length > 0) {
-        //     console.log("The presence of all users: ")
-        //     console.log(presences)
-        //     axios.post(url + '/api/postpresence', presences)
+        if (presences.length > 0) {
+            axios.post(url + '/api/postpresence', presences)
 
-        //     .then((result: any) => {
-        //         console.log(result);
-        //     })
-        //     .catch((error: any) => {
-        //         console.log(error.response.data);
-        //     });
-        // }
+            .then((result: any) => {
+                console.log(result.data);
+            })
+            .catch((error: any) => {
+                if (error.response != undefined) {
+                    console.log(error.response.data);
+                }
+                else {
+                    console.log(error);
+                }
+            });
+        }
     }, 5000);
 };
 
@@ -402,7 +421,6 @@ function guildIdAndAllUsersId(){
                     "Servers": guild.id, 
                     "Avatar": user.user.avatar
                 }
-                // console.log(newUser)
                 users.push(newUser);
                 setTimeout(() => 100);
             }
@@ -448,15 +466,18 @@ async function sendVoiceChannels (){
 
     setTimeout(() => {
         if (channels.length != 0) {
-            console.log("All Channels: ")
-            console.log(channels)
         
             axios.post(url + '/api/PostVoiceChannels', channels)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error.response.data);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 100000);
@@ -484,15 +505,18 @@ async function sendVoiceStates (){
 
     setTimeout(() => {
         if (voiceStates.length != 0) {
-            console.log("All VoiceStates: ")
-            console.log(voiceStates)
         
             axios.post(url + '/api/PostVoiceStates', voiceStates)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error.response.data);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
@@ -526,15 +550,18 @@ async function sendStatus (){
     });
     setTimeout(() => {
         if (allStatus.length != 0) {
-            console.log("allStatus: ")
-            console.log(allStatus)
         
             axios.post(url + '/api/PostStatuses', allStatus)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error.response.data);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
         }
     }, 5000);
@@ -557,8 +584,6 @@ async function sendAllReactions (){
                     let urls: string = "";
 
                     message.reactions.cache.each((reaction) => {
-                        // console.log(reaction.emoji.name)
-                        // console.log(reaction.emoji.url)
 
                         if (reaction.emoji.name) {
                             reactions += reaction.emoji.name
@@ -573,10 +598,6 @@ async function sendAllReactions (){
                             const emoji = match[0];
                             reactionsUnicode += emoji.codePointAt(0)?.toString(16) + ",";
                           }
-                    }
-                    if (urls.length > 0) {
-                        // console.log("url")
-                        // console.log(urls)
                     }
 
                     if (reactionsUnicode.length > 0 || urls.length > 0) {
@@ -595,19 +616,22 @@ async function sendAllReactions (){
                     }
                     
                 })
-                // console.log((await channel.messages.fetch()))
             }
         })
 
         setTimeout(() => {
             if (allMessageInfos.length > 0) {
-                // console.log(allMessageInfos)
                 axios.post(url + '/api/PostMessageDataArray', allMessageInfos)
                 .then((result: any) => {
-                    console.log(result);
+                    console.log(result.data);
                 })
                 .catch((error: any) => {
-                    console.log(error.response.data);
+                    if (error.response != undefined) {
+                        console.log(error.response.data);
+                    }
+                    else {
+                        console.log(error);
+                    }
                 });
             }
 
@@ -617,10 +641,10 @@ async function sendAllReactions (){
 
             // axios.post('https://discordstats.azurewebsites.net/api/postchannels', channels)
             //     .then((result: any) => {
-            //         console.log(result);
+            //         console.log(result.data);
             //     })
             //     .catch((error: any) => {
-            //         console.log(error.response.data);
+            //         console.log(error);
             //     });
 
 
@@ -671,9 +695,10 @@ setInterval(sendPresence, 10000)
 //  setInterval(UpdateServers, 1800000);
 //  setInterval(UpdateChannels, 1800000);
 
-// setInterval(UpdateServers, 10000);
-// setInterval(updataUsers, 30000);
-// setInterval(sendAllReactions, 10000);
+setInterval(UpdateServers, 10000);
+setInterval(updataVoiceStates, 10000);
+setInterval(sendAllReactions, 10000);
+setInterval(sendChannels, 10000);
 
 //setInterval(UpdateVoiceChannel, 15000);
 //setInterval(updataData, 45000);

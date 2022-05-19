@@ -61,7 +61,7 @@ namespace DiscordStats.Models
             modelBuilder.Entity<Presence>(entity =>
             {
                 entity.HasKey(e => e.PresencePk)
-                    .HasName("PK__Presence__4981B3D9EF057BB6");
+                    .HasName("PK__Presence__4981B3D9C17AD04F");
             });
 
             modelBuilder.Entity<Server>(entity =>

@@ -33,5 +33,7 @@ namespace DiscordStats.Models
         public string? UserId { get; set; }
         [StringLength(256)]
         public string? Image { get; set; }
+        [StringLength(256)]
+        public string? ActivityType { get; set; }
     }
 }
