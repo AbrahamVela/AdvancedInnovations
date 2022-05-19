@@ -12,8 +12,8 @@
 var allPresenceActivityData = [];
 var tempAllPresenceActivityData = [];
 var allPresencesChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -21,7 +21,7 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (allPresencesChart != null) {
         allPresencesChart.destroy();
     }
@@ -31,7 +31,7 @@ $("#startDateGraph").change(function () {
 
 $("#endDateGraph").change(function () {
 
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (allPresencesChart != null) {
         allPresencesChart.destroy();
     }
@@ -47,7 +47,8 @@ $("#allUsers").change(function () {
         if (allPresencesChart != null) {
             allPresencesChart.destroy();
         }
-        graphingAllPresenceActivity(allPresenceActivityData)
+        tempAllPresenceActivityData = allPresenceActivityData
+        graphingAllPresenceActivity(tempAllPresenceActivityData)
     }
     else {
         for (var i = 0; i < allPresenceActivityData.length; i++) {

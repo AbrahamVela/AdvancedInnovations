@@ -11,20 +11,9 @@
 var emojiActivityData = [];
 var tempEmojiActivityData = [];
 var emojisChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
-function graphEmojiDropDownBox(data) {
-    var allUsers = document.getElementById("allUsers");
-
-    for (i = 0; i < data.length; i++) {
-        var opt = data[i];
-        var elEmoji = document.createElement("option");
-        elEmoji.textContent = opt.username;
-        elEmoji.value = opt.id;
-        allUsers.appendChild(elEmoji);
-    }
-}
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -40,7 +29,8 @@ $("#allUsers").change(function () {
         if (emojisChart != null) {
             emojisChart.destroy();
         }
-        graphingEmojiActivity(emojiActivityData)
+        tempEmojiActivityData = emojiActivityData
+        graphingEmojiActivity(tempEmojiActivityData)
     }
     else {
         for (var i = 0; i < emojiActivityData.length; i++) {
@@ -57,7 +47,7 @@ $("#allUsers").change(function () {
 });
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (emojisChart != null) {
         emojisChart.destroy();
     }
@@ -66,7 +56,7 @@ $("#startDateGraph").change(function () {
 });
 
 $("#endDateGraph").change(function () {
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (emojisChart != null) {
         emojisChart.destroy();
     }

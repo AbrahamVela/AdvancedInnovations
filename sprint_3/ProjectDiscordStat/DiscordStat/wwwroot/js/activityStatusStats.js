@@ -12,8 +12,10 @@
 var activityStatusData = [];
 var tempActivityStatusData = [];
 var activityStatusChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
+//var startDate = new Date(Date.UTC(startDateDetailsPage.getUTCFullYear(), startDateDetailsPage.getMonth(), startDateDetailsPage.getDate(), startDateDetailsPage.getHours()))
+//var endDate = new Date(Date.UTC(endDateDetailsPage.getUTCFullYear(), endDateDetailsPage.getMonth(), endDateDetailsPage.getDate(), endDateDetailsPage.getHours()))
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -21,7 +23,7 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (activityStatusChart != null) {
         activityStatusChart.destroy();
     }
@@ -31,7 +33,7 @@ $("#startDateGraph").change(function () {
 
 $("#endDateGraph").change(function () {
 
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (activityStatusChart != null) {
         activityStatusChart.destroy();
     }
@@ -47,7 +49,8 @@ $("#allUsers").change(function () {
         if (activityStatusChart != null) {
             activityStatusChart.destroy();
         }
-        graphingActivityStatus(activityStatusData)
+        tempActivityStatusData = activityStatusData
+        graphingActivityStatus(tempActivityStatusData)
     }
     else {
         for (var i = 0; i < activityStatusData.length; i++) {
@@ -72,6 +75,8 @@ function barGraphHourlyActivityStatus(data) {
 
 function graphingActivityStatus(data) {
     //broken chart
+    console.log("User: " + $("#allUsers").val())
+
 
     $("#activityStatusHourlyAllTimeChart").empty();
 
@@ -83,6 +88,9 @@ function graphingActivityStatus(data) {
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        //console.log("Data date: " + dateUTC);
+        //console.log("Data UTC: " + date);
+        //console.log("endDate: " + endDate);
 
         if (date > startDate && date < endDate) {
             if (xValues.includes(data[i].activityType) == false) {

@@ -11,20 +11,8 @@
 var reactionActivityData = [];
 var tempReactionActivityData = [];
 var reactionsChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
-
-function graphReactionDropDownBox(data) {
-    var allUsers = document.getElementById("allUsers");
-
-    for (i = 0; i < data.length; i++) {
-        var opt = data[i];
-        var elReaction = document.createElement("option");
-        elReaction.textContent = opt.username;
-        elReaction.value = opt.id;
-        allUsers.appendChild(elReaction);
-    }
-}
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -40,7 +28,8 @@ $("#allUsers").change(function () {
         if (reactionsChart != null) {
             reactionsChart.destroy();
         }
-        graphingReactionActivity(reactionActivityData)
+        tempReactionActivityData = reactionActivityData
+        graphingReactionActivity(tempReactionActivityData)
     }
     else {
         for (var i = 0; i < reactionActivityData.length; i++) {
@@ -57,7 +46,7 @@ $("#allUsers").change(function () {
 });
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (reactionsChart != null) {
         reactionsChart.destroy();
     }
@@ -66,7 +55,7 @@ $("#startDateGraph").change(function () {
 });
 
 $("#endDateGraph").change(function () {
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (reactionsChart != null) {
         reactionsChart.destroy();
     }
