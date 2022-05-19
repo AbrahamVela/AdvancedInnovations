@@ -75,7 +75,6 @@ function barGraphHourlyActivityStatus(data) {
 
 function graphingActivityStatus(data) {
     //broken chart
-    console.log("User: " + $("#allUsers").val())
 
 
     $("#activityStatusHourlyAllTimeChart").empty();
@@ -88,10 +87,6 @@ function graphingActivityStatus(data) {
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
-        //console.log("Data date: " + dateUTC);
-        //console.log("Data UTC: " + date);
-        //console.log("endDate: " + endDate);
-
         if (date > startDate && date < endDate) {
             if (xValues.includes(data[i].activityType) == false) {
                 xValues.push(data[i].activityType)
@@ -131,7 +126,7 @@ function graphingActivityStatus(data) {
                 },
                 title: {
                     display: true,
-                    text: "Hours per Game",
+                    text: "Activity Status",
                     padding: 10,
                     color: 'black',
                     font: {
@@ -143,7 +138,7 @@ function graphingActivityStatus(data) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Hours Played',
+                        text: 'Total',
                         padding: 10,
                         color: 'black',
                         font: {

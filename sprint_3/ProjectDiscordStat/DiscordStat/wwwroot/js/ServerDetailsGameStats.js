@@ -85,6 +85,8 @@ function graphingUserPresenceActivity(data) {
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        console.log("Presences Data Date: " + dateUTC)
+        console.log("Presences Data DateUTC: " + date)
 
         if (date > startDate && date < endDate) {
             let hour = date.getHours()

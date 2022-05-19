@@ -109,8 +109,10 @@ function graphingMessageActivity(data) {
     //}
 
     for (var i = 0; i < data.length; i++) {
-        var dateUTC = new Date(data[i].createdAt)
-        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        var date = new Date(data[i].createdAt)
+        //var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        //console.log("Messages Data Date: " + dateUTC)
+        //console.log("Messages Data DateUTC: " + date)
 
         if (date > startDate && date < endDate) {
             let hour = date.getHours()

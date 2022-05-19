@@ -76,8 +76,8 @@ function graphingEmojiActivity(data) {
     var yValues = [];
 
     for (var i = 0; i < data.length; i++) {
-        var dateUTC = new Date(data[i].createdAt)
-        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        var date = new Date(data[i].createdAt)
+        //var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
 
         
         if (date > startDate && date < endDate) {
