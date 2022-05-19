@@ -109,8 +109,6 @@ function graphingEmojiActivity(data) {
                     yValues[index] += 1
                 }
             }
-            console.log("XVALUES")
-            console.log(xValues)
 
         }
 
