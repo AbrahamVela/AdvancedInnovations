@@ -1,13 +1,11 @@
-﻿$(document).ready(function () {
+﻿var xValuesStatus = [];
+var yValuesStatus = [];
+var yValuesOnline = [];
+var yValuesIdle = [];
+var yValuesDnD = [];
+
+$(document).ready(function () {
     var data = 0;
-    ajaxStatuses(data);
-});
-
-function GetStatuses(data) {
-    ajaxStatuses(data);
-};
-
-function ajaxStatuses(data) {
     let detailsServerId = $("#ServerId").attr('value');
     let formatWithDetailsServerId = data + ":" + detailsServerId
     $.ajax({
@@ -16,13 +14,19 @@ function ajaxStatuses(data) {
         success: barGraphHourlyStatusActivity,
         error: handleError
     });
+});
+
+function GetStatuses(data) {
+    setUpForDownLoadForStatus(data);
 };
+
+
 
 var statusActivityData = [];
 var tempStatusActivityData = [];
 var statusesChart;
-var startDate = new Date($("#startDateGraph").val() + " 23:59");
-var endDate = new Date($("#endDateGraph").val() + " 23:59");
+var startDate = new Date("December 17, 2020");
+var endDate = new Date();
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -30,12 +34,11 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 23:59");
+    startDate = new Date($(this).val() + " 00:00");
     if (statusesChart != null) {
         statusesChart.destroy();
     }
-    tempStatusActivityData.format = 0;
-    graphingStatusActivity(tempStatusActivityData.dataFromDB, tempStatusActivityData.format);
+    graphingStatusActivity(tempStatusActivityData);
 });
 
 $("#endDateGraph").change(function () {
@@ -44,8 +47,7 @@ $("#endDateGraph").change(function () {
     if (statusesChart != null) {
         statusesChart.destroy();
     }
-    tempStatusActivityData.format = 0;
-    graphingStatusActivity(tempStatusActivityData.dataFromDB, tempStatusActivityData.format);
+    graphingStatusActivity(tempStatusActivityData);
 });
 
 $("#allUsers").change(function () {
@@ -57,40 +59,39 @@ $("#allUsers").change(function () {
         if (statusesChart != null) {
             statusesChart.destroy();
         }
-        tempStatusActivityData = statusActivityData
-        graphingStatusActivity(tempStatusActivityData.dataFromDB)
+        graphingStatusActivity(tempStatusActivityData)
     }
     else {
-        for (var i = 0; i < statusActivityData.dataFromDB.length; i++) {
-            if (statusActivityData.dataFromDB[i].userId == $(this).val()) {
-                newList.push(statusActivityData.dataFromDB[i]);
+        for (var i = 0; i < statusActivityData.length; i++) {
+            if (statusActivityData[i].userId == $(this).val()) {
+                newList.push(statusActivityData[i]);
             }
         }
         if (statusesChart != null) {
             statusesChart.destroy();
         }
         tempStatusActivityData = newList
-        graphingStatusActivity(tempStatusActivityData, tempStatusActivityData.format)
+        graphingStatusActivity(tempStatusActivityData)
     }
 });
 
 
 function barGraphHourlyStatusActivity(data) {
-    statusActivityData = data
-    tempStatusActivityData = data
-    graphingStatusActivity(tempStatusActivityData.dataFromDB, data.format)
+    statusActivityData = data.dataFromDB
+    tempStatusActivityData = data.dataFromDB
+    graphingStatusActivity(tempStatusActivityData)
 }
 
 
-function graphingStatusActivity(data, format) {
+function graphingStatusActivity(data) {
 
     $("#usersStatusHourlyChart").empty();
 
     var count = 0;
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValuesOnline = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    var yValuesIdle = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    var yValuesDnD = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+     xValuesStatus = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
+     yValuesOnline = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+     yValuesIdle = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+     yValuesDnD = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     console.log("Length: " + data.length)
     for (var i = 0; i < data.length; i++) {
@@ -121,42 +122,11 @@ function graphingStatusActivity(data, format) {
         }
     }
 
-    if (format != 0) {
-        xValues.push("Start Date");
-        yValuesOnline.push(startDate);
-        yValuesIdle.push(startDate);
-        yValuesDnD.push(startDate);
-        xValues.push("End Date");
-        yValuesOnline.push(endDate);
-        yValuesIdle.push(endDate);
-        yValuesDnD.push(endDate);
-        xValues.push("Status Type");
-        yValuesOnline.push("online");
-        yValuesIdle.push("idle");
-        yValuesDnD.push("do not disturb");
-
-        var obj = {};
-        for (var i = 0; i < xValues.length; i++) {
-            obj[xValues[i]] = yValuesOnline[i];
-        };
-        var obj1 = {};
-        for (var i = 0; i < xValues.length; i++) {
-            obj1[xValues[i]] = yValuesIdle[i];
-        };
-        var obj2 = {};
-        for (var i = 0; i < xValues.length; i++) {
-            obj2[xValues[i]] = yValuesDnD[i];
-        };
-
-        downloadStatuses(obj, obj1, obj2, format);
-    }
-
-    else {
         statusesChart = new Chart("usersStatusHourlyChart", {
 
             type: "line",
             data: {
-                labels: xValues,
+                labels: xValuesStatus,
                 datasets: [{
                     label: "Online",
                     backgroundColor: "green",
@@ -246,23 +216,53 @@ function graphingStatusActivity(data, format) {
 
 
         })
-    }
+
 };
 
+function setUpForDownLoadForStatus(data) {
+    xValuesStatus.push("Start Date");
+        yValuesOnline.push(startDate);
+        yValuesIdle.push(startDate);
+        yValuesDnD.push(startDate);
+    xValuesStatus.push("End Date");
+        yValuesOnline.push(endDate);
+        yValuesIdle.push(endDate);
+        yValuesDnD.push(endDate);
+    xValuesStatus.push("Status Type");
+        yValuesOnline.push("online");
+        yValuesIdle.push("idle");
+        yValuesDnD.push("do not disturb");
 
-function downloadStatuses(obj, obj1, obj2, format) {
+        var obj = {};
+    for (var i = 0; i < xValuesStatus.length; i++) {
+        obj[xValuesStatus[i]] = yValuesOnline[i];
+        };
+        var obj1 = {};
+    for (var i = 0; i < xValuesStatus.length; i++) {
+        obj1[xValuesStatus[i]] = yValuesIdle[i];
+        };
+        var obj2 = {};
+    for (var i = 0; i < xValuesStatus.length; i++) {
+        obj2[xValuesStatus[i]] = yValuesDnD[i];
+        };
+
+        downloadStatuses(obj, obj1, obj2, data);
+    }
+
+
+function downloadStatuses(obj, obj1, obj2, data) {
     var zero = JSON.stringify(obj);
     var one = JSON.stringify(obj1);
     var two = JSON.stringify(obj2);
     var allThree = zero + "\n" + one + "\n" + two;
 
     var element = document.createElement('a');
-    if (format == 1) {
+    if (data == 1) {
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(allThree));
 
         element.setAttribute('download', "Status.json");
     }
-    if (format == 2)  {
+    if (data == 2)  {
         var something = JSONToCSVConvertor(zero);
         var something1 = JSONToCSVConvertorWithOutKeys(one);
         var something2 = JSONToCSVConvertorWithOutKeys(two);

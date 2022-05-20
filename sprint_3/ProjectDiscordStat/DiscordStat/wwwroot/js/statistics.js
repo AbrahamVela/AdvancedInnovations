@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿var xValuesMessages = [];
+var yValuesMessages = [];
+$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     var data = 0;
     ajaxMessaging(data);
@@ -13,7 +15,7 @@
 });
 
 function GetActiveMessageTime(data) {
-    ajaxMessaging(data);
+    setUpForDownLoadMessages(data);
 };
 
 function ajaxMessaging(data) {
@@ -63,26 +65,26 @@ $("#allUsers").change(function () {
         graphingMessageActivity(tempMessageActivityData)
     }
     else {
-        for (var i = 0; i < messageActivityData.dataFromDB.length; i++) {
-            if (messageActivityData.dataFromDB[i].userId == $(this).val()) {
-                newList.push(messageActivityData.dataFromDB[i]);
+        for (var i = 0; i < messageActivityData.length; i++) {
+            if (messageActivityData[i].userId == $(this).val()) {
+                newList.push(messageActivityData[i]);
             }
         }
         if (messagesChart != null) {
             messagesChart.destroy();
         }
         tempMessageActivityData = newList
-        graphingMessageActivity(tempMessageActivityData, messageActivityData.format)
+        graphingMessageActivity(tempMessageActivityData)
     }
 });
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 23:59");
+    startDate = new Date($(this).val() + " 00:00");
     if (messagesChart != null) {
         messagesChart.destroy();
     }
     tempMessageActivityData.format = 0;
-    graphingMessageActivity(tempMessageActivityData.dataFromDB, tempMessageActivityData.format );
+    graphingMessageActivity(tempMessageActivityData);
 
 });
 
@@ -92,20 +94,20 @@ $("#endDateGraph").change(function () {
         messagesChart.destroy();
     }
     tempMessageActivityData.format = 0;
-    graphingMessageActivity(tempMessageActivityData.dataFromDB, tempMessageActivityData.format );
+    graphingMessageActivity(tempMessageActivityData);
 });
 
 function barGraphHourlyMessageActivity(data) {
-    messageActivityData = data;
-    tempMessageActivityData = data;
-    graphingMessageActivity(tempMessageActivityData.dataFromDB, data.format)
+    messageActivityData = data.dataFromDB
+    tempMessageActivityData = data.dataFromDB
+    graphingMessageActivity(tempMessageActivityData)
 }
 
-function graphingMessageActivity(data, format) {
+function graphingMessageActivity(data) {
     $("#usersHourlyAllTimeChart").empty();
     //Good Chart
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    xValuesMessages = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
+    yValuesMessages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
     //for (var i = 0; i < data.length; i++) {
@@ -131,34 +133,34 @@ function graphingMessageActivity(data, format) {
             let hour = date.getHours()
             subtraction = hour - 4;
             if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
+                subtraction = yValuesMessages.length + subtraction;
             }
-            yValues[subtraction] += 1;
+            yValuesMessages[subtraction] += 1;
         }
     }
 
-    if (format != 0) {
-        xValues.push("Start Date");
-        yValues.push(startDate);
-        xValues.push("End Date");
-        yValues.push(endDate);
+    //if (format != 0) {
+    //    xValues.push("Start Date");
+    //    yValues.push(startDate);
+    //    xValues.push("End Date");
+    //    yValues.push(endDate);
 
-        var obj = {};
-        for (var i = 0; i < xValues.length; i++) {
-            obj[xValues[i]] = yValues[i];
-        }
+    //    var obj = {};
+    //    for (var i = 0; i < xValues.length; i++) {
+    //        obj[xValues[i]] = yValues[i];
+    //    }
 
-        downloadForHourlyMessageActivity(obj, format);
-    }
+    //    downloadForHourlyMessageActivity(obj, format);
+    //}
 
-    else {
+   // else {
         messagesChart = new Chart("usersHourlyAllTimeChart", {
             type: "bar",
             data: {
-                labels: xValues,
+                labels: xValuesMessages,
                 datasets: [{
                     backgroundColor: "green",
-                    data: yValues,
+                    data: yValuesMessages,
                 }]
             },
 
@@ -213,20 +215,34 @@ function graphingMessageActivity(data, format) {
             },
 
         })
-    }
+ //  }
 
 };
 
-function downloadForHourlyMessageActivity(obj, format) {
+function setUpForDownLoadMessages(data) {
+    xValuesMessages.push("Start Date");
+    yValuesMessages.push(startDate);
+    xValuesMessages.push("End Date");
+    yValuesMessages.push(endDate);
+
+        var obj = {};
+    for (var i = 0; i < xValuesMessages.length; i++) {
+        obj[xValuesMessages[i]] = yValuesMessages[i];
+        }
+
+    downloadForHourlyMessageActivity(obj, data);
+
+}
+function downloadForHourlyMessageActivity(obj, data) {
 
     var element = document.createElement('a');
 
-    if (format == 1) {
+    if (data == 1) {
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
 
         element.setAttribute('download', "ActiveMessagingTime.json");
     }
-    if (format == 2) {
+    if (data == 2) {
         var something = JSONToCSVConvertor(JSON.stringify(obj));
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
         element.setAttribute('download', "ActiveMessagingTime.csv");

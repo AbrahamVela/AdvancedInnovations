@@ -35,15 +35,15 @@ var presenceActivityData = [];
 var tempPresenceActivityData = [];
 
 var presencesChart;
-var startDate = new Date($("#startDateGraph").val() + " 23:59");
-var endDate = new Date($("#endDateGraph").val() + " 23:59");
+var startDate = new Date("December 17, 2020");
+var endDate = new Date();
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
 }
 
 $("#start").change(function () {
-    startDateUTC = new Date($(this).val() + " 23:59");
+    startDateUTC = new Date($(this).val() + " 00:00");
     if (presencesChart != null) {
         presencesChart.destroy();
     }
@@ -122,20 +122,20 @@ function graphingPresenceActivity(data, format) {
     }
 
     if (format != 0) {
-    if (data.startDate != "1-1-0001" && data.endDate != "1-1-0001") {
-        xValues.push("Start Date");
-        yValues.push(data.startDate);
-        xValues.push("End Date");
-        yValues.push(data.endDate);
-    }
+        if (data.startDate != "1-1-0001" && data.endDate != "1-1-0001") {
+            xValues.push("Start Date");
+            yValues.push(data.startDate);
+            xValues.push("End Date");
+            yValues.push(data.endDate);
+        }
 
-    var obj = {};
-    for (var i = 0; i < xValues.length; i++) {
-        obj[xValues[i]] = yValues[i];
-    };
+        var obj = {};
+        for (var i = 0; i < xValues.length; i++) {
+            obj[xValues[i]] = yValues[i];
+        };
 
 
-    downloadMostPopularPlayTime(obj,format);
+        downloadMostPopularPlayTime(obj, format);
     }
 
     else {

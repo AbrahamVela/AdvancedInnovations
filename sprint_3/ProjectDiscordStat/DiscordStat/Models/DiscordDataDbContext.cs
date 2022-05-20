@@ -29,6 +29,7 @@ namespace DiscordStats.Models
         public virtual DbSet<VoiceChannel> VoiceChannels { get; set; } = null!;
         public virtual DbSet<VoiceState> VoiceStates { get; set; } = null!;
         public virtual DbSet<Webhook> Webhooks { get; set; } = null!;
+        public virtual DbSet<ServerMembers> ServerMembers { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

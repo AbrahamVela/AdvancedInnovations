@@ -57,49 +57,47 @@
          
           @if (Model != null)
 {
-    <div id="ServerId" value="@Model[0].Id"></div>
+                    @if (Model.Count != 0)
+                    {
+                        <div id="ServerId" value="@Model[0].Id"></div>
 
 
-                <div class="row justify-content-center">
-                        <div class="col-3"  style="margin-left:29%">
-                            <label for="start">Start date:</label>                 
+                        <div class="row justify-content-center">
+                            <div class="col-3"  style="margin-left:29%">
+                                <label for="start">Start date:</label>                 
+                            </div>
+                            <div class="col-3" style="left:-10%" >
+                                <label for="start">End date:</label>       
+                            </div>
                         </div>
-                        <div class="col-3" style="left:-10%" >
-                            <label for="start">End date:</label>       
+                        <div class="row justify-content-center">
+                            <div class="col-3" style="margin-left:15%">          
+                                <input type="date" id="start" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            </div>
+                            <div class="col-3" style="margin-left:-9%">
+                                <input type="date" id="end" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+
+                            </div>
                         </div>
-                </div>
-                <div class="row justify-content-center">
-                        <div class="col-3" style="margin-left:15%">          
-                            <input type="date" id="start" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        <div class="row justify-content-center">
+                            <div class="col-3" style="left: 10.5%"> 
+                                <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" style="margin-top: 3%;" value="Update" />
+                            </div>
                         </div>
-                        <div class="col-3" style="margin-left:-9%">
-                              <input type="date" id="end" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        <br />
 
+                        <br><center><canvas id="ServerGrowthAllTimeChart" style="color: white; width:100%;max-width:1400px"></canvas></center>
+                        <div class="row" style="margin-top:2%; text-align:right">
+                            <div class="col">
+                                <h5 id="serverGrowthDownloadArea">Download Active Members in Server Data:</h5>
+
+                                <button id="exportJsonActiveMemberInServer" type="button" class="btn btn-primary" onclick="GetActiveMemberInServer(1)">Json</button>
+
+                                <button id="exportCsvActiveMemberInServer" type="button" class="btn btn-primary" onclick="GetActiveMemberInServer(2)">CSV</button>                   
+                            </div>
                         </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-3" style="left: 10.5%"> 
-                <input type="submit" onclick="UpdateMessages()" class="btn btn-primary btn-sm" style="margin-top: 3%;" value="Update" />
-                </div>
-                </div>
-                <br />
-
-    <br><center><canvas id="ServerGrowthAllTimeChart" style="color: white; width:100%;max-width:1400px"></canvas></center>
-         <div class="row" style="margin-top:2%; text-align:right">
-            <div class="col">
-            <h5 id="serverGrowthDownloadArea">Download Active Members in Server Data:</h5>
-
-            <button id="exportJsonActiveMemberInServer" type="button" class="btn btn-primary" onclick="GetActiveMemberInServer(1)">Json</button>
-
-            <button id="exportCsvActiveMemberInServer" type="button" class="btn btn-primary" onclick="GetActiveMemberInServer(2)">CSV</button>                   
-        </div>
-    </div>
-
-
-    
-
-
-}
+                    }
+                }
 
 
 
