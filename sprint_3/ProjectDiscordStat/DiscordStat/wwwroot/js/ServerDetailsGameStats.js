@@ -1,14 +1,9 @@
-﻿$(document).ready(function () {
-    var data = 0;
-    ajaxPresenceForActiveGamingTime(data);
-});
+﻿var xValuesGameTime = [];
+var yValuesGameTime = [];
 
-function GetActiveGamingTime(data) {
-    ajaxPresenceForActiveGamingTime(data);
-};
-
-function ajaxPresenceForActiveGamingTime(data) {
+$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
+    var data = 0;
     let formatWithDetailsServerId = data + ":" + detailsServerId;
     $.ajax({
         type: "GET",
@@ -16,13 +11,18 @@ function ajaxPresenceForActiveGamingTime(data) {
         success: barGraphHourlyUserPresenceActivity,
         error: handleError
     });
+});
+
+function GetActiveGamingTime(data) {
+    setUpForDownLoadGameTime(data);
 };
+
 
 
 var userPresenceActivityData = [];
 var tempUserPresenceActivityData = [];
 var userPresencesChart;
-var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var startDate = new Date($("#startDateGraph").val() + " 00:00");
 var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
@@ -35,8 +35,8 @@ $("#startDateGraph").change(function () {
     if (userPresencesChart != null) {
         userPresencesChart.destroy();
     }
-    tempUserPresenceActivityData.format = 0;
-    graphingUserPresenceActivity(tempUserPresenceActivityData.dataFromDB, tempUserPresenceActivityData.format);
+   
+    graphingUserPresenceActivity(tempUserPresenceActivityData);
 
 });
 
@@ -46,8 +46,8 @@ $("#endDateGraph").change(function () {
     if (userPresencesChart != null) {
         userPresencesChart.destroy();
     }
-    tempUserPresenceActivityData.format = 0;
-    graphingUserPresenceActivity(tempUserPresenceActivityData.dataFromDB, tempUserPresenceActivityData.format);
+    
+    graphingUserPresenceActivity(tempUserPresenceActivityData);
 });
 
 $("#allUsers").change(function () {
@@ -59,80 +59,79 @@ $("#allUsers").change(function () {
         if (userPresencesChart != null) {
             userPresencesChart.destroy();
         }
-        tempUserPresenceActivityData = userPresenceActivityData
-        graphingUserPresenceActivity(tempUserPresenceActivityData.dataFromDB)
+        graphingUserPresenceActivity(userPresenceActivityData)
 
     }
     else {
-        for (var i = 0; i < userPresenceActivityData.dataFromDB.length; i++) {
-            if (userPresenceActivityData.dataFromDB[i].userId == $(this).val()) {
-                newList.push(userPresenceActivityData.dataFromDB[i]);
+        for (var i = 0; i < userPresenceActivityData.length; i++) {
+            if (userPresenceActivityData[i].userId == $(this).val()) {
+                newList.push(userPresenceActivityData[i]);
             }
         }
         if (userPresencesChart != null) {
             userPresencesChart.destroy();
         }
         tempUserPresenceActivityData = newList
-        graphingUserPresenceActivity(tempUserPresenceActivityData, tempUserPresenceActivityData.format)
+        graphingUserPresenceActivity(tempUserPresenceActivityData)
     }
 });
 
 
 function barGraphHourlyUserPresenceActivity(data) {
-    userPresenceActivityData = data
-    tempUserPresenceActivityData = data
-    graphingUserPresenceActivity(tempUserPresenceActivityData.dataFromDB, data.format)
+    userPresenceActivityData = data.dataFromDB
+    tempUserPresenceActivityData = data.dataFromDB
+    graphingUserPresenceActivity(tempUserPresenceActivityData)
 }
 
 
-function graphingUserPresenceActivity(data, format) {
+function graphingUserPresenceActivity(data) {
     //broken chart
 
     $("#userPresenceHourlyAllTimeChart").empty();
 
     var count = 0;
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    xValuesGameTime = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
+    yValuesGameTime = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
-        console.log("Presences Data Date: " + dateUTC)
-        console.log("Presences Data DateUTC: " + date)
+        //console.log("Presences Data Date: " + dateUTC)
+        //console.log("Presences Data DateUTC: " + date)
 
         if (date > startDate && date < endDate) {
             let hour = date.getHours()
             subtraction = hour - 4;
             if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
+                subtraction = yValuesGameTime.length + subtraction;
             }
-            yValues[subtraction] += 1;
+            yValuesGameTime[subtraction] += 1;
         }
     }
 
-    if (format != 0) {
-        xValues.push("Start Date");
-        yValues.push(startDate);
-        xValues.push("End Date");
-        yValues.push(endDate);
+    //if (format != 0) {
+    //    xValues.push("Start Date");
+    //    yValues.push(startDate);
+    //    xValues.push("End Date");
+    //    yValues.push(endDate);
 
-        var obj = {};
-        for (var i = 0; i < xValues.length; i++) {
-            obj[xValues[i]] = yValues[i];
-        }
+    //    var obj = {};
+    //    for (var i = 0; i < xValues.length; i++) {
+    //        obj[xValues[i]] = yValues[i];
+    //    }
 
-        downloadUserPresenceActivity(obj, format);
-    }
+    //    downloadUserPresenceActivity(obj, format);
+    //}
 
-    else {
+    //else {
         userPresencesChart = new Chart("userPresenceHourlyAllTimeChart", {
             type: "bar",
             data: {
-                labels: xValues,
+                labels: xValuesGameTime,
                 datasets: [{
                     backgroundColor: "green",
-                    data: yValues,
+                    data: yValuesGameTime,
                     ticks: {
                         beginAtZero: false
                     }
@@ -189,21 +188,34 @@ function graphingUserPresenceActivity(data, format) {
             }
 
         })
-    }
+   // }
 
 
 };
 
-function downloadUserPresenceActivity(obj, format) {
+function setUpForDownLoadGameTime(data) {
+    xValuesGameTime.push("Start Date");
+    yValuesGameTime.push(startDate);
+    xValuesGameTime.push("End Date");
+    yValuesGameTime.push(endDate);
+
+        var obj = {};
+    for (var i = 0; i < xValuesGameTime.length; i++) {
+        obj[xValuesGameTime[i]] = yValuesGameTime[i];
+        }
+
+        downloadUserPresenceActivity(obj, data);
+}
+function downloadUserPresenceActivity(obj, data) {
 
     var element = document.createElement('a');
 
-    if (format == 1) {
+    if (data == 1) {
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
 
         element.setAttribute('download', "ActiveGamingTime.json");
     }
-    if (format == 2) {
+    if (data == 2) {
         var something = JSONToCSVConvertor(JSON.stringify(obj));
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
         element.setAttribute('download', "ActiveGamingTime.csv");

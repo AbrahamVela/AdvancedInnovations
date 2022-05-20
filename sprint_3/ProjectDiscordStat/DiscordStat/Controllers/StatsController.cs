@@ -26,7 +26,6 @@ using System.Text;
 
 namespace DiscordStats.Controllers
 {
-    [Authorize]
     public class StatsController : Controller
     {
 
@@ -84,7 +83,28 @@ namespace DiscordStats.Controllers
                 return RedirectToAction("Account", "Account");
 
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetVoiceStatesFromDatabase(string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
         [HttpGet] 
         public async Task<IActionResult> GetVoiceStatesFromDatabaseForGraphAndDownload(string formatWithServerId)
         {
@@ -110,7 +130,12 @@ namespace DiscordStats.Controllers
             else
                 return RedirectToAction("Account", "Account");
         }
-
+        [HttpGet]
+        public IActionResult GetMessageInfoFromDatabase(string ServerId)
+        {
+            var item = _messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList();
+            return Json(item);
+        }
         [HttpGet]
         public async Task<IActionResult> GetMessageInfoFromDatabaseForGraphAndDownload(string formatWithServerId)
         {
@@ -192,6 +217,30 @@ namespace DiscordStats.Controllers
             }
             else
                 return RedirectToAction("Account", "Account");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPresencesFromDatabase(string ServerId, string GameName)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var a = _presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList();
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+            }
+            else
+                return RedirectToAction("Account", "Account");
+
         }
 
         [HttpGet]

@@ -686,15 +686,23 @@ function UpdateChannels() {
 }
 
 
-setInterval(updataPresence, 300000);
-setInterval(updataUsers, 450000);
-setInterval(updataVoiceStates, 300000);
-setInterval(UpdateVoiceChannel, 1800000);
-setInterval(UpdateServers, 1800000);
-setInterval(UpdateChannels, 1800000);
-setInterval(sendStatus, 300000);
-setInterval(sendAllReactions, 300000);
+// setInterval(updataPresence, 300000);
+// setInterval(updataUsers, 450000);
+// setInterval(updataVoiceStates, 300000);
+// setInterval(UpdateVoiceChannel, 1800000);
+// setInterval(UpdateServers, 1800000);
+// setInterval(UpdateChannels, 1800000);
+// setInterval(sendStatus, 300000);
+// setInterval(sendAllReactions, 300000);
 
+setInterval(updataPresence, 30000);
+setInterval(updataUsers, 45000);
+setInterval(updataVoiceStates, 30000);
+setInterval(UpdateVoiceChannel, 180000);
+setInterval(UpdateServers, 180000);
+setInterval(UpdateChannels, 180000);
+setInterval(sendStatus, 30000);
+ setInterval(sendAllReactions, 30000);
 //setInterval(updataData, 45000);
 
 client.login(process.env.TOKEN);
