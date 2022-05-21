@@ -57,6 +57,7 @@ namespace DiscordStats.Controllers
 
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddMemberToPickedServer(string? id)
         {
             string botToken = _config["API:BotToken"];

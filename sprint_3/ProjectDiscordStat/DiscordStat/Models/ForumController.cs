@@ -53,6 +53,7 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ServerOnForum(ForumViewModel vm)
         {
            var captchaResult = await _CaptchaService.VerifyToken(vm.Token);
@@ -89,6 +90,7 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public IActionResult ServerOffForum([Bind("Id, Message")] Server server)
         {
             if (server.Id != null)
