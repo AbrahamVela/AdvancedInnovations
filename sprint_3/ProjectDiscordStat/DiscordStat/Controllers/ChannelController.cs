@@ -111,6 +111,7 @@ namespace DiscordStats.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChannel(CreateChannelVM create)
         {
             var captchaResult = await _CaptchaService.VerifyToken(create.Token);
@@ -162,6 +163,7 @@ namespace DiscordStats.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> WebhookForm(WebhookUsageVM vm)
         {
             if (_CaptchaService != null)
@@ -195,6 +197,7 @@ namespace DiscordStats.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> WebhookMessage(WebhookUsageVM webhook, string whatever)
         {
             

@@ -126,6 +126,7 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProfileFormSubmit(UpdateUserInfoVM websiteProfileInfo)
         {
             var captchaResult = await _CaptchaService.VerifyToken(websiteProfileInfo.Token);
@@ -199,6 +200,7 @@ namespace DiscordStats.Controllers
         }
         [Authorize(AuthenticationSchemes = "Discord")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ChangePrivacy(string privacyString)
         {
             var listPrivacyChanges = privacyString.Split(' ');
@@ -313,6 +315,7 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ServerForm(CreateServerVM vm)
         {
             var newServer = await _discord.CreateServer(_configuration["API:BotToken"], vm);
@@ -331,6 +334,7 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public async void ServerCreateUpdateOwner(string ServerId)
         {
             var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
