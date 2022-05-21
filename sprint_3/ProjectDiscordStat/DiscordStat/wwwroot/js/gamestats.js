@@ -1,19 +1,26 @@
 ﻿var xValuesGameDetails = [];
 var yValuesGameDetails = [];
+
 $(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    var data = 0;
+    let gameDetailsGameName = $("#GameName").attr('value');
+
+    $.ajax({
+        type: 'GET',
+        url: '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'ServerId=' + detailsServerId,
+        success: barGraphHourlyPresenceActivity,
+        error: handleError
+    })
+
     $.ajax({
         type: 'GET',
         url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
         success: graphDropDownBox,
         error: handleError
-    });
-    ajaxPresenceForMostPopularPlayTime(data);
-
-   
+    })
 
 })
+
 function graphDropDownBox(data) {
     var allUsers = document.getElementById("allUsersPresences");
 
@@ -29,20 +36,6 @@ function graphDropDownBox(data) {
 function GetMostPopularPlayTime(data) {
     downloadSetupGameDetails(data);
 };
-
-function ajaxPresenceForMostPopularPlayTime(data) {
-    let detailsServerId = $("#ServerId").attr('value');
-    let gameDetailsGameName = $("#GameName").attr('value');
-    let formatWithDetailsServerId = data + ":" + detailsServerId
-
-    $.ajax({
-        type: 'GET',
-        url: '../Stats/GetPresencesFromDatabaseForGraphAndDownload?gamename=' + gameDetailsGameName + '&' + 'formatWithDetailsServerId=' + formatWithDetailsServerId,
-        success: barGraphHourlyPresenceActivity,
-        error: handleError
-    });
-
-}
 
 const timezone = -3
 var presenceActivityData = [];
@@ -105,8 +98,8 @@ $("#allUsersPresences").change(function () {
 
 
 function barGraphHourlyPresenceActivity(data) {
-    presenceActivityData = data.dataFromDB
-    tempPresenceActivityData = data.dataFromDB
+    presenceActivityData = data
+    tempPresenceActivityData = data
     graphingPresenceActivity(tempPresenceActivityData)
 }
 
@@ -134,87 +127,68 @@ function graphingPresenceActivity(data) {
         }
     }
 
-    //if (format != 0) {
-    //    if (data.startDate != "1-1-0001" && data.endDate != "1-1-0001") {
-    //        xValues.push("Start Date");
-    //        yValues.push(data.startDate);
-    //        xValues.push("End Date");
-    //        yValues.push(data.endDate);
-    //    }
-
-    //    var obj = {};
-    //    for (var i = 0; i < xValues.length; i++) {
-    //        obj[xValues[i]] = yValues[i];
-    //    };
-
-
-    //    downloadMostPopularPlayTime(obj, format);
-    //}
-
-    //else {
-        presencesChart = new Chart("presencesHourlyAllTimeChart", {
-            type: "bar",
-            data: {
-                labels: xValuesGameDetails,
-                datasets: [{
-                    backgroundColor: "green",
-                    data: yValuesGameDetails,
-                    ticks: {
-                        beginAtZero: false
+    presencesChart = new Chart("presencesHourlyAllTimeChart", {
+        type: "bar",
+        data: {
+            labels: xValuesGameDetails,
+            datasets: [{
+                backgroundColor: "green",
+                data: yValuesGameDetails,
+                ticks: {
+                    beginAtZero: false
+                }
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: "Most Popular Play Time",
+                    padding: 10,
+                    color: 'black',
+                    font: {
+                        size: 25
                     }
-                }]
+                },
             },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    },
+            scales: {
+                y: {
                     title: {
                         display: true,
-                        text: "Most Popular Play Time",
+                        text: 'Active Gamers',
                         padding: 10,
                         color: 'black',
                         font: {
                             size: 25
                         }
                     },
-                },
-                scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Active Gamers',
-                            padding: 10,
-                            color: 'black',
-                            font: {
-                                size: 25
-                            }
-                        },
-                        ticks: {
-                            beginAtZero: false,
-                            precision: 0,
-                            color: 'black',
-                            font: {
-                                size: 20
-                            }
-                        }
-
-                    },
-                    x: {
-                        ticks: {
-                            precision: 0,
-                            color: 'Black',
-                            font: {
-                                size: 16,
-                                family: 'Helvetica'
-                            }
+                    ticks: {
+                        beginAtZero: false,
+                        precision: 0,
+                        color: 'black',
+                        font: {
+                            size: 20
                         }
                     }
-                },
 
-            }
-        })
- //   }
+                },
+                x: {
+                    ticks: {
+                        precision: 0,
+                        color: 'Black',
+                        font: {
+                            size: 16,
+                            family: 'Helvetica'
+                        }
+                    }
+                }
+            },
+
+        }
+    })
 };
 
 function downloadSetupGameDetails(data) {
@@ -256,5 +230,3 @@ function downloadMostPopularPlayTime(obj, data) {
 
     document.body.removeChild(element);
 }
-
-

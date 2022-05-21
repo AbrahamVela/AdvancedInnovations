@@ -342,12 +342,39 @@
                 </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="emojiStats" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <div class="row" style="margin-top:2%; text-align:right">
+                        <div class="col">
+                            <h5>Download Popular Emojis Data:</h5>
+
+                            <button type="button" class="btn btn-primary" onclick="GetEmojis(1)">JSON</button>
+
+                            <button type="button" class="btn btn-primary" onclick="GetEmojis(2)">CSV</button>                   
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="reactionStats" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                    <div class="row" style="margin-top:2%; text-align:right">
+                        <div class="col">
+                            <h5>Download Popular Reaction Data:</h5>
+
+                            <button type="button" class="btn btn-primary" onclick="GetPopReaction(1)">JSON</button>
+
+                            <button type="button" class="btn btn-primary" onclick="GetPopReaction(2)">CSV</button>                   
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="activityStatusHourlyAllTimeChart" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
+                     <div class="row" style="margin-top:2%; text-align:right">
+                        <div class="col">
+                            <h5>Download Activity Status Data:</h5>
+
+                            <button type="button" class="btn btn-primary" onclick="GetActivityStatus(1)">JSON</button>
+
+                            <button type="button" class="btn btn-primary" onclick="GetActivityStatus(2)">CSV</button>                   
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

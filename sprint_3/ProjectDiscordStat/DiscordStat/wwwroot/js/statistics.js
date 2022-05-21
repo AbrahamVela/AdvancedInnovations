@@ -2,8 +2,12 @@
 var yValuesMessages = [];
 $(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    var data = 0;
-    ajaxMessaging(data);
+    $.ajax({
+        type: "GET",
+        url: '../Stats/GetMessageInfoFromDatabase?ServerId=' + detailsServerId,
+        success: barGraphHourlyMessageActivity,
+        error: handleError
+    });
 
     $.ajax({
         type: 'GET',
@@ -18,16 +22,6 @@ function GetActiveMessageTime(data) {
     setUpForDownLoadMessages(data);
 };
 
-function ajaxMessaging(data) {
-    let detailsServerId = $("#ServerId").attr('value');
-    let formatWithDetailsServerId = data + ":" + detailsServerId;
-    $.ajax({
-        type: "GET",
-        url: '../Stats/GetMessageInfoFromDatabaseForGraphAndDownload?formatWithServerId=' + formatWithDetailsServerId,
-        success: barGraphHourlyMessageActivity,
-        error: handleError
-    });
-}
 
 var messageActivityData = [];
 var tempMessageActivityData = [];
@@ -98,8 +92,8 @@ $("#endDateGraph").change(function () {
 });
 
 function barGraphHourlyMessageActivity(data) {
-    messageActivityData = data.dataFromDB
-    tempMessageActivityData = data.dataFromDB
+    messageActivityData = data
+    tempMessageActivityData = data
     graphingMessageActivity(tempMessageActivityData)
 }
 
@@ -139,83 +133,67 @@ function graphingMessageActivity(data) {
         }
     }
 
-    //if (format != 0) {
-    //    xValues.push("Start Date");
-    //    yValues.push(startDate);
-    //    xValues.push("End Date");
-    //    yValues.push(endDate);
+    messagesChart = new Chart("usersHourlyAllTimeChart", {
+        type: "bar",
+        data: {
+            labels: xValuesMessages,
+            datasets: [{
+                backgroundColor: "green",
+                data: yValuesMessages,
+            }]
+        },
 
-    //    var obj = {};
-    //    for (var i = 0; i < xValues.length; i++) {
-    //        obj[xValues[i]] = yValues[i];
-    //    }
-
-    //    downloadForHourlyMessageActivity(obj, format);
-    //}
-
-   // else {
-        messagesChart = new Chart("usersHourlyAllTimeChart", {
-            type: "bar",
-            data: {
-                labels: xValuesMessages,
-                datasets: [{
-                    backgroundColor: "green",
-                    data: yValuesMessages,
-                }]
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: "Active Messaging Time",
+                    padding: 10,
+                    color: 'black',
+                    font: {
+                        size: 25
+                    }
+                },
             },
-
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    },
+            scales: {
+                y: {
                     title: {
                         display: true,
-                        text: "Active Messaging Time",
+                        text: 'Messages Sent',
                         padding: 10,
                         color: 'black',
                         font: {
                             size: 25
                         }
                     },
-                },
-                scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Messages Sent',
-                            padding: 10,
-                            color: 'black',
-                            font: {
-                                size: 25
-                            }
-                        },
-                        ticks: {
-                            beginAtZero: false,
-                            precision: 0,
-                            color: 'black',
-                            font: {
-                                size: 20
-                            }
+                    ticks: {
+                        beginAtZero: false,
+                        precision: 0,
+                        color: 'black',
+                        font: {
+                            size: 20
                         }
+                    }
 
-                    },
-                    x: {
-                        ticks: {
-                            precision: 0,
-                            color: 'Black',
-                            font: {
-                                size: 16,
-                                family: 'Helvetica'
-                            }
+                },
+                x: {
+                    ticks: {
+                        precision: 0,
+                        color: 'Black',
+                        font: {
+                            size: 16,
+                            family: 'Helvetica'
                         }
                     }
                 }
+            }
 
-            },
+        },
 
-        })
- //  }
+    })
 
 };
 

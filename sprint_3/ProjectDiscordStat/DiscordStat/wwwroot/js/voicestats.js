@@ -3,16 +3,15 @@ var yValues = [];
 
 $(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    var data = 0;
-    let formatWithDetailsServerId = data + ":" + detailsServerId;
-   
+
     $.ajax({
         type: "GET",
-        url: '../Stats/GetVoiceStatesFromDatabaseForGraphAndDownload?formatWithServerId=' + formatWithDetailsServerId,
+        url: '../Stats/GetVoiceStatesFromDatabase?ServerId=' + detailsServerId,
         success: barGraphHourlyVoiceStateActivity,
         error: handleError
     });
 })
+
 function GetActiveVoiceChannelTime(data) {
     setUpForDownLoad(data);
 };
@@ -74,8 +73,8 @@ $("#allUsers").change(function () {
 
 
 function barGraphHourlyVoiceStateActivity(data) {
-    voiceStateActivityData = data.dataFromDB
-    tempVoiceStateActivityData = data.dataFromDB
+    voiceStateActivityData = data
+    tempVoiceStateActivityData = data
     graphingVoiceStateActivity(tempVoiceStateActivityData)
 }
 

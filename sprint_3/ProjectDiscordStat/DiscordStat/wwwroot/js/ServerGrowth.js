@@ -63,8 +63,8 @@ function graphingPresenceActivity(data, format) {
     for (var i = 0; i < data.length; i++) {
 
         var datecheck = new Date(data[i].date).toLocaleDateString()
-                xValues[i] = datecheck;
-                yValues[i] = data[i].members; 
+        xValues[i] = datecheck;
+        yValues[i] = data[i].members;
     }
     console.log(xValues);
     console.log(yValues);
@@ -147,7 +147,7 @@ function graphingPresenceActivity(data, format) {
     }
 };
 
-function downloadServerGrowth(data, obj,  format) {
+function downloadServerGrowth(data, obj, format) {
     var zero = JSON.stringify(obj);
 
     var element = document.createElement('a');
@@ -173,5 +173,3 @@ function downloadServerGrowth(data, obj,  format) {
 
     document.body.removeChild(element);
 }
-
-

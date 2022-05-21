@@ -3,15 +3,14 @@ var yValuesGameTime = [];
 
 $(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
-    var data = 0;
-    let formatWithDetailsServerId = data + ":" + detailsServerId;
+
     $.ajax({
-        type: "GET",
-        url: '../Stats/GetAllPresencesFromDatabaseForGraphAndDownload?formatWithServerId=' + formatWithDetailsServerId,
+        type: 'GET',
+        url: '../Stats/GetAllPresencesFromDatabase?serverid=' + detailsServerId,
         success: barGraphHourlyUserPresenceActivity,
         error: handleError
     });
-});
+})
 
 function GetActiveGamingTime(data) {
     setUpForDownLoadGameTime(data);
@@ -59,7 +58,8 @@ $("#allUsers").change(function () {
         if (userPresencesChart != null) {
             userPresencesChart.destroy();
         }
-        graphingUserPresenceActivity(userPresenceActivityData)
+        tempUserPresenceActivityData = userPresenceActivityData;
+        graphingUserPresenceActivity(tempUserPresenceActivityData)
 
     }
     else {
@@ -78,8 +78,8 @@ $("#allUsers").change(function () {
 
 
 function barGraphHourlyUserPresenceActivity(data) {
-    userPresenceActivityData = data.dataFromDB
-    tempUserPresenceActivityData = data.dataFromDB
+    userPresenceActivityData = data
+    tempUserPresenceActivityData = data
     graphingUserPresenceActivity(tempUserPresenceActivityData)
 }
 

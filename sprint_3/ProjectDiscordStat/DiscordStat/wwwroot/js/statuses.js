@@ -5,12 +5,10 @@ var yValuesIdle = [];
 var yValuesDnD = [];
 
 $(document).ready(function () {
-    var data = 0;
     let detailsServerId = $("#ServerId").attr('value');
-    let formatWithDetailsServerId = data + ":" + detailsServerId
     $.ajax({
         type: 'GET',
-        url: '../Stats/GetStatusesFromDatabaseForGraphAndDownload?formatWithDetailsServerId=' + formatWithDetailsServerId,
+        url: '../Stats/GetStatusesFromDatabase?ServerId=' + detailsServerId,
         success: barGraphHourlyStatusActivity,
         error: handleError
     });
@@ -59,6 +57,7 @@ $("#allUsers").change(function () {
         if (statusesChart != null) {
             statusesChart.destroy();
         }
+        tempStatusActivityData = statusActivityData;
         graphingStatusActivity(tempStatusActivityData)
     }
     else {
@@ -77,8 +76,8 @@ $("#allUsers").change(function () {
 
 
 function barGraphHourlyStatusActivity(data) {
-    statusActivityData = data.dataFromDB
-    tempStatusActivityData = data.dataFromDB
+    statusActivityData = data
+    tempStatusActivityData = data
     graphingStatusActivity(tempStatusActivityData)
 }
 

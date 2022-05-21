@@ -1,4 +1,7 @@
-﻿$(document).ready(function () {
+﻿var xValuesEmojis = [];
+var yValuesEmojis = [];
+
+$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     $.ajax({
         type: 'GET',
@@ -7,6 +10,11 @@
         error: handleError
     });
 })
+
+function GetEmojis(data) {
+    setUpForDownLoadEmojis(data);
+};
+
 
 var emojiActivityData = [];
 var tempEmojiActivityData = [];
@@ -72,32 +80,36 @@ function barGraphHourlyEmojiActivity(data) {
 function graphingEmojiActivity(data) {
     $("#emojiStats").empty();
     //Good Chart
-    var xValues = [];
-    var yValues = [];
+    xValuesEmojis = [];
+    yValuesEmojis = [];
 
     for (var i = 0; i < data.length; i++) {
         var date = new Date(data[i].createdAt)
         //var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
 
-        
+
         if (date > startDate && date < endDate) {
             var emojis = data[i].emojis.split(",")
             for (var e = 0; e < emojis.length - 1; e++) {
-
-
-                if (xValues.includes(String.fromCodePoint("0x" + emojis[e])) == false) {
-                    xValues.push(String.fromCodePoint("0x" + emojis[e]))
-                    yValues.push(1)
+                var index;
+                var duplicate = false;
+                for (var j = 0; j < xValuesEmojis.length; j++) {
+                    if (duplicate == true) {
+                        break
+                    }
+                    if (xValuesEmojis[j] == String.fromCodePoint("0x" + emojis[e])) {
+                        index = j;
+                        duplicate = true
+                    }
                 }
-                else if (xValues.includes(String.fromCodePoint("0x" + emojis[e]))) {
-                    xValues.some(function (entry, i) {
-                        if (entry == String.fromCodePoint("0x" + emojis[e])) {
-                            index = i;
-                            return true;
-                        }
-                    });
-                    yValues[index] += 1
+                if (duplicate == true) {
+                    yValuesEmojis[index] += 1
                 }
+                if (duplicate == false) {
+                    xValuesEmojis.push(String.fromCodePoint("0x" + emojis[e]));
+                    yValuesEmojis.push(1);
+                }
+
             }
 
         }
@@ -107,10 +119,10 @@ function graphingEmojiActivity(data) {
     emojisChart = new Chart("emojiStats", {
         type: "bar",
         data: {
-            labels: xValues,
+            labels: xValuesEmojis,
             datasets: [{
                 backgroundColor: "green",
-                data: yValues,
+                data: yValuesEmojis,
             }]
         },
 
@@ -167,3 +179,39 @@ function graphingEmojiActivity(data) {
     })
 
 };
+
+
+function setUpForDownLoadEmojis(data) {
+    xValuesEmojis.push("Start Date");
+    yValuesEmojis.push(startDate);
+    xValuesEmojis.push("End Date");
+    yValuesEmojis.push(endDate);
+
+    var obj = {};
+    for (var i = 0; i < xValuesEmojis.length; i++) {
+        obj[xValuesEmojis[i]] = yValuesEmojis[i];
+    }
+
+    downloadEmojis(obj, data);
+}
+function downloadEmojis(obj, data) {
+
+    var element = document.createElement('a');
+
+    if (data == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
+
+        element.setAttribute('download', "Emoji.json");
+    }
+    if (data == 2) {
+        var something = JSONToCSVConvertor(JSON.stringify(obj));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "Emoji.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}

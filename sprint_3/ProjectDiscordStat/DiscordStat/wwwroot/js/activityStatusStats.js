@@ -1,4 +1,7 @@
-﻿$(document).ready(function () {
+﻿var xValuesActivityStatus = [];
+var yValuesActivityStatus = [];
+
+$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
 
     $.ajax({
@@ -8,6 +11,10 @@
         error: handleError
     });
 })
+
+function GetActivityStatus(data) {
+    setUpForDownLoadActivityStatus(data);
+};
 
 var activityStatusData = [];
 var tempActivityStatusData = [];
@@ -79,28 +86,27 @@ function graphingActivityStatus(data) {
 
     $("#activityStatusHourlyAllTimeChart").empty();
 
-    var count = 0;
-    var xValues = [];
-    var yValues = [];
+    xValuesActivityStatus = [];
+    yValuesActivityStatus = [];
 
 
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
         if (date > startDate && date < endDate) {
-            if (xValues.includes(data[i].activityType) == false) {
-                xValues.push(data[i].activityType)
-                yValues.push(1)
+            if (xValuesActivityStatus.includes(data[i].activityType) == false) {
+                xValuesActivityStatus.push(data[i].activityType)
+                yValuesActivityStatus.push(1)
                 var index;
             }
-            else if (xValues.includes(data[i].activityType)) {
-                xValues.some(function (entry, i) {
+            else if (xValuesActivityStatus.includes(data[i].activityType)) {
+                xValuesActivityStatus.some(function (entry, i) {
                     if (entry == data[i].activityType) {
                         index = i;
                         return true;
                     }
                 });
-                yValues[index] += 1
+                yValuesActivityStatus[index] += 1
             }
         }
     }
@@ -110,10 +116,10 @@ function graphingActivityStatus(data) {
     activityStatusChart = new Chart("activityStatusHourlyAllTimeChart", {
         type: "bar",
         data: {
-            labels: xValues,
+            labels: xValuesActivityStatus,
             datasets: [{
                 backgroundColor: "green",
-                data: yValues,
+                data: yValuesActivityStatus,
                 ticks: {
                     beginAtZero: false
                 }
@@ -176,3 +182,39 @@ function graphingActivityStatus(data) {
 
 
 };
+
+
+function setUpForDownLoadActivityStatus(data) {
+    xValuesActivityStatus.push("Start Date");
+    yValuesActivityStatus.push(startDate);
+    xValuesActivityStatus.push("End Date");
+    yValuesActivityStatus.push(endDate);
+
+    var obj = {};
+    for (var i = 0; i < xValuesActivityStatus.length; i++) {
+        obj[xValuesActivityStatus[i]] = yValuesActivityStatus[i];
+    }
+
+    downloadAcivityStatus(obj, data);
+}
+function downloadAcivityStatus(obj, data) {
+
+    var element = document.createElement('a');
+
+    if (data == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
+
+        element.setAttribute('download', "ActivityStatus.json");
+    }
+    if (data == 2) {
+        var something = JSONToCSVConvertor(JSON.stringify(obj));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "ActivityStatus.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}

@@ -1,5 +1,5 @@
-﻿var xValuesReactions = [];
-var yValuesReactions = [];
+﻿var xValuesPopEmojis = [];
+var yValuesPopEmojis = [];
 
 $(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
@@ -10,6 +10,10 @@ $(document).ready(function () {
         error: handleError
     });
 })
+
+function GetPopReaction(data) {
+    setUpForDownLoadPopEmojis(data);
+};
 
 var reactionActivityData = [];
 var tempReactionActivityData = [];
@@ -75,8 +79,8 @@ function graphingReactionActivity(data) {
     $("#reactionStats").empty();
     //Good Chart
 
-    var xValues = [];
-    var yValues = [];
+    xValuesPopEmojis = [];
+    yValuesPopEmojis = [];
 
     for (var i = 0; i < data.length; i++) {
         var date = new Date(data[i].createdAt)
@@ -88,18 +92,18 @@ function graphingReactionActivity(data) {
             for (var e = 0; e < reactions.length - 1; e++) {
 
 
-                if (xValues.includes(String.fromCodePoint("0x" + reactions[e])) == false) {
-                    xValues.push(String.fromCodePoint("0x" + reactions[e]))
-                    yValues.push(1)
+                if (xValuesPopEmojis.includes(String.fromCodePoint("0x" + reactions[e])) == false) {
+                    xValuesPopEmojis.push(String.fromCodePoint("0x" + reactions[e]))
+                    yValuesPopEmojis.push(1)
                 }
-                else if (xValues.includes(String.fromCodePoint("0x" + reactions[e]))) {
-                    xValues.some(function (entry, i) {
+                else if (xValuesPopEmojis.includes(String.fromCodePoint("0x" + reactions[e]))) {
+                    xValuesPopEmojis.some(function (entry, i) {
                         if (entry == String.fromCodePoint("0x" + reactions[e])) {
                             index = i;
                             return true;
                         }
                     });
-                    yValues[index] += 1
+                    yValuesPopEmojis[index] += 1
                 }
             }
 
@@ -110,10 +114,10 @@ function graphingReactionActivity(data) {
     reactionsChart = new Chart("reactionStats", {
         type: "bar",
         data: {
-            labels: xValues,
+            labels: xValuesPopEmojis,
             datasets: [{
                 backgroundColor: "green",
-                data: yValues,
+                data: yValuesPopEmojis,
             }]
         },
 
@@ -170,3 +174,40 @@ function graphingReactionActivity(data) {
     })
 
 };
+
+
+
+function setUpForDownLoadPopEmojis(data) {
+    xValuesPopEmojis.push("Start Date");
+    yValuesPopEmojis.push(startDate);
+    xValuesPopEmojis.push("End Date");
+    yValuesPopEmojis.push(endDate);
+
+    var obj = {};
+    for (var i = 0; i < xValuesPopEmojis.length; i++) {
+        obj[xValuesPopEmojis[i]] = yValuesPopEmojis[i];
+    }
+
+    downloadPopEmojis(obj, data);
+}
+function downloadPopEmojis(obj, data) {
+
+    var element = document.createElement('a');
+
+    if (data == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
+
+        element.setAttribute('download', "PopularReaction.json");
+    }
+    if (data == 2) {
+        var something = JSONToCSVConvertor(JSON.stringify(obj));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "PopularReaction.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
