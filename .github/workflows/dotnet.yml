@@ -7,7 +7,7 @@ on:
 
 env:
   DOTNET_VERSION: '6.x.x'           # set this to the dot net version to use
-  PROJECT_PATH: './DiscordStat'
+  PROJECT_PATH: './sprint_3/ProjectDiscordStat/DiscordStat'
   PROJECT_NAME: 'DiscordStats_Tests'
   TEST_FILENAME: 'NUnitTestResults.md'
   DEPLOYMENT_RESOURCE_GROUP_NAME: 'AutomationTest'
