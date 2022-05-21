@@ -215,7 +215,7 @@ namespace DiscordStats.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetStatusesFromDatabaseForGraphAndDownload(string formatWithDetailsServerId)
+        public async Task<IActionResult> ActionResult(string formatWithDetailsServerId)
         {
             var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
             bool authenticated = false;
