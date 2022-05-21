@@ -163,7 +163,28 @@ namespace DiscordStats.Controllers
                 return RedirectToAction("Account", "Account");
 
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetAllPresencesFromDatabase(string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllPresencesFromDatabaseForGraphAndDownload(string formatWithServerId)
         {
