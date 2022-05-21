@@ -1,4 +1,7 @@
-﻿$(document).ready(function () {
+﻿var xValuesReactions = [];
+var yValuesReactions = [];
+
+$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     $.ajax({
         type: 'GET',
