@@ -7,6 +7,7 @@ on:
 
 env:
   DOTNET_VERSION: '6.x.x'           # set this to the dot net version to use
+  PROJECT_PATH: './DiscordStat'
   PROJECT_NAME: 'DiscordStats_Tests'
   TEST_FILENAME: 'NUnitTestResults.md'
   DEPLOYMENT_RESOURCE_GROUP_NAME: 'AutomationTest'
@@ -38,21 +39,21 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }} 
 
       # confirm we can access secrets within an environment
-      - name: decrypt deployment config file
-        env:
-          CONFIG_SECRET: ${{ secrets.CONFIG_SECRET }}
-        run: |
-          mkdir $HOME/secrets
-          gpg --quiet --batch --yes --decrypt --passphrase="$CONFIG_SECRET" --output $HOME/secrets/config.json config/config.json.gpg
-      - name: Test printing your secret file (remove this step in production)
-        run: cat $HOME/secrets/config.json
+      #- name: decrypt deployment config file
+      #  env:
+       #   CONFIG_SECRET: ${{ secrets.CONFIG_SECRET }}
+      #  run: |
+      #    mkdir $HOME/secrets
+   #       gpg --quiet --batch --yes --decrypt --passphrase="$CONFIG_SECRET" --output $HOME/secrets/config.json config/config.json.gpg
+     # - name: Test printing your secret file (remove this step in production)
+    #    run: cat $HOME/secrets/config.json
         
       # Build the selected project
-      # - name: Build project
-      #   working-directory: ${{ env.PROJECT_PATH }}
-      #   run: |
-      #     dotnet restore
-      #     dotnet build
+      - name: Build project
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+           dotnet restore
+           dotnet build
 
       # Test the selected project
       # - name: Run unit tests on the main project
