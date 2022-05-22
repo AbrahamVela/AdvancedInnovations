@@ -744,47 +744,47 @@ namespace DiscordStats_Tests
             Assert.AreEqual(discord.CheckForBot("FakeBotToken", "FakeServerId").Result, "false");
         }
 
-        [Test]
-        public async Task AddMemberToGuild_SuccessfullyRespondsWithAlreadyAMemeber()
-        {
-            // Arrange  (wrap this up in a method to reuse it)
-            var handler = new Mock<HttpMessageHandler>();
-            AddMemberToPickedServerVM addedMemberProcessInfoVM = new();
+        //[Test]
+        //public async Task AddMemberToGuild_SuccessfullyRespondsWithAlreadyAMemeber()
+        //{
+        //    // Arrange  (wrap this up in a method to reuse it)
+        //    var handler = new Mock<HttpMessageHandler>();
+        //    AddMemberToPickedServerVM addedMemberProcessInfoVM = new();
 
-            string jsonFromDiscordAPI = @"{
-        ""roles"": [], 
-        ""nick"": null, 
-        ""avatar"": null, 
-        ""premium_since"": null, 
-        ""joined_at"": ""2022-01-04T19:41:39.926000+00:00"", 
-        ""is_pending"": false, 
-        ""pending"": false, 
-        ""communication_disabled_until"": null, 
-        ""user"": {""id"": ""697317543555235840"", 
-        ""username"": ""Abraham"", 
-        ""avatar"": ""0753a332ab63d2f91971ad57e25123d3"", 
-        ""discriminator"": ""7167"", 
-        ""public_flags"": 0}, 
-        ""mute"": false, 
-        ""deaf"": false}";
+        //    string jsonFromDiscordAPI = @"{
+        //""roles"": [], 
+        //""nick"": null, 
+        //""avatar"": null, 
+        //""premium_since"": null, 
+        //""joined_at"": ""2022-01-04T19:41:39.926000+00:00"", 
+        //""is_pending"": false, 
+        //""pending"": false, 
+        //""communication_disabled_until"": null, 
+        //""user"": {""id"": ""697317543555235840"", 
+        //""username"": ""Abraham"", 
+        //""avatar"": ""0753a332ab63d2f91971ad57e25123d3"", 
+        //""discriminator"": ""7167"", 
+        //""public_flags"": 0}, 
+        //""mute"": false, 
+        //""deaf"": false}";
 
-            var response = new HttpResponseMessage()
-            {
-                Content = new StringContent(jsonFromDiscordAPI)
-            };
-            handler.SetupAnyRequest()
-                    .ReturnsAsync(response);
+        //    var response = new HttpResponseMessage()
+        //    {
+        //        Content = new StringContent(jsonFromDiscordAPI)
+        //    };
+        //    handler.SetupAnyRequest()
+        //            .ReturnsAsync(response);
 
-            DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null, null);
+        //    DiscordService discord = new DiscordService(handler.CreateClientFactory(), _serverRepository, _presenceRepository, null,null,null, null, null);
 
-            // Act
-            string? responseInfo = await discord.AddMemberToGuild("fakeBotToken", "fakeServerId");
-            var returnAnswer = addedMemberProcessInfoVM.infoOfProcessOfBeingAdded(responseInfo);
-            var realAnswer = "You've already joined. From discord:  \r\n        \"joined_at\": \"2022-01-04T19:41:39.926000+00:00\"";
+        //    // Act
+        //    string? responseInfo = await discord.AddMemberToGuild("fakeBotToken", "fakeServerId");
+        //    var returnAnswer = addedMemberProcessInfoVM.infoOfProcessOfBeingAdded(responseInfo);
+        //    var realAnswer = "You've already joined. From discord:  \r\n        \"joined_at\": \"2022-01-04T19:41:39.926000+00:00\"";
 
-            // Assert
-            Assert.AreEqual(returnAnswer, realAnswer);
-        }
+        //    // Assert
+        //    Assert.AreEqual(returnAnswer, realAnswer);
+        //}
         [Test]
         public async Task Check_For_Duplicate_Presence_Should_Add_New_Presence()
         {
