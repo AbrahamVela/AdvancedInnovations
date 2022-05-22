@@ -105,6 +105,12 @@ namespace DiscordStats.Controllers
             else
                 return RedirectToAction("Account", "Account");
         }
+        [HttpGet]
+        public async Task<IActionResult> GetVoiceStatesFromDatabaseT(string ServerId)
+        {
+
+                return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
         [HttpGet] 
         public async Task<IActionResult> GetVoiceStatesFromDatabaseForGraphAndDownload(string formatWithServerId)
         {
@@ -186,6 +192,12 @@ namespace DiscordStats.Controllers
                 return RedirectToAction("Account", "Account");
         }
         [HttpGet]
+        public async Task<IActionResult> GetAllPresencesFromDatabaseT(string ServerId)
+        {          
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+          
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAllPresencesFromDatabaseForGraphAndDownload(string formatWithServerId)
         {
 
@@ -215,7 +227,7 @@ namespace DiscordStats.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> ActionResult(string formatWithDetailsServerId)
+        public async Task<IActionResult> GetStatusesFromDatabaseForGraphAndDownload(string formatWithDetailsServerId)
         {
             var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
             bool authenticated = false;
@@ -238,6 +250,16 @@ namespace DiscordStats.Controllers
             }
             else
                 return RedirectToAction("Account", "Account");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStatusesFromDatabaseForGraphAndDownloadT(string formatWithDetailsServerId)
+        {
+
+                   
+                var data = _statusRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerId).ToList();
+               
+                return Json(data);
         }
         [HttpGet]
         public async Task<IActionResult> GetPresencesFromDatabase(string ServerId, string GameName)
@@ -262,6 +284,12 @@ namespace DiscordStats.Controllers
             else
                 return RedirectToAction("Account", "Account");
 
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPresencesFromDatabaseT(string ServerId, string GameName)
+        {
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+          
         }
 
         [HttpGet]
@@ -350,6 +378,13 @@ namespace DiscordStats.Controllers
             }
             else
                 return RedirectToAction("Account", "Account");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetUsersFromDatabaseT(string ServerId)
+        {
+           
+                return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
+          
         }
 
 

@@ -118,13 +118,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetStatusesFromDatabaseReturnsCorrectData()
+        public async Task GetStatusesFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, null, null, _serverRepository, null, null, null, null, _statusRepository);
+            StatsController statsController = new StatsController(null, _userRepo, null, null,null, _serverRepository,  null, null,null, null, _statusRepository);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetStatusesFromDatabase("512");
+            JsonResult result = (JsonResult)await statsController.GetStatusesFromDatabaseForGraphAndDownloadT("512");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             var correctList = new List<Status> { new Status() { StatusPk = 3, UserId = "789", ServerId = "512", CreatedAt = now } };
             var correctSerializedResult = JsonConvert.SerializeObject(correctList);
@@ -134,13 +134,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetStatusesFromDatabaseWrongServerId()
+        public async Task GetStatusesFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, null, null, _serverRepository, null, null, null, null, _statusRepository);
+            StatsController statsController = new StatsController(null, _userRepo, null, null, null, _serverRepository, null, null, null, null, _statusRepository);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetStatusesFromDatabase("");
+            JsonResult result = (JsonResult)await statsController.GetStatusesFromDatabaseForGraphAndDownloadT("");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             String[] a = Array.Empty<string>();
             var correctSerializedResult = JsonConvert.SerializeObject(a);

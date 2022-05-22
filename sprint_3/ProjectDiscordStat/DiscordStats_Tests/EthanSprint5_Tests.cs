@@ -165,7 +165,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetMessageInfoFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null,  _userRepo,  null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -179,13 +179,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetPresencesFromDatabaseReturnsCorrectData()
+        public async Task GetPresencesFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null, null);
+            StatsController statsController = new StatsController(null, _userRepo,null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetPresencesFromDatabase("GRDFATYG", "Test4 Name");
+            JsonResult result = (JsonResult) await statsController.GetPresencesFromDatabaseT("GRDFATYG", "Test4 Name");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             var correctList = new List<Presence> { new Presence(){ Id = "2f3c46243vg24", PresencePk = 5, ApplicationId = "c1 35134", Name = "Test4 Name", Details = "w456h", CreatedAt = now, LargeImageId = "2   3rq453g", SmallImageId = "aedrgaerge", ServerId = "GRDFATYG", UserId = "adrghae45ae", Image = "aergaerbeyha" } };
             var correctSerializedResult = JsonConvert.SerializeObject(correctList);
@@ -195,13 +195,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetAllPresencesFromDatabaseReturnsCorrectData()
+        public async Task GetAllPresencesFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null, _userRepo,null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetAllPresencesFromDatabase("GRDFATYG");
+            JsonResult result = (JsonResult) await statsController.GetAllPresencesFromDatabaseT("GRDFATYG");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             var correctList = new List<Presence> { new Presence() { Id = "2f3c46243vg24", PresencePk = 5, ApplicationId = "c1 35134", Name = "Test4 Name", Details = "w456h", CreatedAt = now, LargeImageId = "2   3rq453g", SmallImageId = "aedrgaerge", ServerId = "GRDFATYG", UserId = "adrghae45ae", Image = "aergaerbeyha" } };
             var correctSerializedResult = JsonConvert.SerializeObject(correctList);
@@ -211,13 +211,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetUsersFromDatabaseReturnsCorrectData()
+        public async Task GetUsersFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null, _userRepo, null,_presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetUsersFromDatabase("1122334455");
+            JsonResult result = (JsonResult)await statsController.GetUsersFromDatabaseT("1122334455");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             var correctList = new List<DiscordUserAndUserWebSiteInfo> { new DiscordUserAndUserWebSiteInfo(){Id = "697317543555235841", DiscordUserPk = 2, Username = "Shananay", Servers = "1122334455", Avatar="0753a332ab63d2f91971ad57e25123d4", FirstName="S", LastName="V", BirthDate="2022-03-23", Email="s@v.com"} };
             var correctSerializedResult = JsonConvert.SerializeObject(correctList);
@@ -227,13 +227,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetVoiceStatesFromDatabaseReturnsCorrectData()
+        public async Task GetVoiceStatesFromDatabaseReturnsCorrectData()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null, _userRepo,null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetVoiceStatesFromDatabase("512");
+            JsonResult result = (JsonResult) await statsController.GetVoiceStatesFromDatabaseT("512");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             var correctList = new List<VoiceState> { new VoiceState(){ VoiceStatePk = 3, UserId = "789", ChannelId = "345", ServerId = "512", CreatedAt = now } };
             var correctSerializedResult = JsonConvert.SerializeObject(correctList);
@@ -247,7 +247,7 @@ namespace DiscordStats_Tests
         [Test]
         public void GetMessageInfoFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null, _userRepo,null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
@@ -263,13 +263,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetPresencesFromDatabaseWrongServerId()
+        public async Task GetPresencesFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null,null);
+            StatsController statsController = new StatsController(null, _userRepo, null,_presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository,null,null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetPresencesFromDatabase("", "Test4 Name");
+            JsonResult result = (JsonResult) await statsController.GetPresencesFromDatabaseT("", "Test4 Name");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             String[] a = Array.Empty<string>();
             var correctSerializedResult = JsonConvert.SerializeObject(a);
@@ -280,13 +280,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetAllPresencesFromDatabaseWrongServerId()
+        public async Task GetAllPresencesFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null, _userRepo,null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetAllPresencesFromDatabase("");
+            JsonResult result = (JsonResult) await statsController.GetAllPresencesFromDatabaseT("");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             String[] a = Array.Empty<string>();
             var correctSerializedResult = JsonConvert.SerializeObject(a);
@@ -297,13 +297,13 @@ namespace DiscordStats_Tests
         }
 
         [Test]
-        public void GetUsersFromDatabaseWrongServerId()
+        public async Task GetUsersFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null, _userRepo, null,_presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetUsersFromDatabase("");
+            JsonResult result = (JsonResult)await statsController.GetUsersFromDatabaseT("");
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             String[] a = Array.Empty<string>();
             var correctSerializedResult = JsonConvert.SerializeObject(a);
@@ -313,37 +313,23 @@ namespace DiscordStats_Tests
             Assert.AreEqual(serializedResult, correctSerializedResult);
         }
 
+
         [Test]
-        public void GetVoiceStatesFromDatabaseWrongServerId()
+        public async Task GetVoiceStatesFromDatabaseWrongServerId()
         {
-            StatsController statsController = new StatsController(null, _userRepo, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
+            StatsController statsController = new StatsController(null, _userRepo, null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
             statsController.ControllerContext = new ControllerContext();
 
             // Act
-            JsonResult result = (JsonResult)statsController.GetVoiceStatesFromDatabase("");
+            var result = (JsonResult)await statsController.GetVoiceStatesFromDatabaseT("");
+      
             var serializedResult = JsonConvert.SerializeObject(result.Value);
             String[] a = Array.Empty<string>();
             var correctSerializedResult = JsonConvert.SerializeObject(a);
 
-//            // Assert
-//            Assert.AreEqual(serializedResult, correctSerializedResult);
-//        }
 
-//        [Test]
-//        public void GetVoiceStatesFromDatabaseWrongServerId()
-//        {
-//            StatsController statsController = new StatsController(null, _userRepo, null, _presenceRepo, null, _serverRepository, null, _mockMessageInfoRepository, _mockVoiceStateRepository, null, null);
-//            statsController.ControllerContext = new ControllerContext();
-
-//            // Act
-//            JsonResult result = (JsonResult)statsController.GetVoiceStatesFromDatabase("");
-//            var serializedResult = JsonConvert.SerializeObject(result.Value);
-//            String[] a = Array.Empty<string>();
-//            var correctSerializedResult = JsonConvert.SerializeObject(a);
-
-
-//            // Assert
-//            Assert.AreEqual(serializedResult, correctSerializedResult);
-//        }
-//    }
-//}
+            // Assert
+            Assert.AreEqual(serializedResult, correctSerializedResult);
+        }
+    }
+}

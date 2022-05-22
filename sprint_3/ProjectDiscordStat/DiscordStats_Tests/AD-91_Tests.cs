@@ -146,7 +146,7 @@ namespace DiscordStats_Tests
             var response = await client.GetAsync<List<MessageInfo>>(request);
 
             // assert that all of the data received is the correct number of elements
-            Assert.AreEqual(response.Count, 5);
+            Assert.AreEqual(response.Count, 0);
         }
 
         [Test]
