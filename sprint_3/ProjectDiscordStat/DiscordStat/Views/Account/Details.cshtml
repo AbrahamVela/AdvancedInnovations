@@ -271,7 +271,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-3" style="margin-left:15%">
-                    <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")" value="2020-01-01">
+                    <input type="date" id="startDateGraph" name="startDate" min="2015-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")">
                 </div>
                 <div class="col-3" style="margin-left:-9%">
                     <input type="date" id="endDateGraph" name="endDate" min="2015-02-01" max="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")">
@@ -354,7 +354,7 @@
                 </div>
                 <div class="col-md-6 col-sm-12 col-xs-12 justify-content-center">
                     <canvas id="reactionStats" style="width:100%;max-width:700px;max-height: 330px; margin: 0 auto;"></canvas>
-                    <div class="row" style="margin-top:2%; text-align:right">
+                      <div class="row" style="margin-top:2%; text-align:right">
                         <div class="col">
                             <h5>Download Popular Reaction Data:</h5>
 

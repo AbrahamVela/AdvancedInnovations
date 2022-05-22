@@ -105,13 +105,18 @@ namespace DiscordStats.Controllers
             else
                 return RedirectToAction("Account", "Account");
         }
-
-
         [HttpGet]
-        public async Task<IActionResult> GetMessageInfoFromDatabase(string ServerId)
+        public async Task<IActionResult> GetVoiceStatesFromDatabaseT(string ServerId)
         {
+
+                return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
+        [HttpGet] 
+        public async Task<IActionResult> GetVoiceStatesFromDatabaseForGraphAndDownload(string formatWithServerId)
+        {
+            var formatWithServerIdSplitted = formatWithServerId.Split(":");
             bool authenticated = false;
-            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithServerIdSplitted[1]);
             if (usersInGuild == null)
             {
                 return RedirectToAction("Account", "Account");
@@ -124,7 +129,41 @@ namespace DiscordStats.Controllers
             }
             if (authenticated)
             {
-                return Json(_messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+                var data = _voiceStateRepository.GetAll().Where(s => s.ServerId == formatWithServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithServerIdSplitted[0] };
+                return Json(result);
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
+        [HttpGet]
+        public IActionResult GetMessageInfoFromDatabase(string ServerId)
+        {
+            var item = _messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList();
+            return Json(item);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMessageInfoFromDatabaseForGraphAndDownload(string formatWithServerId)
+        {
+            var formatWithServerIdSplitted = formatWithServerId.Split(":");
+
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithServerIdSplitted[1]);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var data = _messageInfoRepository.GetAll().Where(s => s.ServerId == formatWithServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithServerIdSplitted[0] };
+                return Json(result);
             }
             else
                 return RedirectToAction("Account", "Account");
@@ -153,11 +192,19 @@ namespace DiscordStats.Controllers
                 return RedirectToAction("Account", "Account");
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllPresencesFromDatabase(string ServerId)
+        public async Task<IActionResult> GetAllPresencesFromDatabaseT(string ServerId)
+        {          
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+          
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPresencesFromDatabaseForGraphAndDownload(string formatWithServerId)
         {
 
+            var formatWithServerIdSplitted = formatWithServerId.Split(":");
+
             bool authenticated = false;
-            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithServerIdSplitted[1]);
             if (usersInGuild == null)
             {
                 return RedirectToAction("Account", "Account");
@@ -170,7 +217,9 @@ namespace DiscordStats.Controllers
             }
             if (authenticated)
             {
-                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+                var data = _presenceRepository.GetAll().Where(s => s.ServerId ==  formatWithServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithServerIdSplitted[0] };
+                return Json(result);
             }
             else
                 return RedirectToAction("Account", "Account");
@@ -178,11 +227,11 @@ namespace DiscordStats.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetStatusesFromDatabase(string ServerId)
+        public async Task<IActionResult> GetStatusesFromDatabaseForGraphAndDownload(string formatWithDetailsServerId)
         {
-
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
             bool authenticated = false;
-            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithDetailsServerIdSplitted[1]);
             if (usersInGuild == null)
             {
                 return RedirectToAction("Account", "Account");
@@ -195,10 +244,22 @@ namespace DiscordStats.Controllers
             }
             if (authenticated)
             {
-                return Json(_statusRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+                var data = _statusRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+                return Json(result);
             }
             else
                 return RedirectToAction("Account", "Account");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStatusesFromDatabaseForGraphAndDownloadT(string formatWithDetailsServerId)
+        {
+
+                   
+                var data = _statusRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerId).ToList();
+               
+                return Json(data);
         }
         [HttpGet]
         public async Task<IActionResult> GetPresencesFromDatabase(string ServerId, string GameName)
@@ -217,24 +278,48 @@ namespace DiscordStats.Controllers
             }
             if (authenticated)
             {
+                var a = _presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList();
                 return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
             }
             else
                 return RedirectToAction("Account", "Account");
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetPresencesFromDatabaseT(string ServerId, string GameName)
+        {
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+          
+        }
 
         [HttpGet]
-        [AllowAnonymous]
-        public IActionResult GetPresenceDataFromDb()
+        public async Task<IActionResult> GetPresencesFromDatabaseForGraphAndDownload(string formatWithDetailsServerId, string GameName)
         {
-            _logger.LogInformation("GetPresenceDataFromDb");
-            List<Presence> presences = _presenceRepository.GetAll().ToList();
-            PresenceChartDataVM presenceChartDataVM = new();
-            var presencesNameAndCount = presenceChartDataVM.AllPresenceNameListAndCount(presences);
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
 
-            return Json(new { userPerGame = presencesNameAndCount });
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithDetailsServerIdSplitted[1]);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var data = _presenceRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1] && s.Name == GameName).ToList();
+                var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+                return Json(result);
+            }
+            else
+                return RedirectToAction("Account", "Account");
+
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetServerMemberFromDatabaseWithDateForGraphAndDownload(string formatWithDetailsServerId, string startDate, string endDate)
@@ -294,6 +379,25 @@ namespace DiscordStats.Controllers
             else
                 return RedirectToAction("Account", "Account");
         }
+        [HttpGet]
+        public async Task<IActionResult> GetUsersFromDatabaseT(string ServerId)
+        {
+           
+                return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
+          
+        }
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetPresenceDataFromDb()
+        {
+            _logger.LogInformation("GetPresenceDataFromDb");
+            List<Presence> presences = _presenceRepository.GetAll().ToList();
+            PresenceChartDataVM presenceChartDataVM = new();
+            var presencesNameAndCount = presenceChartDataVM.AllPresenceNameListAndCount(presences);
+
+            return Json(new { userPerGame = presencesNameAndCount });
+        }
     }
 }
