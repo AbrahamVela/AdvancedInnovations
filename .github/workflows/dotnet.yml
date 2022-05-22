@@ -1,0 +1,22 @@
+name: .NET Core
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.x.x
+    - name: Build with dotnet
+      run: dotnet build DiscordStats.csproj --configuration Release
+      working-directory: ./sprint_3/ProjectDiscordStat/DiscordStat
+    - name: Test
+      run: dotnet test DiscordStats_Tests.csproj --configuration Release
+      working-directory: ./sprint_3/ProjectDiscordStat/DiscordStats_Tests
+      
+
