@@ -15,8 +15,8 @@ jobs:
     - name: Build with dotnet
       run: dotnet build DiscordStats.csproj --configuration Release
       working-directory: ./sprint_3/ProjectDiscordStat/DiscordStat
-    #- name: Test
-      #run: dotnet test
-      #working-directory: ./sprint_3/ProjectDiscordStat/DiscordStat/DiscordStats.csproj
+    - name: Test
+      run: dotnet test DiscordStats.csproj --configuration Release
+      working-directory: ./sprint_3/ProjectDiscordStat/DiscordStat
       
 
