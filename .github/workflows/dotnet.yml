@@ -13,7 +13,7 @@ jobs:
       with:
         dotnet-version: 6.x.x
     - name: Build with dotnet
-      run: dotnet build DiscordStat/DiscordStats.csproj --configuration Release
+      run: dotnet build DiscordStats.csproj --configuration Release
       working-directory: ./sprint_3/ProjectDiscordStat/DiscordStat
     #- name: Test
       #run: dotnet test
