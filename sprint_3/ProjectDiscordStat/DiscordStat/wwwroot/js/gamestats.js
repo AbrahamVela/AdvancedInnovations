@@ -2,6 +2,7 @@
 var yValuesGameDetails = [];
 
 $(document).ready(function () {
+
     let detailsServerId = $("#ServerId").attr('value');
     let gameDetailsGameName = $("#GameName").attr('value');
 
@@ -100,7 +101,13 @@ $("#allUsersPresences").change(function () {
 function barGraphHourlyPresenceActivity(data) {
     presenceActivityData = data
     tempPresenceActivityData = data
-    graphingPresenceActivity(tempPresenceActivityData)
+
+    if (data.includes("meta name")) {
+        location.reload();
+    }
+    else {
+        graphingPresenceActivity(tempPresenceActivityData)
+    }
 }
 
 
