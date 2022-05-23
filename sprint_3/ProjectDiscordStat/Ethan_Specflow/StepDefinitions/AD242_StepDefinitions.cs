@@ -23,20 +23,20 @@ namespace Ethan_Specflow.StepDefinitions
 
         }
 
-        [Given(@"I am on the Homepage")]
-        public void CheckHomePage()
-        {
-            _homePage.Goto(Common.HomePageName);
-            var check = true;
-            _homePage.SaveAllCookies();
-        }
-
         //[Given(@"I am on the Homepage")]
         //public void CheckHomePage()
         //{
         //    _homePage.Goto(Common.HomePageName);
-        //    _homePage.GetTitle.Should().Be("WELCOME");
+        //    var check = true;
+        //    _homePage.SaveAllCookies();
         //}
+
+        [Given(@"I am on the Homepage")]
+        public void CheckHomePage()
+        {
+            _homePage.Goto(Common.HomePageName);
+            _homePage.GetTitle.Should().Be("WELCOME");
+        }
 
         [When(@"I login")]
 
