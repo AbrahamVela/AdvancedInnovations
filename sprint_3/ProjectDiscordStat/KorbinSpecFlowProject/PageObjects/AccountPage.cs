@@ -13,7 +13,7 @@ namespace KorbinSpecFlowProject.PageObjects
         private IWebElement logoutButton => _browserInteractions.WaitAndReturnElement(By.Id("logoutButton"));
         private IWebElement UserServers => _browserInteractions.WaitAndReturnElement(By.Id("ServersBlock"));
         private IWebElement ServerInfoButton => _browserInteractions.WaitAndReturnElement(By.Id("Advanced Innovations"));
-        private IWebElement ServerInfoButtonNoBot => _browserInteractions.WaitAndReturnElement(By.Id("Pizza Pals"));
+        private IWebElement ServerInfoButtonNoBot => _browserInteractions.WaitAndReturnElement(By.Id("OpenOSRS"));
         private IWebElement noBotMessage => _browserInteractions.WaitAndReturnElement(By.Id("noBotMessage"));
         private IWebElement NextButton => _browserInteractions.WaitAndReturnElement(By.Id("serverTable_next"));
         public AccountPage(IBrowserInteractions browserInteractions)

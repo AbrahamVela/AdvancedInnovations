@@ -1,9 +1,10 @@
-﻿
+﻿var xValuesMessages = [];
+var yValuesMessages = [];
 $(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     $.ajax({
-        type: 'GET',
-        url: '../Stats/GetMessageInfoFromDatabase?serverid=' + detailsServerId,
+        type: "GET",
+        url: '../Stats/GetMessageInfoFromDatabase?ServerId=' + detailsServerId,
         success: barGraphHourlyMessageActivity,
         error: handleError
     });
@@ -11,18 +12,24 @@ $(document).ready(function () {
     $.ajax({
         type: 'GET',
         url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
-        success: graphMessageDropDownBox,
+        success: graphUsersDropDownBox,
         error: handleError
     });
-})
+
+});
+
+function GetActiveMessageTime(data) {
+    setUpForDownLoadMessages(data);
+};
+
 
 var messageActivityData = [];
 var tempMessageActivityData = [];
 var messagesChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
-function graphMessageDropDownBox(data) {
+function graphUsersDropDownBox(data) {
     var allUsers = document.getElementById("allUsers");
 
     for (i = 0; i < data.length; i++) {
@@ -48,7 +55,8 @@ $("#allUsers").change(function () {
         if (messagesChart != null) {
             messagesChart.destroy();
         }
-        graphingMessageActivity(messageActivityData)
+        tempMessageActivityData = messageActivityData
+        graphingMessageActivity(tempMessageActivityData)
     }
     else {
         for (var i = 0; i < messageActivityData.length; i++) {
@@ -69,15 +77,17 @@ $("#startDateGraph").change(function () {
     if (messagesChart != null) {
         messagesChart.destroy();
     }
+    tempMessageActivityData.format = 0;
     graphingMessageActivity(tempMessageActivityData);
 
 });
 
 $("#endDateGraph").change(function () {
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (messagesChart != null) {
         messagesChart.destroy();
     }
+    tempMessageActivityData.format = 0;
     graphingMessageActivity(tempMessageActivityData);
 });
 
@@ -90,8 +100,8 @@ function barGraphHourlyMessageActivity(data) {
 function graphingMessageActivity(data) {
     $("#usersHourlyAllTimeChart").empty();
     //Good Chart
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    xValuesMessages = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
+    yValuesMessages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
     //for (var i = 0; i < data.length; i++) {
@@ -108,27 +118,28 @@ function graphingMessageActivity(data) {
     //}
 
     for (var i = 0; i < data.length; i++) {
-        var dateUTC = new Date(data[i].createdAt)
-        var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        var date = new Date(data[i].createdAt)
+        //var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        //console.log("Messages Data Date: " + dateUTC)
+        //console.log("Messages Data DateUTC: " + date)
 
         if (date > startDate && date < endDate) {
             let hour = date.getHours()
             subtraction = hour - 4;
             if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
+                subtraction = yValuesMessages.length + subtraction;
             }
-            console.log(subtraction);
-            yValues[subtraction] += 1;
+            yValuesMessages[subtraction] += 1;
         }
     }
 
     messagesChart = new Chart("usersHourlyAllTimeChart", {
         type: "bar",
         data: {
-            labels: xValues,
+            labels: xValuesMessages,
             datasets: [{
                 backgroundColor: "green",
-                data: yValues,
+                data: yValuesMessages,
             }]
         },
 
@@ -147,17 +158,17 @@ function graphingMessageActivity(data) {
                     }
                 },
             },
-                        scales: {
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Messages Sent',
-                                    padding: 10,
-                                    color: 'black',
-                                    font: {
-                                        size: 25
-                                    }
-                                },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Messages Sent',
+                        padding: 10,
+                        color: 'black',
+                        font: {
+                            size: 25
+                        }
+                    },
                     ticks: {
                         beginAtZero: false,
                         precision: 0,
@@ -178,14 +189,46 @@ function graphingMessageActivity(data) {
                         }
                     }
                 }
-            },
+            }
 
-        }
+        },
 
-        
-
-            
     })
 
-
 };
+
+function setUpForDownLoadMessages(data) {
+    xValuesMessages.push("Start Date");
+    yValuesMessages.push(startDate);
+    xValuesMessages.push("End Date");
+    yValuesMessages.push(endDate);
+
+        var obj = {};
+    for (var i = 0; i < xValuesMessages.length; i++) {
+        obj[xValuesMessages[i]] = yValuesMessages[i];
+        }
+
+    downloadForHourlyMessageActivity(obj, data);
+
+}
+function downloadForHourlyMessageActivity(obj, data) {
+
+    var element = document.createElement('a');
+
+    if (data == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
+
+        element.setAttribute('download', "ActiveMessagingTime.json");
+    }
+    if (data == 2) {
+        var something = JSONToCSVConvertor(JSON.stringify(obj));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "ActiveMessagingTime.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}

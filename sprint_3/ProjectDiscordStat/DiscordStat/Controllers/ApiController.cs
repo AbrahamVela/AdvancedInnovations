@@ -3,20 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using DiscordStats.DAL.Abstract;
 using DiscordStats.ViewModel;
+using DiscordStats.Attributes;
 
 
 namespace DiscordStats.Controllers
 {
     [Route("api/[action]")]
     [ApiController]
+    [ApiKey]
     public class ApiController : Controller
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-
         private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
         private readonly IPresenceRepository _presenceRepository;
         private readonly ILogger<ApiController> _logger;
@@ -27,9 +23,10 @@ namespace DiscordStats.Controllers
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IVoiceStateRepository _voiceStateRepository;
+        private readonly IStatusRepository _statusRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
 
-        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
-
+        public ApiController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IDiscordServicesForChannels discordServicesForChannels, IServerRepository serverRepository, IChannelRepository channelRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository, IServerMemberRepository serverMemberRepository, IStatusRepository statusRepository)
         {
             _logger = logger;
             _userRepository = discordUserRepo;
@@ -41,20 +38,22 @@ namespace DiscordStats.Controllers
             _messageInfoRepository = messageInfoRepository;
             _voiceChannelRepository = voiceChannelRepository;
             _voiceStateRepository = voiceStateRepository;
+            _statusRepository = statusRepository;
+            _serverMemberRepository = serverMemberRepository;
         }
 
-
+        
         [HttpPost]
-        public async Task<IActionResult> PostUsers(DiscordUserAndUserWebSiteInfo[] users)
+        public IActionResult PostUsers(DiscordUserAndUserWebSiteInfo user)
         {
            
-            foreach (var user in users)
-            {
+            //foreach (var user in users)
+            //{
 
 
-                Task.Delay(1000).Wait();
-                await Task.Run(() =>
-                {
+                //Task.Delay(1000).Wait();
+                //await Task.Run(() =>
+                //{
                     var duplicate = false;
 
                     var allDiscordUsers = _userRepository.GetAll().ToList();
@@ -70,7 +69,7 @@ namespace DiscordStats.Controllers
                     {
                         _userRepository.AddOrUpdate(user);
                     }
-                });
+                //});
 
                 var query = _userRepository.GetAll()
                 .Where(m => m.Username == user.Username && m.Servers == user.Servers).Skip(1).ToList();
@@ -79,7 +78,7 @@ namespace DiscordStats.Controllers
                     _userRepository.Delete(dupe);
                 }
 
-            }
+            //}
             return Json("It worked");
         }
 
@@ -116,23 +115,35 @@ namespace DiscordStats.Controllers
             return Json("fail");
         }
 
-        public IActionResult GetPresenceDataFromDb()
-        {
-            _logger.LogInformation("GetPresenceDataFromDb");            
-            List<Presence> presences = _presenceRepository.GetAll().ToList(); // .Where(a => a. Privacy == "public").OrderByDescending(m => m.ApproximateMemberCount).Take(5);
-            PresenceChartDataVM presenceChartDataVM = new();
-            var presencesNameAndCount = presenceChartDataVM.AllPresenceNameListAndCount(presences);
-
-            return Json(new { userPerGame = presencesNameAndCount });
-        }
+       
 
 
 
         [HttpPost]
         public async Task<IActionResult> PostServers(Server[] servers)
         {
-            foreach (var server in servers)
+
+            
+
+                foreach (var server in servers)
             {
+
+                bool duplicateCount = false;
+                var currentServerMembers = _serverMemberRepository.GetAll().Where(s => s.Id == server.Id).ToList();
+                foreach (var s in currentServerMembers)
+                {
+                    if (s.Date.Date == DateTime.Now.Date && s.Date.Hour == DateTime.Now.Hour)
+                        duplicateCount = true;
+                }
+                if (!duplicateCount)
+                {
+                    ServerMembers newServerCount = new();
+                    newServerCount.Date = DateTime.Now;
+                    newServerCount.Members = server.ApproximateMemberCount;
+                    newServerCount.Id = server.Id;
+                    _serverMemberRepository.AddOrUpdate(newServerCount);
+                }
+
                 var duplicate = false;
 
                 Task.Delay(300).Wait();
@@ -189,11 +200,33 @@ namespace DiscordStats.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> PostMessageDataArray(MessageInfo[] messages)
+        {
+            foreach(var botMessage in messages)
+            {
+                var duplicate = false;
+                foreach(var dbMessage in _messageInfoRepository.GetAll().ToList())
+                {
+                    if (botMessage.Id == dbMessage.Id)
+                    {
+                        dbMessage.Reactions = botMessage.Reactions;
+                        dbMessage.ReactionUrl = botMessage.ReactionUrl;
+                        _messageInfoRepository.AddOrUpdate(dbMessage);
+                    }
+                }
+            }
+            //_messageInfoRepository.AddOrUpdate(message);
+            //await _channelRepository.UpdateMessageCount(message);
+            return Json("It worked");
+        }
+
+        [HttpPost]
         public IActionResult PostVoiceStates(VoiceState[] voiceStates)
         {
             var duplicate = false;
             foreach (var voiceState in voiceStates)
             {
+                voiceState.CreatedAt = DateTime.UtcNow;
                 foreach (var voice in _voiceStateRepository.GetAll().ToList())
                 {
                     if (voice.UserId == voiceState.UserId && voice.ServerId == voiceState.ServerId && voice.CreatedAt?.Hour == voiceState.CreatedAt?.Hour && voice.CreatedAt?.Date == voiceState.CreatedAt?.Date)
@@ -207,7 +240,7 @@ namespace DiscordStats.Controllers
                     {
                         var newVoiceState = voiceState;
                         newVoiceState.CreatedAt = DateTime.UtcNow;
-                        _voiceStateRepository.AddOrUpdate(voiceState);
+                        _voiceStateRepository.AddOrUpdate(newVoiceState);
 
                     }
                 }
@@ -217,6 +250,47 @@ namespace DiscordStats.Controllers
                 }
             }
 
+            return Json("It worked");
+        }
+
+        [HttpPost]
+        public IActionResult PostStatuses(Status[] statuses)
+        {
+            var duplicate = false;
+            Status dublicateStatus = new Status();
+            foreach (var status in statuses)
+            {
+                status.CreatedAt = DateTime.UtcNow;
+                foreach (var s in _statusRepository.GetAll().ToList())
+                {
+                    if (s.UserId == status.UserId && s.ServerId == status.ServerId && s.CreatedAt?.Hour == status.CreatedAt?.Hour && s.CreatedAt?.Date == status.CreatedAt?.Date)
+                    {
+                        duplicate = true;
+                        dublicateStatus = s;
+                    }
+                }
+                if (duplicate)
+                {
+                    //TimeSpan? ts = status.CreatedAt - dublicateStatus.CreatedAt;
+
+                    if (status.CreatedAt?.Hour != DateTime.UtcNow.Hour)
+                    //if (ts?.TotalMinutes >= 10)
+                    {
+                        var newStatus = status;
+                        newStatus.CreatedAt = DateTime.UtcNow;
+                        _statusRepository.AddOrUpdate(newStatus);
+                    }
+                    else
+                    {
+                        dublicateStatus.Status1 = status.Status1;
+                        _statusRepository.AddOrUpdate(dublicateStatus);
+                    }
+                }
+                if (!duplicate)
+                {
+                    _statusRepository.AddOrUpdate(status);
+                }
+            }
             return Json("It worked");
         }
     }

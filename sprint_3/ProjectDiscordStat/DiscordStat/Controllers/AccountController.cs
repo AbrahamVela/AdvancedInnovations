@@ -1,4 +1,5 @@
 ﻿using DiscordStats.DAL.Abstract;
+using DiscordStats.DAL.Concrete;
 using DiscordStats.Models;
 using DiscordStats.ViewModel;
 using DiscordStats.ViewModels;
@@ -23,7 +24,11 @@ namespace DiscordStats.Controllers
         private readonly IVoiceChannelRepository _voiceChannelRepository;
         private readonly IMessageInfoRepository _messageIngoChannelRepository;
         private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
-        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository)
+        private readonly IServerMemberRepository _serverMemberRepository;
+        private readonly CaptchaService _CaptchaService;
+
+        public AccountController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository, IChannelRepository channelRepository, IPresenceRepository presenceRepository, IVoiceChannelRepository voiceChannelRepository, 
+            IMessageInfoRepository messageInfoRepository, IDiscordUserAndUserWebSiteInfoRepository userRepository, IServerMemberRepository serverMemberRepository, CaptchaService captchaService)
         {
             _logger = logger;
             _discord = discord;
@@ -33,7 +38,9 @@ namespace DiscordStats.Controllers
             _presenceRepository = presenceRepository;
             _voiceChannelRepository = voiceChannelRepository;
             _messageIngoChannelRepository = messageInfoRepository;
-            _userRepository = userRepository;    
+            _userRepository = userRepository;
+            _serverMemberRepository = serverMemberRepository;
+            _CaptchaService = captchaService;
 
         }
 
@@ -95,20 +102,41 @@ namespace DiscordStats.Controllers
         }
 
 
+
         [Authorize]
         public async Task<IActionResult> WebsiteProfileForm(string userId)
         {
-            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
-            vm.id = userId;
-            return View(vm);
+            bool authenticated = false;
+            var name = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if (userId == name)
+                authenticated = true;
+            if (authenticated)
+            {
+                var vm = new UpdateUserInfoVM();
+                vm.ProfileVM = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
+                vm.ProfileVM.id = userId;
+                return View(vm);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
+
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
-        public async Task<IActionResult> ProfileFormSubmit([Bind("id, ProfileFirstName, ProfileLastName, ProfileBirthDate, ProfileEmail")] ServerAndDiscordUserInfoAndWebsiteProfileVM websiteProfileInfo)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProfileFormSubmit(UpdateUserInfoVM websiteProfileInfo)
         {
+            var captchaResult = await _CaptchaService.VerifyToken(websiteProfileInfo.Token);
+            if (!captchaResult)
+            {
+                return RedirectToAction("Index");
+
+            }
             ModelState.Remove("Servers");
-            _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo);
+            _userRepository.UpdateWebsiteProfileInfo(websiteProfileInfo.ProfileVM);
             return RedirectToAction("Account");
         }
 
@@ -170,8 +198,9 @@ namespace DiscordStats.Controllers
 
             return RedirectToAction("Servers");
         }
-
+        [Authorize(AuthenticationSchemes = "Discord")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ChangePrivacy(string privacyString)
         {
             var listPrivacyChanges = privacyString.Split(' ');
@@ -191,6 +220,7 @@ namespace DiscordStats.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
 
         [Authorize]
         public async Task<IActionResult> Details(string? name)
@@ -219,6 +249,16 @@ namespace DiscordStats.Controllers
                 vm.Owner = ServerOwner.Username;
 
                 vm.users = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], vm.Id);
+                foreach (var user in vm.users)
+                {
+                    foreach (var u2 in _userRepository.GetAll())
+                    {
+                        if (u2.Servers == SelectedServer.Id && u2.Username == user.user.UserName)
+                        {
+                            user.user.Role = u2.Role;
+                        }
+                    }
+                }
 
             }
             else
@@ -251,7 +291,7 @@ namespace DiscordStats.Controllers
             string bearerToken = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
             _discord.RemoveUserServer(_configuration["API:BotToken"], ServerId, userid);
         }
-        
+        [Authorize(AuthenticationSchemes = "Discord")]
         public async void KickUser(string ServerId,string user)
         {
             var users = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
@@ -275,6 +315,7 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ServerForm(CreateServerVM vm)
         {
             var newServer = await _discord.CreateServer(_configuration["API:BotToken"], vm);
@@ -293,12 +334,14 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public async void ServerCreateUpdateOwner(string ServerId)
         {
             var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
             var updatedOwner = await _discord.UpdateOwner(_configuration["API:BotToken"], ServerId, userId);
         }
 
+        [Authorize(AuthenticationSchemes = "Discord")]
         public async Task<string> addUsertoGuild(string serverId)
         {
             var getResponse = await _discord.FindChannels(_configuration["API:BotToken"], serverId);
@@ -431,7 +474,37 @@ namespace DiscordStats.Controllers
                 return RedirectToAction("Account", "Account");
             }
         }
+
+        [Authorize(AuthenticationSchemes = "Discord")]
+        public async Task<IActionResult> ServerGrowth(string ServerName, string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                ViewBag.ServerName = ServerName;
+                var serverCounts = _serverMemberRepository.GetAll().Where(s => s.Id == ServerId).ToList();
+                
+                return View(serverCounts);
+            }
+            else
+            {
+                return RedirectToAction("Account", "Account");
+            }
+        }
+
         [HttpGet]
+        [Authorize(AuthenticationSchemes = "Discord")]
         public IActionResult GetVoiceChannelInfoFromDatabase(string ServerId)
         {
             var voiceChannels = _voiceChannelRepository.GetAll().Where(v => v.GuildId == ServerId).ToList();

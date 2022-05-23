@@ -7,6 +7,7 @@ using DiscordStats.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DiscordStats.ViewModel;
+using DiscordStats.DAL.Concrete;
 
 namespace DiscordStats.Controllers
 {
@@ -16,13 +17,15 @@ namespace DiscordStats.Controllers
         private readonly IDiscordService _discord;
         private readonly IConfiguration _configuration;
         private readonly IServerRepository _serverRepository;
+        private readonly CaptchaService _CaptchaService;
 
-        public ForumController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository)
+        public ForumController(ILogger<HomeController> logger, IDiscordService discord, IConfiguration config, IServerRepository serverRepository,CaptchaService captchaService)
         {
             _logger = logger;
             _discord = discord;
             _configuration = config;
             _serverRepository = serverRepository;
+            _CaptchaService = captchaService;
         }
 
         public IActionResult Index()
@@ -50,17 +53,25 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
-        public IActionResult ServerOnForum([Bind("Id, Message")] Server server)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ServerOnForum(ForumViewModel vm)
         {
+           var captchaResult = await _CaptchaService.VerifyToken(vm.Token);
+            if(!captchaResult)
+            {
+                return RedirectToAction("Index");
+
+            }
+
             //var messageLength = server.Message.Length;
-            if (server.Id != null)
+            if (vm.server.Id != null)
             {             
                 string onForum = "true";
-                if(server.Message == null)
+                if(vm.server.Message == null)
                 {
-                    server.Message = "null";
+                    vm.server.Message = "null";
                 }
-                _serverRepository.UpdateOnServerWithForumInfo(server.Id, onForum, server.Message);
+                _serverRepository.UpdateOnServerWithForumInfo(vm.server.Id, onForum, vm.server.Message);
                 return RedirectToAction("Index");
 
             }
@@ -79,6 +90,7 @@ namespace DiscordStats.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Discord")]
+        [ValidateAntiForgeryToken]
         public IActionResult ServerOffForum([Bind("Id, Message")] Server server)
         {
             if (server.Id != null)

@@ -5,8 +5,10 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>869e677d-b0c9-4e1f-9d79-1d4a60a2b453</UserSecretsId>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(RunConfiguration)' == 'DiscordStat' " />
 	<ItemGroup>
 		<PackageReference Include="Azure.Core" Version="1.22.0" />
 		<PackageReference Include="bootstrap" Version="5.1.3" />

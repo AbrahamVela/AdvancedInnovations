@@ -1,7 +1,8 @@
-﻿$(document).ready(function () {
-    let detailsServerId = $("#ServerId").attr('value');
+﻿var xValuesAllGamesStats = [];
+var yValuesAllGamesStats = [];
 
-    console.log("URL: " + '../Stats/GetPresencesFromDatabase?serverid=' + detailsServerId);
+$(document).ready(function () {
+    let detailsServerId = $("#ServerId").attr('value');
 
     $.ajax({
         type: 'GET',
@@ -11,11 +12,16 @@
     });
 })
 
+function GetHoursPerGame(data) {
+    setUpForDownLoadAllGamesStats(data);
+};
+
+
 var allPresenceActivityData = [];
 var tempAllPresenceActivityData = [];
 var allPresencesChart;
-var startDate = new Date("December 17, 2020");
-var endDate = new Date();
+var startDate = new Date($("#startDateGraph").val() + " 23:59");
+var endDate = new Date($("#endDateGraph").val() + " 23:59");
 
 function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
@@ -23,7 +29,7 @@ function handleError(xhr, ajaxOptions, thrownError) {
 
 
 $("#startDateGraph").change(function () {
-    startDate = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 23:59");
     if (allPresencesChart != null) {
         allPresencesChart.destroy();
     }
@@ -33,7 +39,7 @@ $("#startDateGraph").change(function () {
 
 $("#endDateGraph").change(function () {
 
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (allPresencesChart != null) {
         allPresencesChart.destroy();
     }
@@ -49,7 +55,8 @@ $("#allUsers").change(function () {
         if (allPresencesChart != null) {
             allPresencesChart.destroy();
         }
-        graphingAllPresenceActivity(allPresenceActivityData)
+        tempAllPresenceActivityData = allPresenceActivityData
+        graphingAllPresenceActivity(tempAllPresenceActivityData)
     }
     else {
         for (var i = 0; i < allPresenceActivityData.length; i++) {
@@ -77,46 +84,45 @@ function graphingAllPresenceActivity(data) {
 
     $("#allPresenceHourlyAllTimeChart").empty();
 
-    var count = 0;
-    var xValues = [];
-    var yValues = [];
+    xValuesAllGamesStats = [];
+    yValuesAllGamesStats = [];
 
 
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        var index;
+        var duplicate = false;
 
         if (date > startDate && date < endDate) {
-            if (xValues.includes(data[i].name) == false) {
-                xValues.push(data[i].name)
-                yValues.push(1)
-                var index;
+            for (var j = 0; j < xValuesAllGamesStats.length; j++) {
+                if (duplicate == true) {
+                    break
+                }
+                if (xValuesAllGamesStats[j] == data[i].name) {
+                    index = j;
+                    duplicate = true
+                }
             }
-            else if (xValues.includes(data[i].name)) {
-                xValues.some(function (entry, i) {
-                    if (entry == data[i].name) {
-                        index = i;
-                        return true;
-                    }
-                });
-                yValues[index] += 1
+            if (duplicate == true) {
+                yValuesAllGamesStats[index] += 1
+            }
+            if (duplicate == false) {
+                xValuesAllGamesStats.push(data[i].name);
+                yValuesAllGamesStats.push(1);
             }
         }
     }
-    console.log("all X: ")
-    console.log(xValues);
-    console.log("all Y: ")
-    console.log(yValues);
 
 
 
     allPresencesChart = new Chart("allPresenceHourlyAllTimeChart", {
         type: "bar",
         data: {
-            labels: xValues,
+            labels: xValuesAllGamesStats,
             datasets: [{
                 backgroundColor: "green",
-                data: yValues,
+                data: yValuesAllGamesStats,
                 ticks: {
                     beginAtZero: false
                 }
@@ -171,22 +177,42 @@ function graphingAllPresenceActivity(data) {
             },
 
         }
-
-
-
-
     })
-
-
 };
-//        options: {
-//            legend: { display: false },
-//            title: {
-//                display: true,
-//                text: "Activity Frequency"
-//            }
 
 
-//        }
-//    })
-////};
+
+function setUpForDownLoadAllGamesStats(data) {
+    xValuesAllGamesStats.push("Start Date");
+    yValuesAllGamesStats.push(startDate);
+    xValuesAllGamesStats.push("End Date");
+    yValuesAllGamesStats.push(endDate);
+
+    var obj = {};
+    for (var i = 0; i < xValuesAllGamesStats.length; i++) {
+        obj[xValuesAllGamesStats[i]] = yValuesAllGamesStats[i];
+    }
+
+    downloadDataHoursPerGame(obj, data);
+}
+function downloadDataHoursPerGame(obj, data) {
+
+    var element = document.createElement('a');
+
+    if (data == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
+
+        element.setAttribute('download', "HoursPerGame.json");
+    }
+    if (data == 2) {
+        var something = JSONToCSVConvertor(JSON.stringify(obj));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "HoursPerGame.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}

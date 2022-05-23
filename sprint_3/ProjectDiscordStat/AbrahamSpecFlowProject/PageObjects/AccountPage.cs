@@ -1,6 +1,12 @@
 ﻿using OpenQA.Selenium;
 using SpecFlow.Actions.Selenium;
 using System.Collections.ObjectModel;
+using System;
+using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.Chrome;
+using System.IO;
+using System.Threading;
+using OpenQA.Selenium.Support.UI;
 
 namespace AbrahamSpecFlowProject.PageObjects
 {
@@ -25,6 +31,16 @@ namespace AbrahamSpecFlowProject.PageObjects
 
         private IWebElement SubmitProfileForm => _browserInteractions.WaitAndReturnElement(By.Id("submitProfileForm"));
 
+        private IWebElement DownloadContainer => _browserInteractions.WaitAndReturnElement(By.Id("dowwnloadContainer"));
+
+        private IWebElement ExportJsonVoiceChannel => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonVoiceChannel"));
+
+        private IWebElement ExportJsonMessaging => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonMessaging"));
+
+        private IWebElement ExportJsonActiveGaming => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonActiveGaming"));
+
+        private IWebElement ExportJsonHoursPerGame => _browserInteractions.WaitAndReturnElement(By.Id("exportJsonHoursPerGame"));
+
         public AccountPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
         {
@@ -42,6 +58,25 @@ namespace AbrahamSpecFlowProject.PageObjects
         public bool GetProfileForm => ProfileForm.Displayed;
         public bool GetTitleBool => Title.Displayed;
 
+        public bool GetDownloadContainer => DownloadContainer.Displayed;
+
+        public void ClickExportJsonVoiceChannelButton()
+        {
+            ExportJsonVoiceChannel.ClickWithRetry(30);
+        }
+
+        public void ClickExportJsonMessagingButton()
+        {
+            ExportJsonMessaging.ClickWithRetry(30);
+        }
+        public void ClickExportJsonActiveGamingButton()
+        {
+            ExportJsonActiveGaming.ClickWithRetry(30);
+        }
+        public void ClickExportJsonHoursPerGameButton()
+        {
+            ExportJsonHoursPerGame.ClickWithRetry(30);
+        }
         public void ClickSubmitProfileFormButton()
         {
             SubmitProfileForm.ClickWithRetry(30);
@@ -93,6 +128,21 @@ namespace AbrahamSpecFlowProject.PageObjects
         public void DeleteCookies()
         {
             _browserInteractions.DeleteAllCookies();
+        }
+
+        public void VerifyFileActiveVoiceChannelTimeExists()
+        {
+            string expectedFilePath = @"C:\Users\Abraham\Downloads\ActiveVoiceChannelTime.json";
+
+            if(File.Exists(expectedFilePath) == true)
+            {
+                return;
+            }
+            else
+            {
+                NUnit.Framework.Assert.Fail("File path does not exist");
+            }
+
         }
 
     }

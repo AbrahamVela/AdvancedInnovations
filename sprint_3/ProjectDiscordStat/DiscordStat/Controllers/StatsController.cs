@@ -22,23 +22,26 @@ using System.Web.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DiscordStats.ViewModels;
+using System.Text;
 
 namespace DiscordStats.Controllers
 {
-    [Authorize]
     public class StatsController : Controller
     {
 
         private readonly IDiscordUserAndUserWebSiteInfoRepository _userRepository;
         private readonly IPresenceRepository _presenceRepository;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<ApiController> _logger;
         private readonly IDiscordService _discord;
         private readonly IServerRepository _serverRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IMessageInfoRepository _messageInfoRepository;
         private readonly IVoiceStateRepository _voiceStateRepository;
+        private readonly IServerMemberRepository _serverMemberRepository;
+        private readonly IStatusRepository _statusRepository;
 
-        public StatsController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository)
+        public StatsController(ILogger<ApiController> logger, IDiscordUserAndUserWebSiteInfoRepository discordUserRepo, IConfiguration config, IPresenceRepository presenceRepository, IDiscordService discord, IServerRepository serverRepository, IChannelRepository channelRepository, IMessageInfoRepository messageInfoRepository, IVoiceStateRepository voiceStateRepository, IServerMemberRepository serverMemberRepository, IStatusRepository statusRepository)
         {
             _logger = logger;
             _userRepository = discordUserRepo;
@@ -48,46 +51,353 @@ namespace DiscordStats.Controllers
             _channelRepository = channelRepository;
             _messageInfoRepository = messageInfoRepository;
             _voiceStateRepository = voiceStateRepository;
+            _statusRepository = statusRepository;
+            _serverMemberRepository = serverMemberRepository;
+            _configuration = config;
         }
 
-        public IActionResult ServerStats(string ServerId)
+        public async Task<IActionResult> ServerStats(string ServerId)
         {
-            if (_serverRepository.GetAll().Any(c => c.Id == ServerId))
-                return View((object)ServerId);
-            else
-                return View();
-        }
 
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+
+                if (_serverRepository.GetAll().Any(c => c.Id == ServerId))
+                    return View((object)ServerId);
+                else
+                    return View();
+            }
+            else
+                return RedirectToAction("Account", "Account");
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetVoiceStatesFromDatabase(string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetVoiceStatesFromDatabaseT(string ServerId)
+        {
+
+                return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+        }
+        [HttpGet] 
+        public async Task<IActionResult> GetVoiceStatesFromDatabaseForGraphAndDownload(string formatWithServerId)
+        {
+            var formatWithServerIdSplitted = formatWithServerId.Split(":");
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithServerIdSplitted[1]);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var data = _voiceStateRepository.GetAll().Where(s => s.ServerId == formatWithServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithServerIdSplitted[0] };
+                return Json(result);
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
         [HttpGet]
         public IActionResult GetMessageInfoFromDatabase(string ServerId)
         {
-            return Json(_messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            var item = _messageInfoRepository.GetAll().Where(s => s.ServerId == ServerId).ToList();
+            return Json(item);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMessageInfoFromDatabaseForGraphAndDownload(string formatWithServerId)
+        {
+            var formatWithServerIdSplitted = formatWithServerId.Split(":");
+
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithServerIdSplitted[1]);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var data = _messageInfoRepository.GetAll().Where(s => s.ServerId == formatWithServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithServerIdSplitted[0] };
+                return Json(result);
+            }
+            else
+                return RedirectToAction("Account", "Account");
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPresencesFromDatabase(string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPresencesFromDatabaseT(string ServerId)
+        {          
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+          
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPresencesFromDatabaseForGraphAndDownload(string formatWithServerId)
+        {
+
+            var formatWithServerIdSplitted = formatWithServerId.Split(":");
+
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithServerIdSplitted[1]);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var data = _presenceRepository.GetAll().Where(s => s.ServerId ==  formatWithServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithServerIdSplitted[0] };
+                return Json(result);
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetStatusesFromDatabaseForGraphAndDownload(string formatWithDetailsServerId)
+        {
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithDetailsServerIdSplitted[1]);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var data = _statusRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1]).ToList();
+                var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+                return Json(result);
+            }
+            else
+                return RedirectToAction("Account", "Account");
         }
 
         [HttpGet]
-        public IActionResult GetPresencesFromDatabase(string ServerId, string GameName)
+        public async Task<IActionResult> GetStatusesFromDatabaseForGraphAndDownloadT(string formatWithDetailsServerId)
         {
-            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+
+                   
+                var data = _statusRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerId).ToList();
+               
+                return Json(data);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPresencesFromDatabase(string ServerId, string GameName)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var a = _presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList();
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+            }
+            else
+                return RedirectToAction("Account", "Account");
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPresencesFromDatabaseT(string ServerId, string GameName)
+        {
+                return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId && s.Name == GameName).ToList());
+          
         }
 
         [HttpGet]
-        public IActionResult GetAllPresencesFromDatabase(string ServerId)
+        public async Task<IActionResult> GetPresencesFromDatabaseForGraphAndDownload(string formatWithDetailsServerId, string GameName)
         {
-            return Json(_presenceRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], formatWithDetailsServerIdSplitted[1]);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                var data = _presenceRepository.GetAll().Where(s => s.ServerId == formatWithDetailsServerIdSplitted[1] && s.Name == GameName).ToList();
+                var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0] };
+                return Json(result);
+            }
+            else
+                return RedirectToAction("Account", "Account");
+
         }
 
-        [HttpGet]
-        public IActionResult GetUsersFromDatabase(string ServerId)
-        {
-            var test = _userRepository.GetAll().Where(s => s.Servers == ServerId).ToList();
-            return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
-        }
 
         [HttpGet]
-        public IActionResult GetVoiceStatesFromDatabase(string ServerId)
+        public async Task<IActionResult> GetServerMemberFromDatabaseWithDateForGraphAndDownload(string formatWithDetailsServerId, string startDate, string endDate)
         {
-            
-            return Json(_voiceStateRepository.GetAll().Where(s => s.ServerId == ServerId).ToList());
+            var formatWithDetailsServerIdSplitted = formatWithDetailsServerId.Split(":");
+            if (startDate == null)
+                startDate = "1-1-0001";
+            if (endDate == null)
+                endDate = "1-1-0001";
+            var memberCount = _discord.GetServerUsersByDates(DateTime.Parse(startDate), DateTime.Parse(endDate), formatWithDetailsServerIdSplitted[1]);
+            var newMembers = new List<ServerMembers>();
+            for (int i = 0; i < memberCount.Count; i++)
+            {
+                if (i != 0)
+                {
+                    if (memberCount[i].Date.ToString("yyyy-MM-dd") == memberCount[i - 1].Date.ToString("yyyy-MM-dd") && memberCount[i].Members != memberCount[i - 1].Members)
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                    else if (memberCount[i].Date.ToString("yyyy-MM-dd") != memberCount[i - 1].Date.ToString("yyyy-MM-dd"))
+                    {
+                        newMembers.Add(memberCount[i]);
+                    }
+                }
+                else
+                {
+                    newMembers.Add(memberCount[i]);
+                }
+            }
+
+            var data = newMembers;
+            var result = new { dataFromDB = data, format = formatWithDetailsServerIdSplitted[0], startDate = startDate, endDate = endDate };
+            return Json(result);
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsersFromDatabase(string ServerId)
+        {
+            bool authenticated = false;
+            var usersInGuild = await _discord.GetCurrentGuildUsers(_configuration["API:BotToken"], ServerId);
+            if (usersInGuild == null)
+            {
+                return RedirectToAction("Account", "Account");
+            }
+            var name = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            foreach (var u in usersInGuild)
+            {
+                if (u.user.UserName == name)
+                    authenticated = true;
+            }
+            if (authenticated)
+            {
+                return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
+            }
+            else
+                return RedirectToAction("Account", "Account");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetUsersFromDatabaseT(string ServerId)
+        {
+           
+                return Json(_userRepository.GetAll().Where(s => s.Servers == ServerId).ToList());
+          
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetPresenceDataFromDb()
+        {
+            _logger.LogInformation("GetPresenceDataFromDb");
+            List<Presence> presences = _presenceRepository.GetAll().ToList();
+            PresenceChartDataVM presenceChartDataVM = new();
+            var presencesNameAndCount = presenceChartDataVM.AllPresenceNameListAndCount(presences);
+
+            return Json(new { userPerGame = presencesNameAndCount });
         }
     }
 }

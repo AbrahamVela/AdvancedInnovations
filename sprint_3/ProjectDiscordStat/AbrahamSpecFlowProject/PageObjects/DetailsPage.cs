@@ -15,7 +15,9 @@ namespace AbrahamSpecFlowProject.PageObjects
         private IWebElement GamesButton => _browserInteractions.WaitAndReturnElement(By.Id("ViewGamesButton"));
         private IWebElement Runelite_Image => _browserInteractions.WaitAndReturnElement(By.Id("RuneLite"));
         private IWebElement GameGraph => _browserInteractions.WaitAndReturnElement(By.Id("presencesHourlyAllTimeChart"));
-        
+        private IWebElement ViewServerGrowthButton => _browserInteractions.WaitAndReturnElement(By.Id("ViewServerGrowthButton"));
+
+
         public DetailsPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
         {
@@ -30,6 +32,11 @@ namespace AbrahamSpecFlowProject.PageObjects
         public string GetTitle => Title.Text;
         public string GetWelcomeText => WelcomeText.Text;
         public bool GetMessagingTable => MessagesTable.Displayed;
+
+        public void ClickViewServerGrowthButton()
+        {
+            ViewServerGrowthButton.ClickWithRetry(30);
+        }
 
         public void ClickOnRunelite()
         {

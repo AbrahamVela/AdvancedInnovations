@@ -169,57 +169,9 @@ namespace DiscordStats_Tests
 
         //}
 
-        [Test]
-        public async Task ProfileFormSubmit_ShouldReturnIdThroughViewModel()
-        {
-            // Arrange
 
-            AccountController controller = new AccountController(null, null, null, _serverRepository, null, null, null, null, null);
-            controller.ControllerContext = new ControllerContext();
-            var userId = "697317543555235840";
-            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
-            vm.id = userId;
-            // Act
-            ViewResult result = (ViewResult)await controller.WebsiteProfileForm(userId);
 
-            var expectedJson = System.Text.Json.JsonSerializer.Serialize(result.Model);
-            var actualJson = System.Text.Json.JsonSerializer.Serialize(vm);
-
-            // Assert
-            Assert.AreEqual(expectedJson, actualJson);
-        }
-
-        [Test]
-        public async Task ProfileFormSubmit_ShouldRedirectToAccountPageOnSuccess()
-        {
-            // Arrange
-            _userRepo = new DiscordUserAndUserWebSiteInfoRepository(_mockContext1.Object);
-            var configForSmsApi = new Dictionary<string, string>
-            {
-                {"API:BotToken", "fakeBotToken"},
-            };
-
-            var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(configForSmsApi)
-            .Build();
-
-            AccountController controller = new AccountController(null, null, configuration, _serverRepository, null, null, null, null, _userRepo);
-            controller.ControllerContext = new ControllerContext();
-            var vm = new ServerAndDiscordUserInfoAndWebsiteProfileVM();
-            vm.id =  "697317543555235840";
-            vm.ProfileFirstName = "A2";
-            vm.ProfileLastName = "B2";
-            vm.ProfileBirthDate= "1999-01-19";
-            vm.ProfileEmail = "A@B3.com";
-
-            // Act
-            RedirectToActionResult result = (RedirectToActionResult)await controller.ProfileFormSubmit(vm);
-
-            var expectedJson = System.Text.Json.JsonSerializer.Serialize(result.ActionName);
-            var actualJson = System.Text.Json.JsonSerializer.Serialize("Account");
-            // Assert
-            Assert.AreEqual(actualJson, expectedJson);
-        }
+       
 
         [Test]
         public void ServerAndDiscordUserInfoAndWebsiteProfileVM_ShouldReturnAllAttributesFilled()
@@ -251,51 +203,7 @@ namespace DiscordStats_Tests
         }
 
 
-        [Test]
-        public async Task CreateChannel_OnSuccessShouldRedirectToServerChannels()
-        {
-            // Arrange
-            var handler = new Mock<HttpMessageHandler>();
-            string jsonFromDiscordAPI = @"{
-            ""id"": ""789317480803074075"",
-            ""type"": ""0"",
-            ""name"": ""TestChannel"",   
-            }";
-            var response = new HttpResponseMessage()
-            {
-                Content = new StringContent(jsonFromDiscordAPI)
-            };
-            handler.SetupAnyRequest()
-                    .ReturnsAsync(response);
-
-            _channelRepository = new ChannelRepository(_mockContext2.Object);
-            var selectedChannel = _channelRepository.GetAll().Where(m => m.Id == "789317480803074075").FirstOrDefault();
-            var configForSmsApi = new Dictionary<string, string>
-            {
-                {"API:BotToken", "fakeBotToken"},
-            };
-
-            var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(configForSmsApi)
-            .Build();
-            DiscordServicesForChannels discord = new DiscordServicesForChannels(handler.CreateClientFactory(), _channelRepository);
-
-            ChannelController controller = new ChannelController(null, configuration, _channelRepository, discord, _serverRepository, null);
-            controller.ControllerContext = new ControllerContext();
-
-            // Act
-
-            ServerChannelsVM serverChannelsVM = new ServerChannelsVM();
-
-
-            RedirectToActionResult result = (RedirectToActionResult)await controller.CreateChannel(serverChannelsVM);
-            var expectedJson = System.Text.Json.JsonSerializer.Serialize(result.ActionName);
-            var actualJson = System.Text.Json.JsonSerializer.Serialize("ServerChannels");
-
-            // Assert
-            Assert.AreEqual(actualJson, expectedJson);
-
-        }
+        
 
         // The DeleteById would end up calling the FindById and even though the _dbSet had the id the entity would return null, instead
         // of the object.

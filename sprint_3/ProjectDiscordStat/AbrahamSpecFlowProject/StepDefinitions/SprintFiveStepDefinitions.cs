@@ -26,6 +26,13 @@ namespace AbrahamSpecFlowProject.StepDefinitions
             _serverChannels = serverChannels;
         }
 
+        [Given(@"I am on the Homepage")]
+        public void CheckHomePage()
+        {
+            _homePage.Goto(Common.HomePageName);
+            //var welcomeMessage = _homePage.GetTitle;
+            //welcomeMessage.Should().Be("WELCOME");
+        }
 
         [When(@"I login")]
         public void DiscordUserLoggedIn()
@@ -100,13 +107,6 @@ namespace AbrahamSpecFlowProject.StepDefinitions
             _accountPage.GetProfileInfo.Should().BeTrue();
         }
 
-        [Given(@"I am on the Homepage")]
-        public void CheckHomePage()
-        {
-            _homePage.Goto(Common.HomePageName);
-            //var welcomeMessage = _homePage.GetTitle;
-            //welcomeMessage.Should().Be("WELCOME");
-        }
 
         [When(@"I click on edit profile button")]
         public void WhenIClickOnEditProfileButton()

@@ -1,24 +1,41 @@
-﻿$(document).ready(function () {
+﻿var xValuesGameDetails = [];
+var yValuesGameDetails = [];
+
+$(document).ready(function () {
     let detailsServerId = $("#ServerId").attr('value');
     let gameDetailsGameName = $("#GameName").attr('value');
 
-    console.log("URL: " + '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId);
-
     $.ajax({
         type: 'GET',
-        url: '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'serverid=' + detailsServerId,
+        url: '../Stats/GetPresencesFromDatabase?gamename=' + gameDetailsGameName + '&' + 'ServerId=' + detailsServerId,
         success: barGraphHourlyPresenceActivity,
         error: handleError
-    });
+    })
 
     $.ajax({
         type: 'GET',
         url: '../Stats/GetUsersFromDatabase?serverid=' + detailsServerId,
         success: graphDropDownBox,
         error: handleError
-    });
+    })
 
 })
+
+function graphDropDownBox(data) {
+    var allUsers = document.getElementById("allUsersPresences");
+
+    for (i = 0; i < data.length; i++) {
+        var opt = data[i];
+        var elMessage = document.createElement("option");
+        elMessage.textContent = opt.username;
+        elMessage.value = opt.id;
+        allUsers.appendChild(elMessage);
+    }
+}
+
+function GetMostPopularPlayTime(data) {
+    downloadSetupGameDetails(data);
+};
 
 const timezone = -3
 var presenceActivityData = [];
@@ -32,32 +49,18 @@ function handleError(xhr, ajaxOptions, thrownError) {
     console.log('ajax error: ' + xhr.status);
 }
 
-
-function graphDropDownBox(data) {
-    var allUsersPresences = document.getElementById("allUsersPresences");
-    for (i = 0; i < data.length; i++) {
-        console.log(data[i].username);
-        var opt = data[i];
-        var elPresence = document.createElement("option");
-        elPresence.textContent = opt.username;
-        elPresence.value = opt.id;
-        allUsersPresences.appendChild(elPresence);
-        //graphingPresenceActivity(newList)
-
-    }
-}
-
 $("#start").change(function () {
-    startDateUTC = new Date($(this).val() + " 00:00");
+    startDate = new Date($(this).val() + " 00:00");
     if (presencesChart != null) {
         presencesChart.destroy();
     }
+
     graphingPresenceActivity(tempPresenceActivityData);
 
 });
 
 $("#end").change(function () {
-    endDate = new Date($(this).val() + " 00:00");
+    endDate = new Date($(this).val() + " 23:59");
     if (presencesChart != null) {
         presencesChart.destroy();
     }
@@ -74,8 +77,9 @@ $("#allUsersPresences").change(function () {
         if (presencesChart != null) {
             presencesChart.destroy();
         }
+        tempPresenceActivityData = presenceActivityData
+        graphingPresenceActivity(tempPresenceActivityData)
 
-        graphingPresenceActivity(presenceActivityData)
     }
     else {
         for (var i = 0; i < presenceActivityData.length; i++) {
@@ -92,24 +96,6 @@ $("#allUsersPresences").change(function () {
     }
 });
 
-//$(function () {
-//    $('input[name="daterange"]').daterangepicker({
-//        opens: 'left'
-//    }, function (start, end, label) {
-//        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-//    });
-//});
-
-//$('#sandbox-container .input-daterange').datepicker({
-//    endDate: "today"
-//});
-
-//$("#datepicker").change(function (startDate, endDate) {
-//    alert("Start Date: " + startDate)
-//    alert("End Date: " + endDate)
-
-//})
-
 
 function barGraphHourlyPresenceActivity(data) {
     presenceActivityData = data
@@ -123,8 +109,8 @@ function graphingPresenceActivity(data) {
 
     $("#presencesHourlyAllTimeChart").empty();
 
-    var xValues = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
-    var yValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    xValuesGameDetails = ["4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm", "12am", "1am", "2am", "3am"];
+    yValuesGameDetails = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
     for (var i = 0; i < data.length; i++) {
@@ -135,24 +121,19 @@ function graphingPresenceActivity(data) {
             let hour = date.getHours()
             subtraction = hour - 1 + timezone;
             if (subtraction < 0) {
-                subtraction = yValues.length + subtraction;
+                subtraction = yValuesGameDetails.length + subtraction;
             }
-            console.log(subtraction);
-            yValues[subtraction] += 1;
+            yValuesGameDetails[subtraction] += 1;
         }
     }
-    console.log(xValues);
-    console.log(yValues);
-
-
 
     presencesChart = new Chart("presencesHourlyAllTimeChart", {
         type: "bar",
         data: {
-            labels: xValues,
+            labels: xValuesGameDetails,
             datasets: [{
                 backgroundColor: "green",
-                data: yValues,
+                data: yValuesGameDetails,
                 ticks: {
                     beginAtZero: false
                 }
@@ -209,3 +190,43 @@ function graphingPresenceActivity(data) {
         }
     })
 };
+
+function downloadSetupGameDetails(data) {
+    if (data.startDate != "1-1-0001" && data.endDate != "1-1-0001") {
+        xValuesGameDetails.push("Start Date");
+        yValuesGameDetails.push(data.startDate);
+        xValuesGameDetails.push("End Date");
+        yValuesGameDetails.push(data.endDate);
+    }
+
+    var obj = {};
+    for (var i = 0; i < xValuesGameDetails.length; i++) {
+        obj[xValuesGameDetails[i]] = yValuesGameDetails[i];
+    };
+
+
+    downloadMostPopularPlayTime(obj, data);
+}
+
+function downloadMostPopularPlayTime(obj, data) {
+    var zero = JSON.stringify(obj);
+
+    var element = document.createElement('a');
+    if (data == 1) {
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(zero));
+
+        element.setAttribute('download', "MostPopularPlayTime.json");
+    }
+    if (data == 2) {
+        var something = JSONToCSVConvertor(zero);
+
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(something));
+        element.setAttribute('download', "MostPopularPlayTime.csv");
+    }
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
