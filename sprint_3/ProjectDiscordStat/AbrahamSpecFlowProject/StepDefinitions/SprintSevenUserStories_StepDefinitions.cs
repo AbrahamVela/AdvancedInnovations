@@ -17,7 +17,7 @@ namespace AbrahamSpecFlowProject.StepDefinitions
         public SprintSevenUserStories_StepDefinitions(AccountPage accountPage, DetailsPage detailsPage, GamesPage gamesPage, GameDetailsPage gameDetailsPage, ServerGrowthPage serverGrowthPage)
         {
             _accountPage = accountPage;
-            _detailPage = detailsPage;  
+            _detailPage = detailsPage;
             _gamesPage = gamesPage;
             _gameDetailsPage = gameDetailsPage;
             _serverGrowthPage = serverGrowthPage;
@@ -26,7 +26,7 @@ namespace AbrahamSpecFlowProject.StepDefinitions
         [When(@"I click on View Games button")]
         public void WhenIClickOnViewGamesButton()
         {
-           _detailPage.ClickGames();
+            _detailPage.ClickGames();
         }
 
         [When(@"I click on RuneLite icon")]
@@ -72,11 +72,70 @@ namespace AbrahamSpecFlowProject.StepDefinitions
         }
 
 
+        [Then(@"I click on JSON button for Active Voice Channel time and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnJSONButtonForActiveVoiceChannelTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileJsonActiveVoiceChannelTimeExists();
+        }
+
+        [Then(@"I click on CSV button for Active Voice Channel time and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnCSVButtonForActiveVoiceChannelTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileCsvActiveVoiceChannelTimeExists();
+        }
+
+        [Then(@"I click on JSON button for Active Messaging time and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnJSONButtonForActiveMessagingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileJsonActiveMessagingExists();
+        }
+
+        [Then(@"I click on CSV button for Active Messaging time and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnCSVButtonForActiveMessagingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileCsvActiveMessagingTimeExists();
+        }
+
+        [Then(@"I click on JSON button for Active Gaming time and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnJSONButtonForActiveGamingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileJsonActiveGamingTimeExists();
+        }
+
+        [Then(@"I click on CSV button for Active Gaming time and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnCSVButtonForActiveGamingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileCsvActiveGamingTimeExists();
+        }
+
+        [Then(@"I click on JSON button for Hours Per Game and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnJSONButtonForHoursPerGameButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileJsonHoursPerGameExists();
+        }
+
+        [Then(@"I click on CSV button for Hours Per Game and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnCSVButtonForHoursPerGameButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileCsvHoursPerGameExists();
+        }
+
+        [Then(@"I click on JSON button for Statuses and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnJSONButtonForStatusesAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileJsonStatusesExists();
+        }
+
+        [Then(@"I click on CSV button for Statuses and I'll know it has been downloaded with right file type comparison")]
+        public void ThenIClickOnCSVButtonForStatusesAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
+        {
+            _detailPage.VerifyFileCsvStatusesExists();
+        }
+
         [Then(@"I will know file has been downloaded")]
         public void ThenIWillKnowFileHasBeenDownloaded()
         {
-          _accountPage.VerifyFileActiveVoiceChannelTimeExists();
-          
+            _accountPage.VerifyFileActiveVoiceChannelTimeExists();
         }
     }
 }
