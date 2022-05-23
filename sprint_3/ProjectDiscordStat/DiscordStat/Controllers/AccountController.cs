@@ -200,7 +200,6 @@ namespace DiscordStats.Controllers
         }
         [Authorize(AuthenticationSchemes = "Discord")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult ChangePrivacy(string privacyString)
         {
             var listPrivacyChanges = privacyString.Split(' ');
