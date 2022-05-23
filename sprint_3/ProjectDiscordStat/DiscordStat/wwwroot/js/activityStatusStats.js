@@ -93,20 +93,25 @@ function graphingActivityStatus(data) {
     for (var i = 0; i < data.length; i++) {
         var dateUTC = new Date(data[i].createdAt)
         var date = new Date(Date.UTC(dateUTC.getUTCFullYear(), dateUTC.getMonth(), dateUTC.getDate(), dateUTC.getHours()))
+        var index;
+        var duplicate = false;
+
         if (date > startDate && date < endDate) {
-            if (xValuesActivityStatus.includes(data[i].activityType) == false) {
-                xValuesActivityStatus.push(data[i].activityType)
-                yValuesActivityStatus.push(1)
-                var index;
+            for (var j = 0; j < xValuesAllGamesStats.length; j++) {
+                if (duplicate == true) {
+                    break
+                }
+                if (xValuesActivityStatus[j] == data[i].activityType) {
+                    index = j;
+                    duplicate = true
+                }
             }
-            else if (xValuesActivityStatus.includes(data[i].activityType)) {
-                xValuesActivityStatus.some(function (entry, i) {
-                    if (entry == data[i].activityType) {
-                        index = i;
-                        return true;
-                    }
-                });
+            if (duplicate == true) {
                 yValuesActivityStatus[index] += 1
+            }
+            if (duplicate == false) {
+                xValuesActivityStatus.push(data[i].activityType);
+                yValuesActivityStatus.push(1);
             }
         }
     }

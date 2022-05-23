@@ -21,6 +21,10 @@ namespace Ethan_Specflow.PageObjects
         private IWebElement AllGameGraph => _browserInteractions.WaitAndReturnElement(By.Id("allPresenceHourlyAllTimeChart"));
         private IWebElement GameActivityGraph => _browserInteractions.WaitAndReturnElement(By.Id("userPresenceHourlyAllTimeChart"));
         private IWebElement StatusGraph => _browserInteractions.WaitAndReturnElement(By.Id("usersStatusHourlyChart"));
+        private IWebElement EmojiGraph => _browserInteractions.WaitAndReturnElement(By.Id("emojiStats"));
+        private IWebElement ReactionGraph => _browserInteractions.WaitAndReturnElement(By.Id("reactionStats"));
+        private IWebElement ActivityStatusGraph => _browserInteractions.WaitAndReturnElement(By.Id("usersStatusHourlyChart"));
+        private IWebElement RoleColumn => _browserInteractions.WaitAndReturnElement(By.Id("roleId"));
 
         public DetailsPage(IBrowserInteractions browserInteractions)
             : base(browserInteractions)
@@ -28,6 +32,10 @@ namespace Ethan_Specflow.PageObjects
             PageName = Common.AccountPageName;
         }
 
+        public bool GetEmojiGraph => EmojiGraph.Displayed;
+        public bool GetReactionGraph => ReactionGraph.Displayed;
+        public bool GetActivityStatusGraph => ActivityStatusGraph.Displayed;
+        public bool GetRoleColumn => RoleColumn.Displayed;
         public bool GetGameGraph => GameGraph.Displayed;
         public bool GetAllGameGraph => AllGameGraph.Displayed;
         public bool GetStatusGraph => StatusGraph.Displayed;
