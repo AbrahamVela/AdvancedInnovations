@@ -35,18 +35,25 @@ namespace AbrahamSpecFlowProject.StepDefinitions
             _gamesPage.ClickRuneLiteButton();
         }
 
+
+        //14th on the list in test Explorer
         [Then(@"I will scroll down and see Download area")]
         public void ThenIWillScrollDownAndSeeDownloadOptions()
         {
             _gameDetailsPage.GetGameDetialsDownloadArea.Should().BeTrue();
         }
 
+        //WhenInTheGamesDetailsPageAtTheMostPopularPlayTimeDownLoadOptionsJsonFileOptionWillBeClickedAndDownloadWillBeVerifiedByFilePathOnSystem
+        //16th on the list in test Explorer for JSON file type download for graph in Game Details page
         [Then(@"I will click json file type and I'll know it has been downloaded with right file type by filepath")]
         public void ThenIWillKnowFileHasBeenDownloadedWithRightFileType()
         {
             _gameDetailsPage.VerifyFileJsonMostPopularPlayTimeExists();
         }
 
+
+        //WhenInTheGamesDetailsPageAtTheMostPopularPlayTimeDownLoadOptionsCsvFileOptionWillBeClickedAndDownloadWillBeVerifiedByFilePathOnSystem
+        //15th on the list in test Explorer for CSV file type download for graph in Game Details page
         [Then(@"I will click csv file type and I'll know it has been downloaded with right file type by filepath")]
         public void ThenIWillClickCsvFileTypeAndIllKnowItHasBeenDownloadedWithRightFileTypeByFilepath()
         {
@@ -59,12 +66,16 @@ namespace AbrahamSpecFlowProject.StepDefinitions
             _detailPage.ClickViewServerGrowthButton();
         }
 
+        //WhenInTheServerGrowthPageAtTheActiveMembersInServerDownLoadOptionsJsonFileOptionWillBeClickedAndDownloadWillBeVerifiedByFilePathOnSystem
+        //18th on the list in test Explorer for JSON file type download for graph in Game Details page
         [Then(@"I will click Active Members in Server json file type and I'll know it has been downloaded with right file type by filepath")]
         public void ThenIWillClickActiveMembersInServerJsonFileTypeAndIllKnowItHasBeenDownloadedWithRightFileTypeByFilepath()
         {
             _serverGrowthPage.VerifyFileJsonActiveMembersInServerExists();
         }
 
+        //WhenInTheServerGrowthPageAtTheActiveMembersInServerDownLoadOptionsCsvFileOptionWillBeClickedAndDownloadWillBeVerifiedByFilePathOnSystem
+        //17th on the list in test Explorer for CSV file type download for graph in Game Details page
         [Then(@"I will click Active Members in Server csv file type and I'll know it has been downloaded with right file type by filepath")]
         public void ThenIWillClickActiveMembersInServerCsvFileTypeAndIllKnowItHasBeenDownloadedWithRightFileTypeByFilepath()
         {
@@ -72,60 +83,76 @@ namespace AbrahamSpecFlowProject.StepDefinitions
         }
 
 
+        //11th on the list in test Explorer
         [Then(@"I click on JSON button for Active Voice Channel time and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnJSONButtonForActiveVoiceChannelTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileJsonActiveVoiceChannelTimeExists();
         }
 
+        // 6th on the list in test Explorer
         [Then(@"I click on CSV button for Active Voice Channel time and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnCSVButtonForActiveVoiceChannelTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileCsvActiveVoiceChannelTimeExists();
         }
 
+
+        //10th on the list in test Explorer
         [Then(@"I click on JSON button for Active Messaging time and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnJSONButtonForActiveMessagingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileJsonActiveMessagingExists();
         }
 
+        //5th on the list in test Explorer
         [Then(@"I click on CSV button for Active Messaging time and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnCSVButtonForActiveMessagingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileCsvActiveMessagingTimeExists();
         }
 
+
+        //9th on the list in test Explorer
         [Then(@"I click on JSON button for Active Gaming time and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnJSONButtonForActiveGamingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileJsonActiveGamingTimeExists();
         }
 
+        // 4th on the list in test Explorer
         [Then(@"I click on CSV button for Active Gaming time and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnCSVButtonForActiveGamingTimeButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileCsvActiveGamingTimeExists();
         }
 
+
+        //12th on the list in test Explorer
         [Then(@"I click on JSON button for Hours Per Game and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnJSONButtonForHoursPerGameButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileJsonHoursPerGameExists();
         }
 
+
+        //7th on the list in test Explorer
         [Then(@"I click on CSV button for Hours Per Game and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnCSVButtonForHoursPerGameButtonAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileCsvHoursPerGameExists();
         }
 
+
+        //13th on the list in test Explorer
         [Then(@"I click on JSON button for Statuses and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnJSONButtonForStatusesAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
             _detailPage.VerifyFileJsonStatusesExists();
         }
 
+
+        //8th on the list in test Explorer
         [Then(@"I click on CSV button for Statuses and I'll know it has been downloaded with right file type comparison")]
         public void ThenIClickOnCSVButtonForStatusesAndIllKnowItHasBeenDownloadedWithRightFileTypeComparison()
         {
