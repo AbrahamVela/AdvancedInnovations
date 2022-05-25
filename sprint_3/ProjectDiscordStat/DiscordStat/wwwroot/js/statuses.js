@@ -228,10 +228,10 @@ function setUpForDownLoadForStatus(data) {
     yValuesOnline.push(endDate);
     yValuesIdle.push(endDate);
     yValuesDnD.push(endDate);
-    xValuesStatus.push("Status Type");
-    yValuesOnline.push("online");
-    yValuesIdle.push("idle");
-    yValuesDnD.push("do not disturb");
+    //xValuesStatus.push("Status Type");
+    //yValuesOnline.push("online");
+    //yValuesIdle.push("idle");
+    //yValuesDnD.push("do not disturb");
 
     var obj = {};
     for (var i = 0; i < xValuesStatus.length; i++) {
@@ -254,7 +254,8 @@ function downloadStatuses(obj, obj1, obj2, data) {
     var zero = JSON.stringify(obj);
     var one = JSON.stringify(obj1);
     var two = JSON.stringify(obj2);
-    var allThree = zero + "\n" + one + "\n" + two;
+
+    var allThree = "[" + zero + ",\n" + one + ",\n" + two + "]";
 
     var element = document.createElement('a');
     if (data == 1) {
