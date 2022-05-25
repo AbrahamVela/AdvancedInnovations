@@ -58,53 +58,51 @@
         <div class="row">
           <div class="col-md-12">
             <div class="section-heading">
-              <h2>Here you can post to our forum to recruit more members</h2>
+              <h2 style="text-align:center">Here you can post to our forum to recruit more members</h2><br />
+                <center>
+                    <input type="button" value="View Forum" class="btn btn-success" onclick="location.href='@Url.Action("Index","Forum")'" />
+                </center>
             </div>
           </div>
           <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
-              <form asp-controller="Forum" asp-action="ServerOnForum" method="post">
+            <form asp-controller="Forum" asp-action="ServerOnForum" method="post">
                  
-            <input type="hidden" id="PostForumToken" asp-for="Token"/>
-            <div class="row" >
-            <label asp-for="server.Id" class="control-label" style="text-align: left; font-weight:bold;margin-left:-1% ;">Which Server would you like to add to forum?</label>
-            <select asp-for="server.Id" class="form-control" asp-items="ViewBag.Id"></select>
-            <span asp-validation-for="server.Id" class="text-danger"></span>
-            </div>
+                        <input type="hidden" id="PostForumToken" asp-for="Token"/>
+                        <div class="row" >
+                        <label asp-for="server.Id" class="control-label" style="text-align: left; font-weight:bold;margin-left:-1% ;">Which Server would you like to add to forum?</label>
+                        <select asp-for="server.Id" class="form-control" asp-items="ViewBag.Id"></select>
+                        <span asp-validation-for="server.Id" class="text-danger"></span>
+                        </div>
 
-         <div class="row">
-                <label for="text" asp-for="server.Message" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Leave a message:</label>
-                <input type="text" asp-for="server.Message" id="MessageBox" class="form-control" maxlength="32">
-                <span asp-validation-for="server.Message" class="text-danger"></span>
-        </div>
-        <div class="col">
-            <div class="form-group mt-3 text-center">
-                <input type="submit" value="Add to Forum"  id="addToForum" class="btn btn-primary"/>
-            </div>
-        </div>
+                     <div class="row">
+                            <label for="text" asp-for="server.Message" class="control-label" style="font-weight:bold; margin-top: 3%; margin-left:-1% ;">Leave a message:</label>
+                            <input type="text" asp-for="server.Message" id="MessageBox" class="form-control" maxlength="32">
+                            <span asp-validation-for="server.Message" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <div class="form-group mt-3 text-center">
+                            <input type="submit" value="Add to Forum"  id="addToForum" class="btn btn-primary"/>
+                        </div>
+                    </div>
 
-</form>
-<form asp-controller="Forum" asp-action="ServerOffForum" method="post">
-        <div class="align-content-lg-center">
-            <div class="row">
-            <label asp-for="server.Id" class="control-label" style="font-weight:bold; margin-left:-1% ;">Which Server would you like to remove from the forum?</label>
-            <select asp-for="server.Id" class="form-control" asp-items="ViewBag.Id"></select>
-            <span asp-validation-for="server.Id" class="text-danger"></span>
-            </div>
-        </div>
+            </form>
+            <form asp-controller="Forum" asp-action="ServerOffForum" method="post">
+                    <div class="align-content-lg-center">
+                        <div class="row">
+                        <label asp-for="server.Id" class="control-label" style="font-weight:bold; margin-left:-1% ;">Which Server would you like to remove from the forum?</label>
+                        <select asp-for="server.Id" class="form-control" asp-items="ViewBag.Id"></select>
+                        <span asp-validation-for="server.Id" class="text-danger"></span>
+                        </div>
+                    </div>
 
  
-        <div class="col">
-            <div class="form-group mt-3 text-center">
-                <input class="btn btn-danger" type="submit" value="Remove from Forum"  class="btn btn-primary"/>
-            </div>
-        </div>
-</form>
+                    <div class="col">
+                        <div class="form-group mt-3 text-center">
+                            <input class="btn btn-danger" type="submit" value="Remove from Forum"  class="btn btn-primary"/>
+                        </div>
+                    </div>
+            </form>
 
-<div class="col">
-    <div class="form-group mt-3 text-center">
-        <input type="button" value="View Forum" class="btn btn-success" onclick="location.href='@Url.Action("Index","Forum")'" />
-    </div>
-</div>
           </div>
 
 

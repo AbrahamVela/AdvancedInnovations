@@ -112,7 +112,7 @@
                 <div class="row">
 
                     <label for="text" asp-for="channelsVM.name" style="margin-bottom: .5%; margin-left: -1%" class="control-label">Channel Name:</label>
-                    <input type="text" asp-for="channelsVM.name" class="form-control" required="required" maxlength="32" pattern="^[a-zA-Z]" ErrorMessage="No whitespace">
+                    <input type="text" asp-for="channelsVM.name" class="form-control" required="required" maxlength="32" pattern="^[-a-zA-Z ]+" ErrorMessage="No whitespace">
                     <span asp-validation-for="channelsVM.name" class="text-danger"></span>
 
                 </div>
@@ -191,12 +191,12 @@ else
 
     <script>
         $(document).ready(function(){
-            //$('input:checkbox').click(function() {
-            //    $('input:checkbox').not(this).prop('checked', false);
-            //});
+            $('input:checkbox').click(function() {
+                $('input:checkbox').not(this).prop('checked', false);
+            });
 
-            $("#type_text").attr('required', 'required');
-            $("#activityValue").attr('required', 'required');
+            $("#channelsVM.type_text").attr('required', 'required');
+            $("#channelsVM.type_voice").attr('required', 'required');
         });
     </script>
 
@@ -230,6 +230,7 @@ else
         }
     }
 
+
     $(function(){
         $("#type_text").change(function(){
             if($("#type_text").is(':checked')) {
@@ -247,6 +248,6 @@ else
             }
         });
     });
-    </script>
 
+    </script>
 }
