@@ -128,22 +128,22 @@
              $("#activityValue").attr('required', 'required');
         });
 
-        $(function(){
-            $("#activityValue").change(function(){
-                if($("#activityValue").is(':checked')) {
-                    $("#memberValue").removeAttr('required');
-                } else {
-                    $("#memberValue").attr('required', 'required');
-                }
-            });
+        //$(function(){
+        //    $("#activityValue").change(function(){
+        //        if($("#activityValue").is(':checked')) {
+        //            $("#memberValue").removeAttr('required');
+        //        } else {
+        //            $("#memberValue").attr('required', 'required');
+        //        }
+        //    });
 
-            $("#memberValue").change(function(){
-                if($("#memberValue").is(':checked')) {
-                    $("#activityValue").removeAttr('required');
-                } else {
-                    $("#activityValue").attr('required', 'required');
-                }
-            });
-        });
+        //    $("#memberValue").change(function(){
+        //        if($("#memberValue").is(':checked')) {
+        //            $("#activityValue").removeAttr('required');
+        //        } else {
+        //            $("#activityValue").attr('required', 'required');
+        //        }
+        //    });
+        //});
     </script>
 }
