@@ -1,0 +1,199 @@
+﻿@model IEnumerable<DiscordStats.Models.Server>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Server Details</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>@ViewData["Title"] - DiscordStat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="~/assets/css/templatemo-host-cloud.css">
+    <link rel="stylesheet" href="~/assets/css/owl.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+</head>
+ <body>
+          <!-- ***** Preloader Start ***** -->
+    <div id="preloader">
+        <div class="jumper">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>  
+    <!-- ***** Preloader End ***** -->
+    <!-- Page Content -->
+    <!-- Heading Starts Here -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+              <h1>Servers</h1>
+            <p>Start Your Journey</p>           
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Heading Ends Here -->
+     <!-- Services Starts Here -->
+    <div class="services-section services-page">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+              <h2>Here is a list of servers that you own</h2>
+                @* <p>Please select which one you would like to add our bot to</p>*@
+            </div>
+          </div>
+             
+          <table class="table">
+              <thead class="thead-dark">
+                <tr>
+                    <th><b>Server</b></th>
+                    <th><b>Icon</b></th>
+                    <th><b>Privacy Level/Add bot</b></th>
+                    <th><b>Server channels</b></th>
+                    <th><b>Drawing for server on home page</b></th>
+                </tr>
+             </thead>
+             <tbody>
+              @foreach (var s in Model)
+                {
+                   <tr>
+                       <td><h3>@s.Name</h3></td>
+                       <td style="padding-bottom: 2%">
+                        @if (s.Icon == null)
+                        {
+                            <img src="https://nektony.com/wp-content/uploads/2019/07/discord-icon.png" width="125" height="125"/>
+                        }
+                        else
+                        {
+                            var link = "https://cdn.discordapp.com/icons/" + @s.Id + "//" + @s.Icon + ".png";
+                            <img src="@link"/>
+                        } 
+
+                    </td>
+                    <td style="font-weight:bold; padding-bottom: 2%">   
+                        @* <h3><a> @s.Name</a></h3>*@
+
+                        @if(s.HasBot == "false")
+                        {
+                            <div class="row" style="width: 50%; margin-top: 2%">
+                            @{
+                                var url = "https://discord.com/oauth2/authorize?client_id=938808510932746350&scope=bot&permissions=8&guild_id=" + s.Id;
+                            }
+                            <a id="anchorID" onclick="Refresh()" href="@url" target="_blank" style="margin-left: 12%" class="btn btn-primary">Add Bot</a>
+                            </div>
+                        }
+                        @if(s.HasBot == "true")
+                        {
+                            <div class="row form-inline">
+                                <form method="post" action="ChangePrivacy">
+                                    <select class="form-select" aria-label="Default select example" itemid="privacy @s" name="privacyString" id="privacyChangeForm">
+                                        <option value="private @s.Id">Private</option>
+                                        <option value="public @s.Id">Public</option>
+                                    </select>
+                                    <input class="btn btn-secondary" type="submit" value="Submit" style="float:left; margin-top: 3%">
+                                </form>
+                                <br/>
+
+
+                            </div>
+                            <div class="row" style="width: 50%; margin-top: 2%;white-space: nowrap; display: inline-block; color: green; font-size:18px">
+                  
+                                <span>Bot added </span> <span class="fa fa-check" style="margin-left: -15%"></span>
+                            </div>
+                        }
+                    </td>
+                    @if (s.HasBot == "true")
+                    {
+                        <td style="padding-bottom: 2%" id ="serverChannels">
+                        
+                        
+                        <h3><a href="@Url.Action("ServerChannels", "Channel", new {serverId = s.Id})"> Channels</a></h3>
+                        
+                        </td>
+                        <td style="padding-bottom: 2%" id="drawingSpot">
+                            @if (s.InLottery == "false" || s.InLottery == null)
+                            {
+                                <h3>Add: <a href="@Url.Action("AddServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
+                            }
+                            @if (s.InLottery == "true")
+                            {
+                                <h3>Remove: <a href="@Url.Action("RemoveServerLottery", "Account", new {serverId = s.Id})">@s.Name</a></h3>
+                            }
+                        </td> 
+                    }
+                                
+
+                
+                    </tr>
+                }
+               
+            </tbody>
+        </table>
+          
+          
+
+                
+        </div>
+      </div>
+    </div>
+    <!-- Services Ends Here -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+    </html>
+
+
+<!-- Bootstrap core JavaScript -->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Additional Scripts -->
+    <script src="~/assets/js/custom.js"></script>
+    <script src="~/assets/js/owl.js"></script>
+    <script src="~/assets/js/accordions.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    function AddBot(val) {
+        alert(val);
+    }
+     
+    function Refresh()
+    {
+        setTimeout(() => {
+ window.location.href = window.location.href
+}, 8000)
+      
+    }
+</script>
+
+@section Scripts {
+
+     <script type="text/javascript" src="~/js/site.js"></script>
+}

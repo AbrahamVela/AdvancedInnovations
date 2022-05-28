@@ -1,0 +1,173 @@
+﻿@model DiscordStats.ViewModel.UpdateUserInfoVM
+@using DiscordStats.DAL.Concrete
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Options
+@inject IOptions<CaptchaConfig> CaptchaConfig
+
+@{
+	ViewData["Title"] = "Create/Update Website Profile Info";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Server Details</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>@ViewData["Title"] - DiscordStat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">    
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="~/assets/css/templatemo-host-cloud.css">
+    <link rel="stylesheet" href="~/assets/css/owl.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+</head>
+ <body>
+               <!-- ***** Preloader Start ***** -->
+    <div id="preloader">
+        <div class="jumper">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>  
+    <!-- ***** Preloader End ***** -->
+    <!-- Page Content -->
+    <!-- Heading Starts Here -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>STAT TRACKER profile info</h1>
+            <p>Add or Update profile info in the Account page</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Heading Ends Here -->
+    <!-- Services Starts Here -->
+    <div class="services-section services-page">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+              <h2>Here you can make adjustments or add profile info custom to STAT TRACKER</h2>
+            </div>
+          </div>
+          <div class="col-md-10 col-sm-10 col-xs-12" style="margin:0 auto">
+              @*@using (Html.BeginForm("ProfileFormSubmit", "Account", FormMethod.Post))*@
+            <form asp-action="ProfileFormSubmit" id="profileForm"> 
+                 <input type="hidden" id="PostForumToken" asp-for="Token"/>
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">First Name:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="ProfileVM.ProfileFirstName" type="text" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileVM.ProfileFirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">Last Name:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="ProfileVM.ProfileLastName" type="text" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileVM.ProfileLastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">Birth Date:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="ProfileVM.ProfileBirthDate" type="date" id="Date" class="form-control"  min="1850-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+                            <span asp-validation-for="ProfileVM.ProfileBirthDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                
+                    <div class="row" style="padding-bottom: 3%" >
+                        <div class="col-3">
+                            <p style=" color: black; font-weight: 400;font-size:16px">Email:</p>
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="ProfileVM.ProfileEmail" type="email" class="form-control" maxlength="32"/>
+                            <span asp-validation-for="ProfileVM.ProfileEmail" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        @Html.HiddenFor(m => m.ProfileVM.id, new { @readonly="readonly" })                       
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 text-center" >
+                            <button id="submitProfileForm" value="Submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Services Ends Here -->
+
+</body>
+    </html>
+    <!-- Bootstrap core JavaScript -->
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Additional Scripts -->
+    <script src="~/assets/js/custom.js"></script>
+    <script src="~/assets/js/owl.js"></script>
+    <script src="~/assets/js/accordions.js"></script>
+@section Scripts {
+
+     <script type="text/javascript" src="~/js/site.js"></script>
+}
+<script src="https://www.google.com/recaptcha/api.js?render=@CaptchaConfig.Value.SiteKey"></script>
+    <script>
+        function getToken()
+        {
+             grecaptcha.ready(function() {
+          grecaptcha.execute('@CaptchaConfig.Value.SiteKey', {action: 'submit'}).then(function(token) {
+             document.getElementById("PostForumToken").value = token;
+          });
+        });
+        }
+        setInterval(getToken, 115000);
+        $(function(){
+         getToken();
+        });
+    </script>
+<script>
+     function CheckDate(date) {
+            var inDate = $("#Date").val();
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+            today = yyyy + '-' + mm + '-' + dd;
+            var pastDateCheck = new Date();
+            pastDateCheck.setFullYear( pastDateCheck.getFullYear() - 125);
+            var yyyy = pastDateCheck.getFullYear();
+            pastDateCheck = yyyy + '-' + 00 + '-' + 00;
+
+            if (inDate > today) {
+                alert("Birth date can't be in the future.");
+                $("#Date1").val(null);
+            }
+            //if(today < pastDateCheck){
+            //    alert("Birth date year can't be more than 125 yrs back.");
+            //    $("#Date1").val(null);
+            //}
+        }
+</script>
